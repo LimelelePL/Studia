@@ -5,25 +5,41 @@
 #include "GeneticAlgorithm.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "ConstantValues.h"
 
-static void printGenotype(Individual& ind) {
-    std::cout<<" Genotyp: ";
-    for (auto& g : ind.getGenotype()) {
-        cout<< g << ",";
+static void printGenotype(Individual& ind, const std::string& file) {
+    const std::vector<int>& genotype = ind.getGenotype();
+    std::ostringstream oss;
+    oss << "Genotyp: ";
+    for (size_t i = 0; i < genotype.size(); ++i) {
+        oss << genotype[i];
+        if (i < genotype.size() - 1) oss << ",";
     }
-    cout<<endl;
+    oss << " | size: " << genotype.size() << std::endl;
+    // wypisz na konsolę
+    std::cout << oss.str();
+
+    // zapisz do pliku (append), jeśli podano nazwę
+    if (!file.empty()) {
+        std::ofstream ofs(file, std::ios::app);
+        if (!ofs) {
+            std::cerr << "Nie można otworzyć pliku: " << file << std::endl;
+        } else {
+            ofs << oss.str();
+        }
+    }
 }
 
 GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval, RandomGenerator& generator, int popSize, double crossProb, double mutProb, int maxIterations) :
 crossProb(crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval), gen(generator) {
 
     if (mutProb > 1 || mutProb < 0) {
-        mutProb = DEFAULT_PROB;
+        this->mutProb = DEFAULT_PROB;
     }
     if (crossProb > 1 || crossProb < 0) {
-        crossProb = DEFAULT_PROB;
+        this->crossProb = DEFAULT_PROB;
     }
     if (popSize < MIN_POPSIZE) {
         this->popSize = DEFAULT_POPSIZE;
@@ -55,8 +71,9 @@ void GeneticAlgorithm::run() {
         if (bestSolution == nullptr || currentBest.getFitnes() > bestSolution->getFitnes()) {
             delete bestSolution;
             bestSolution = new Individual(currentBest);
-            cout<<"nowy najlepszy " << bestSolution->getFitnes() << endl;
 
+            cout<<"nowy najlepszy " << bestSolution->getFitnes() << endl;
+            printGenotype(*bestSolution, "data/wyniki.txt");
         }
 
     }
@@ -82,13 +99,9 @@ void GeneticAlgorithm::crossPopulation() {
         } else {
             pair<Individual,Individual> crossed = parent1.cross(parent2, gen);
 
-            // dodajemy do nowej populacji
-
             newPopulation.push_back(crossed.first);
             newPopulation.push_back(crossed.second);
 
-           // printGenotype(crossed.first);
-            //printGenotype(crossed.second);
         }
     }
 
@@ -166,13 +179,6 @@ void GeneticAlgorithm::calcFitness() {
     }
 }
 
-void GeneticAlgorithm::printBest() {
-    if (bestSolution) {
-        std::cout << "Najlepszy znaleziony dystans: " << 1.0 / bestSolution->getFitnes() << std::endl;
-        std::cout<< "size genotypu: " << static_cast<int>(bestSolution->getGenotype().size());
-    }
-}
-
 void GeneticAlgorithm::printDetailedBest() {
     if (!bestSolution) return;
 
@@ -213,6 +219,6 @@ void GeneticAlgorithm::printDetailedBest() {
     std::cout << "STATUS ROZWIAZANIA: " << (overallFeasible ? "DOPUSZCZALNE" : "NIEDOPUSZCZALNE") << std::endl;
     std::cout << "KONCOWY DYSTANS: " << (1.0 / bestSolution->getFitnes()) << std::endl;
 
-    printGenotype(*bestSolution);
+    printGenotype(*bestSolution, "data/wyniki.txt");
 }
 

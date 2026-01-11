@@ -21,6 +21,14 @@ public:
     void setDistanceType(const std::string& type);
     void setMaxDistance(double dist);
 
+    void setTotalNodes(int totalNodes);
+
+    void setCapacityLimit(int cLimit);
+
+    void setVehicleFleet(int vFleet);
+
+    void setDepotNode(int dNode);
+
     void assignCoordinates(const std::vector<Coordinate>& coords);
     void assignDemands(const std::vector<int>& dems);
     void assignVisitOrder(const std::vector<int>& order);

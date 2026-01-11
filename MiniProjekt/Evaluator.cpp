@@ -37,6 +37,20 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
         return Result<void, Error>::fail(new Error("INVALID_NUM_GROUPS"));
     if (data.getCapacityLimit() <= 0)
         return Result<void, Error>::fail(new Error("INVALID_CAPACITY"));
+
+    // walidacja permutacjii
+    if ((int)data.getVisitOrder().size() != data.getCustomerCount())
+        return Result<void, Error>::fail(new Error("PERMUTATION_WRONG_SIZE"));
+
+    std::vector<bool> seen(data.getCustomerCount() + 2, false);
+    for (const int i : data.getVisitOrder()) {
+        if (i < 2 || i>=data.getCustomerCount()+2) return Result<void, Error>::fail(new Error("INVALID_PERMUTATION"));
+        if (seen[i]) {
+            return Result<void, Error>::fail(new Error("PERMUTATION_DUPLICATE"));
+        }
+            seen[i] = true;
+    }
+
     if (!checkIfProblemIsSolvable())
         return Result<void, Error>::fail(new Error("PROBLEM_UNSOLVABLE"));
 
@@ -57,6 +71,13 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     vector<int> lastPos(numVehicles, depot);
     vector<bool> used(numVehicles, false);
 
+    const bool hasDistanceLimit = data.hasDistanceLimit();
+    const double maxDistance = data.getMaxDistance();
+
+    if (static_cast<int>(genotype.size()) != data.getCustomerCount())
+        return Result<double, Error>::fail(new Error("GENOTYPE_SIZE_MISMATCH"));
+
+
     for (int p : permutation) {
         if (p == data.getDepotNode()) continue;
 
@@ -65,6 +86,7 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
         int v = genotype[genotypeIdx];
 
         if (v >= 0 && v < numVehicles) {
+
             distances[v] += data.calculateDistance(lastPos[v], clientDistIdx);
             loads[v] += demands[clientDistIdx];
             lastPos[v] = clientDistIdx;
@@ -74,8 +96,19 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
 
     double totalDist = 0;
     long totalPenalty = 0;
+
     for (int v = 0; v < numVehicles; v++) {
-        if (used[v]) totalDist += distances[v] + data.calculateDistance(lastPos[v], depot);
+        if (used[v]) {
+            double vehicleFullRouteDist = distances[v] + data.calculateDistance(lastPos[v], depot);
+            totalDist += vehicleFullRouteDist;
+
+        // kara za przekroczenie dystansu przejechanego przez samochód
+            if (hasDistanceLimit && vehicleFullRouteDist > maxDistance) {
+                totalPenalty += (vehicleFullRouteDist - maxDistance) * DEFAULT_PENALTY/100;
+            }
+        }
+
+        //kara za przeladowanie
         if (loads[v] > maxCapacity) totalPenalty += (loads[v] - maxCapacity) * DEFAULT_PENALTY;
     }
 

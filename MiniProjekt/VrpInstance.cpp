@@ -9,15 +9,6 @@ VrpInstance::VrpInstance()
     : totalNodes(0), capacityLimit(0), fleetSize(0),
       depotNode(1), maxDistance(0.0), hasDistLimit(false) {}
 
-void VrpInstance::initialize(int nodes, int cap, int fleet, int depot) {
-    totalNodes = nodes;
-    capacityLimit = cap;
-    fleetSize = fleet;
-    depotNode = depot;
-    coordinates.resize(nodes);
-    demands.resize(nodes, 0);
-}
-
 
 double VrpInstance::computeEuclidean(const Coordinate& a, const Coordinate& b) {
     double dx = a.xPos - b.xPos;
@@ -50,6 +41,10 @@ void VrpInstance::generateDistanceTable() {
 void VrpInstance::setInstanceName(const std::string& name) { instanceName = name; }
 void VrpInstance::setDistanceType(const std::string& type) { distanceType = type; }
 void VrpInstance::setMaxDistance(double dist) { maxDistance = dist; hasDistLimit = true; }
+void VrpInstance::setTotalNodes(int totalNodes) {this->totalNodes = totalNodes;}
+void VrpInstance::setCapacityLimit(int cLimit) {this->capacityLimit = cLimit;}
+void VrpInstance::setVehicleFleet(int vFleet) { this -> fleetSize = vFleet;}
+void VrpInstance::setDepotNode(int dNode) {this->depotNode = dNode;}
 
 void VrpInstance::assignCoordinates(const std::vector<Coordinate>& c) { coordinates = c; }
 void VrpInstance::assignDemands(const std::vector<int>& d) { demands = d; }
@@ -63,8 +58,8 @@ int VrpInstance::getFleetSize() const { return fleetSize; }
 int VrpInstance::getDepotNode() const { return depotNode; }
 int VrpInstance::getCustomerCount() const { return totalNodes > 0 ? totalNodes - 1 : 0; }
 
-double VrpInstance::getMaxDistance() const { return maxDistance; }
 bool VrpInstance::hasDistanceLimit() const { return hasDistLimit; }
+double VrpInstance::getMaxDistance() const { return hasDistanceLimit() ? maxDistance : -1 ; }
 
 std::string VrpInstance::getDistanceType() const { return distanceType; }
 
@@ -72,3 +67,4 @@ const std::vector<Coordinate>& VrpInstance::getCoordinates() const { return coor
 const std::vector<int>& VrpInstance::getDemands() const { return demands; }
 const std::vector<int>& VrpInstance::getVisitOrder() const { return visitOrder; }
 const std::vector<std::vector<double>>& VrpInstance::getDistanceTable() const { return distanceTable; }
+

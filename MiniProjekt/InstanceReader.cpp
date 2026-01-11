@@ -46,36 +46,17 @@ Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance&
                 instance.setInstanceName(trim(line.substr(line.find(':') + 1)));
             }
             else if (line.starts_with("DIMENSION")) {
-                instance.initialize(
-                    std::stoi(trim(line.substr(line.find(':') + 1))),
-                    0, 0, 1
-                );
+                instance.setTotalNodes(std::stoi(trim(line.substr(line.find(':') + 1))));
             }
             else if (line.starts_with("CAPACITY")) {
-                instance.initialize(
-                    instance.getTotalNodes(),
-                    std::stoi(trim(line.substr(line.find(':') + 1))),
-                    instance.getFleetSize(),
-                    instance.getDepotNode()
-                );
+                instance.setCapacityLimit(std::stoi(trim(line.substr(line.find(':') + 1))));
             }
             else if (line.starts_with("NUM_GROUPS")) {
-                instance.initialize(
-                    instance.getTotalNodes(),
-                    instance.getCapacityLimit(),
-                    std::stoi(trim(line.substr(line.find(':') + 1))),
-                    instance.getDepotNode()
-                );
-            }
-            else if (line.starts_with("DISTANCE")) {
-                instance.setMaxDistance(
-                    std::stod(trim(line.substr(line.find(':') + 1)))
-                );
-            }
-            else if (line.starts_with("EDGE_WEIGHT_TYPE")) {
-                instance.setDistanceType(
-                    trim(line.substr(line.find(':') + 1))
-                );
+                instance.setVehicleFleet(std::stoi(trim(line.substr(line.find(':') + 1))));
+            } else if (line.starts_with("DISTANCE")) {
+                instance.setMaxDistance(std::stoi(trim(line.substr(line.find(':') + 1))));
+            } else if (line.starts_with("EDGE_WEIGHT_TYPE")) {
+                instance.setDistanceType(trim(line.substr(line.find(':') + 1)));
             }
             else if (line.starts_with("PERMUTATION")) {
                 std::vector<int> perm;
@@ -84,8 +65,6 @@ Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance&
                 while (iss >> x) perm.push_back(x);
                 instance.assignVisitOrder(perm);
             }
-
-            // ---------- SECTIONS ----------
             else if (line.contains("NODE_COORD_SECTION")) {
                 auto r = loadNodeCoordinates(file, instance);
                 if (!r.isSuccess()) return r;
@@ -116,9 +95,7 @@ Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance&
     return Result<void, Error>::ok();
 }
 
-Result<void, Error> InstanceReader::loadNodeCoordinates(
-    std::ifstream& file,
-    VrpInstance& instance
+Result<void, Error> InstanceReader::loadNodeCoordinates(std::ifstream& file,VrpInstance& instance
 ) {
     const int n = instance.getTotalNodes();
     if (n <= 0)
@@ -140,10 +117,7 @@ Result<void, Error> InstanceReader::loadNodeCoordinates(
     return Result<void, Error>::ok();
 }
 
-Result<void, Error> InstanceReader::loadNodeDemands(
-    std::ifstream& file,
-    VrpInstance& instance
-) {
+Result<void, Error> InstanceReader::loadNodeDemands(std::ifstream& file,VrpInstance& instance) {
     const int n = instance.getTotalNodes();
     std::vector<int> demands(n, 0);
 
@@ -160,29 +134,16 @@ Result<void, Error> InstanceReader::loadNodeDemands(
     return Result<void, Error>::ok();
 }
 
-Result<void, Error> InstanceReader::loadDepotInformation(
-    std::ifstream& file,
-    VrpInstance& instance
-) {
-    int depot, term;
-    if (!(file >> depot))
-        return Result<void, Error>::fail(new Error("DEPOT_SECTION_TRUNCATED"));
+Result<void, Error> InstanceReader::loadDepotInformation(std::ifstream& file, VrpInstance& instance) {
+    int depot;
+    if (!(file >> depot)) return Result<void, Error>::fail(new Error("DEPOT_SECTION_TRUNCATED"));
 
-    instance.initialize(
-        instance.getTotalNodes(),
-        instance.getCapacityLimit(),
-        instance.getFleetSize(),
-        depot
-    );
+    instance.setDepotNode(depot);
 
-    file >> term; // -1
     return Result<void, Error>::ok();
 }
 
-Result<void, Error> InstanceReader::loadDistanceMatrix(
-    std::ifstream& file,
-    VrpInstance& instance
-) {
+Result<void, Error> InstanceReader::loadDistanceMatrix(std::ifstream& file, VrpInstance& instance) {
     const int n = instance.getTotalNodes();
     std::vector<std::vector<double>> matrix(n, std::vector<double>(n, 0.0));
 

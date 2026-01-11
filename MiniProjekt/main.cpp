@@ -30,9 +30,12 @@ int main() {
     // X-n209-k16 wynik 119957
     // Leuven2 4 811 620
 
-    std::string folder = "Vrp-Set-XML100";
-    std::string file = "XML100_2174_01";
 
+    const std::string path = "data/wyniki.txt";
+    std::ofstream ofs(path, std::ios::trunc);
+
+    std::string folder = "Vrp-Set-Golden";
+    std::string file = "Golden_1";
 
     Evaluator evaluator;
 
@@ -46,10 +49,10 @@ int main() {
         return 1;
     }
 
-    int populationSize = 5000;
+    int populationSize = 500;
     double crossoverProbability = 0.8;
     double mutationProbability = 0.05;
-    int iterations = 10000;
+    int iterations = 5000;
     RandomGenerator generator;
 
     GeneticAlgorithm ga(evaluator, generator, populationSize, crossoverProbability, mutationProbability, iterations);
@@ -58,7 +61,6 @@ int main() {
     ga.run();
 
     std::cout << "\n=== WYNIK KONCOWY ===" << std::endl;
-    ga.printBest();
 
     ga.printDetailedBest();
 
