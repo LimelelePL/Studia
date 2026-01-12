@@ -64,8 +64,8 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
     const int maxCapacity = data.getCapacityLimit();
-    const int depot = data.getDepotNode() - 1; // indeks magazynu = 0
-    const vector<int>& demands = data.getDemands(); // indeks 0 = magazyn
+    const int depot = data.getDepotNode() - 1; // indeks magazynu = 0 (ID1)
+    const vector<int>& demands = data.getDemands(); // indeks 0 = magazyn (ID1), indeks 1 klient (ID 2)
     const vector<int>& permutation = data.getVisitOrder(); // kolejność klientów (pierwszy klient ID 2)
 
     vector<int> loads(numVehicles, 0); //aktualny ładunek kazdego samochodu
@@ -82,21 +82,32 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     for (int p : permutation) {
         if (p == data.getDepotNode()) continue;
 
-        // indeks w macierzy dystansu/obciążeń -> indeks 0 = magazyn (ID1), indeks 1 = pierwszy klient (ID 2)
-        int clientDistIdx = p - 1;
+        // indeks w macierzy dystansu/obciążeń -> indeks 0 = magazyn (ID1), indeks 1 = pierwszy klient (ID 2), indeks 2 drugi klient (ID 3)
+        int clientDataIdx = p - 1;
 
-        //indeks w genotypie (samochodu) dla klienta, p-2 bo i-ty indeks w genotypie to ID = i + 2,
-        //np genotype[0] -> samochód dla klienta pierwszego (ID 2), genotype[1] -> samochód dla drugiego klienta (ID3)
+        //indeks w genotypie (samochodu dla klienta) p-2 bo i-ty indeks w permutacji to ID - 2;
+        //genotype[0] -> samochód dla klienta pierwszego z permutacji (ID 2)
+        //genotype[1] -> samochód dla drugiego klienta z permutacji (ID3)
         int genotypeIdx = p - 2;
+
+        /* PRZYKŁAD
+        * genotyp [0,1,1,5]
+        * permutacja [2,4,3,5]
+
+        * p = 2 -> genotypeIdx = 0 -> v = 0
+        * p = 4 -> genotypeIdx = 2 -> v = 1
+        * p = 3 -> genotypeIdx = 1 -> v = 1
+        * p = 5 -> genotypeIdx = 3 -> v = 5
+        */
 
         //samochód dla klienta
         int v = genotype[genotypeIdx];
 
         // dla samochodu v, który jedzie do klienta p doliczamy statysyki
         if (v >= 0 && v < numVehicles) {
-            distances[v] += data.calculateDistance(lastPos[v], clientDistIdx);
-            loads[v] += demands[clientDistIdx];
-            lastPos[v] = clientDistIdx;
+            distances[v] += data.calculateDistance(lastPos[v], clientDataIdx);
+            loads[v] += demands[clientDataIdx];
+            lastPos[v] = clientDataIdx;
             used[v] = true;
         }
     }
