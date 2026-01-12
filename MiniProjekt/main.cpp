@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <iostream>
 #include <string>
@@ -34,8 +35,8 @@ int main() {
     const std::string path = "data/wyniki.txt";
     std::ofstream ofs(path, std::ios::trunc);
 
-    std::string folder = "Vrp-Set-Golden";
-    std::string file = "Golden_1";
+    std::string folder = "Vrp-Set-p";
+    std::string file = "p-n19-k2";
 
     Evaluator evaluator;
 
@@ -49,10 +50,10 @@ int main() {
         return 1;
     }
 
-    int populationSize = 500;
+    int populationSize = 100;
     double crossoverProbability = 0.8;
     double mutationProbability = 0.05;
-    int iterations = 5000;
+    int iterations = 500;
     RandomGenerator generator;
 
     GeneticAlgorithm ga(evaluator, generator, populationSize, crossoverProbability, mutationProbability, iterations);

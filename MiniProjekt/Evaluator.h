@@ -30,7 +30,7 @@ private:
     VrpInstance data;
     int numVehicles;
 
-    bool checkIfProblemIsSolvable();
+    bool checkIfProblemIsSolvable() const;
 
 };
 

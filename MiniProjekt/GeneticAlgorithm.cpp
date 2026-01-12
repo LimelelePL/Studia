@@ -4,6 +4,7 @@
 
 #include "GeneticAlgorithm.h"
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -18,10 +19,8 @@ static void printGenotype(Individual& ind, const std::string& file) {
         if (i < genotype.size() - 1) oss << ",";
     }
     oss << " | size: " << genotype.size() << std::endl;
-    // wypisz na konsolę
     std::cout << oss.str();
 
-    // zapisz do pliku (append), jeśli podano nazwę
     if (!file.empty()) {
         std::ofstream ofs(file, std::ios::app);
         if (!ofs) {
@@ -53,20 +52,22 @@ GeneticAlgorithm::~GeneticAlgorithm() {
 }
 
 void GeneticAlgorithm::run() {
-    //generujemy popsize gotowych rozwiazan
+    //KROK 1 generujemy popsize gotowych rozwiazan i oblczamy dla nich fitness
     genRandomPopulation();
 
     for (int i = 0; i < maxIterations; i++) {
-
-        // krzyzowanie ustawia fitness krzyzowanych na -1
+        // KROK 2 KRZYZOWANIE
         crossPopulation();
 
+        //KROK 3 MUTACJA
         for (size_t j = 1; j < population.size(); j++) {
             population[j].mutate(mutProb, gen, eval.getNumVehicles());
         }
 
+        //po mutacji i skrzyzowaniu osobników musimy obliczyć dla nich ponownie fitness
         calcFitness();
 
+        // KROK 4 wybór najlepszego rozwiazania
         Individual &currentBest = currentIterationBestSolution();
         if (bestSolution == nullptr || currentBest.getFitnes() > bestSolution->getFitnes()) {
             delete bestSolution;
@@ -83,46 +84,48 @@ void GeneticAlgorithm::run() {
 void GeneticAlgorithm::crossPopulation() {
     vector<Individual> newPopulation;
 
+    // najlepszego osobnika przenosimy do nowej populacji
     if (bestSolution != nullptr) {
         newPopulation.push_back(*bestSolution);
     }
 
+    //krzyzujemy osobników do momentu gdy utworzymy z nich nowe pokolenie o rozmiarze PopSize
     while (newPopulation.size() < popSize){
         double prob = gen.nextDouble(0,1);
 
         Individual& parent1 = selectParents();
         Individual& parent2 = selectParents();
 
-        if (prob > crossProb) {
+        if (prob > crossProb){
+            // przenosimy rodziców z poprzedniej populacji do nowej
             newPopulation.push_back(parent1);
             newPopulation.push_back(parent2);
         } else {
+            // przenosimy do nowej populacji osobniki skrzyzowane
             pair<Individual,Individual> crossed = parent1.cross(parent2, gen);
-
             newPopulation.push_back(crossed.first);
             newPopulation.push_back(crossed.second);
-
         }
     }
 
-    // gdyby przekroczylo popsize
+    // gdyby przekroczylo popsize usuwamy ostatniego osobnika
     if (newPopulation.size() > popSize) {
         newPopulation.pop_back();
     }
 
     this->population = std::move(newPopulation);
-
 }
 
 void GeneticAlgorithm::genRandomPopulation() {
     const int numVehicles = eval.getNumVehicles();
     const int numClients = eval.getNumClients();
 
+    // generujemy populacje osobników o rozmiarze popsize
     for (int i = 0; i<popSize; i++) {
         std::vector<int> randGenotype;
-        // genotyp to przypisanie klientów
+
+        // dla kazdego klienta losujemy pojazd (gen) tworząc genotyp osobnika
         for (int j = 0; j<numClients; j++) {
-            // losujemy pojazd dla klienta
             int gene = gen.nextInt(0,numVehicles-1);
             randGenotype.push_back(gene);
         }
@@ -133,13 +136,13 @@ void GeneticAlgorithm::genRandomPopulation() {
     calcFitness();
 }
 
+// w turnieju bierze udział 5 osobników i wybieramy dwóch najlepszych
 Individual& GeneticAlgorithm::selectParents() {
-    //losujemy 1 kandyata
+    //losujemy pierwszego kandyata
     int bestIdx = gen.nextInt(0, popSize - 1);
 
     int minSize = 2;
     int optimalSize = 5;
-
     if (optimalSize > popSize) optimalSize = minSize;
 
     // Losujemy resztę zawodników turnieju (tutaj 4)
@@ -153,8 +156,10 @@ Individual& GeneticAlgorithm::selectParents() {
     return population[bestIdx];
 }
 
+
+// zwraca najepszego osobnika w danej iteracji
 Individual& GeneticAlgorithm::currentIterationBestSolution() {
-    double bestFitness = -1;
+    double bestFitness = DEFAULT_FITNESS;
     int bestIndex = 0;
 
     for (int i = 0; i<popSize; i++) {
@@ -171,15 +176,16 @@ Individual& GeneticAlgorithm::currentIterationBestSolution() {
     return population[bestIndex];
 }
 
+//oblicza fitness dla osobników, ktorzy nie mają go wczensije obliczonego
 void GeneticAlgorithm::calcFitness() {
     for (Individual &in: population) {
-        if (in.getFitnes() < 0) {
+        if (in.getFitnes() == DEFAULT_FITNESS) {
             in.initFitness(eval);
         }
     }
 }
 
-void GeneticAlgorithm::printDetailedBest() {
+void GeneticAlgorithm::printDetailedBest() const {
     if (!bestSolution) return;
 
     int maxCap = eval.getCapacity();
@@ -195,9 +201,9 @@ void GeneticAlgorithm::printDetailedBest() {
         int genotypeIdx = p - 2;
         int clientDistIdx = p - 1;
 
-        if (genotypeIdx >= 0 && genotypeIdx < (int)genotype.size()) {
+        if (genotypeIdx >= 0 && genotypeIdx < static_cast<int>(genotype.size())) {
             int vehicleIdx = genotype[genotypeIdx];
-            if (vehicleIdx >= 0 && vehicleIdx < (int)loads.size()) {
+            if (vehicleIdx >= 0 && vehicleIdx < static_cast<int>(loads.size())) {
                 loads[vehicleIdx] += demands[clientDistIdx];
             }
         }

@@ -7,7 +7,7 @@
 // ID 1 to DEPOT
 // ID 2... to KLIENCi
 // GENOTYP MA MIEC ROZMIAR ROWNY LICZBIE KLIENTÓW
-// DLA KAZDEGO GENU STOSUJEMY PRZESUNIECIE -2: TZN klient 2 = genotype [0]
+// DLA KAZDEGO GENU STOSUJEMY PRZESUNIECIE -2: TZN pierwszy klient (ID 2) = genotype [0]
 // MACIERZ DEMANDS[0] to magazyn
 // PRERMUTACJA[0] = k oznacza ze pierwszym klientem jest klient k
 
@@ -39,16 +39,18 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
         return Result<void, Error>::fail(new Error("INVALID_CAPACITY"));
 
     // walidacja permutacjii
-    if ((int)data.getVisitOrder().size() != data.getCustomerCount())
+    if (static_cast<int>(data.getVisitOrder().size()) != data.getCustomerCount())
         return Result<void, Error>::fail(new Error("PERMUTATION_WRONG_SIZE"));
 
-    std::vector<bool> seen(data.getCustomerCount() + 2, false);
-    for (const int i : data.getVisitOrder()) {
-        if (i < 2 || i>=data.getCustomerCount()+2) return Result<void, Error>::fail(new Error("INVALID_PERMUTATION"));
-        if (seen[i]) {
+    // sprawdzenie czy klient nie zostanie przyporządkowany dwa razy do jednego samochodu
+    std::vector<bool> seen(data.getCustomerCount(), false);
+    for (const int clientID : data.getVisitOrder()) {
+        //pierwszy klient ma ID2 a ostatni ma ID = clientsCount + 1 (bo id = 1 to magazyn)
+        if (clientID < 2 || clientID>data.getCustomerCount()+1) return Result<void, Error>::fail(new Error("INVALID_PERMUTATION"));
+        if (seen[clientID]) {
             return Result<void, Error>::fail(new Error("PERMUTATION_DUPLICATE"));
         }
-            seen[i] = true;
+            seen[clientID] = true;
     }
 
     if (!checkIfProblemIsSolvable())
@@ -62,14 +64,14 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
 
 Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) const {
     const int maxCapacity = data.getCapacityLimit();
-    const int depot = data.getDepotNode() - 1;
-    const vector<int>& demands = data.getDemands();
-    const vector<int>& permutation = data.getVisitOrder();
+    const int depot = data.getDepotNode() - 1; // indeks magazynu = 0
+    const vector<int>& demands = data.getDemands(); // indeks 0 = magazyn
+    const vector<int>& permutation = data.getVisitOrder(); // kolejność klientów (pierwszy klient ID 2)
 
-    vector<int> loads(numVehicles, 0);
-    vector<double> distances(numVehicles, 0.0);
-    vector<int> lastPos(numVehicles, depot);
-    vector<bool> used(numVehicles, false);
+    vector<int> loads(numVehicles, 0); //aktualny ładunek kazdego samochodu
+    vector<double> distances(numVehicles, 0.0); //aktualny dystans kazdego samochcodu
+    vector<int> lastPos(numVehicles, depot); // ostatnia pozycja kazdego samochodu
+    vector<bool> used(numVehicles, false); // czy dany samochod zostal zuzyty
 
     const bool hasDistanceLimit = data.hasDistanceLimit();
     const double maxDistance = data.getMaxDistance();
@@ -77,16 +79,21 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     if (static_cast<int>(genotype.size()) != data.getCustomerCount())
         return Result<double, Error>::fail(new Error("GENOTYPE_SIZE_MISMATCH"));
 
-
     for (int p : permutation) {
         if (p == data.getDepotNode()) continue;
 
+        // indeks w macierzy dystansu/obciążeń -> indeks 0 = magazyn (ID1), indeks 1 = pierwszy klient (ID 2)
         int clientDistIdx = p - 1;
-        int genotypeIdx = p - 2; // Klient nr 2 (pierwszy) to gen[0]
+
+        //indeks w genotypie (samochodu) dla klienta, p-2 bo i-ty indeks w genotypie to ID = i + 2,
+        //np genotype[0] -> samochód dla klienta pierwszego (ID 2), genotype[1] -> samochód dla drugiego klienta (ID3)
+        int genotypeIdx = p - 2;
+
+        //samochód dla klienta
         int v = genotype[genotypeIdx];
 
+        // dla samochodu v, który jedzie do klienta p doliczamy statysyki
         if (v >= 0 && v < numVehicles) {
-
             distances[v] += data.calculateDistance(lastPos[v], clientDistIdx);
             loads[v] += demands[clientDistIdx];
             lastPos[v] = clientDistIdx;
@@ -98,6 +105,7 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     long totalPenalty = 0;
 
     for (int v = 0; v < numVehicles; v++) {
+        //dla kazdego użytego samochodu doliczamy dystans od ostatniego odwiedzonego klienta do magazynu
         if (used[v]) {
             double vehicleFullRouteDist = distances[v] + data.calculateDistance(lastPos[v], depot);
             totalDist += vehicleFullRouteDist;
@@ -112,10 +120,11 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
         if (loads[v] > maxCapacity) totalPenalty += (loads[v] - maxCapacity) * DEFAULT_PENALTY;
     }
 
-    return Result<double, Error>::ok(1.0 / (totalDist + (double)totalPenalty));
+    return Result<double, Error>::ok(1.0 / (totalDist + static_cast<double>(totalPenalty)));
 }
-// zwraca false gdy dany demand z pliku bedzie wiekszy od capacity
-bool Evaluator::checkIfProblemIsSolvable() {
+
+// zwraca false gdy kazdy demand z pliku bedzie wiekszy od capacity
+bool Evaluator::checkIfProblemIsSolvable() const {
     const int cap = data.getCapacityLimit();
     const std::vector<int>& demands = data.getDemands();
 

@@ -15,8 +15,7 @@ public:
     ~GeneticAlgorithm();
     void run();
     std::vector<int> getBestSolution;
-    void printBest();
-    void printDetailedBest();
+    void printDetailedBest() const;
 
 
 private:

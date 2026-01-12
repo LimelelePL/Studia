@@ -9,23 +9,22 @@ VrpInstance::VrpInstance()
     : totalNodes(0), capacityLimit(0), fleetSize(0),
       depotNode(1), maxDistance(0.0), hasDistLimit(false) {}
 
-
 double VrpInstance::computeEuclidean(const Coordinate& a, const Coordinate& b) {
     double dx = a.xPos - b.xPos;
     double dy = a.yPos - b.yPos;
     return std::sqrt(dx * dx + dy * dy);
 }
 
+// zwraca odleglosc miedzy dwoma klientami
+// indeks = ID - 1
 double VrpInstance::calculateDistance(int i, int j) const {
     if (i < 0 || j < 0 || i >= totalNodes || j >= totalNodes) return -1.0;
     if (i == j) return 0.0;
 
-    if (distanceType == "EXPLICIT") {
         return distanceTable[i][j];
-    }
-    return computeEuclidean(coordinates[i], coordinates[j]);
 }
 
+//na podstawie koordynatów generuje macierz zawierajaca odleglosci miedzy dwoma klientami (dla EUC2d tylko)
 void VrpInstance::generateDistanceTable() {
     if (distanceType != "EUC_2D") return;
 

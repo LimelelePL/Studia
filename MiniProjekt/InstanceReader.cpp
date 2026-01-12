@@ -1,8 +1,9 @@
 #include "InstanceReader.hpp"
 
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <cmath>
+
 #include <utility>
 
 InstanceReader::InstanceReader(std::string  dirName, std::string  fileName)
@@ -34,9 +35,8 @@ Result<VrpInstance, Error> InstanceReader::readInstance() const {
 
 Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance& instance
 ) {
-    std::string line;
-
     try {
+        std::string line;
         while (std::getline(file, line)) {
             line = trim(line);
             if (line.empty()) continue;
@@ -95,6 +95,8 @@ Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance&
     return Result<void, Error>::ok();
 }
 
+//ładuje koordynaty kazdego nodea (ID1 = magazyn, ID2... klienci)
+//indeks = id - 1
 Result<void, Error> InstanceReader::loadNodeCoordinates(std::ifstream& file,VrpInstance& instance
 ) {
     const int n = instance.getTotalNodes();
@@ -103,7 +105,7 @@ Result<void, Error> InstanceReader::loadNodeCoordinates(std::ifstream& file,VrpI
 
     std::vector<Coordinate> coords(n);
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; i++) {
         int id;
         double x, y;
         if (!(file >> id >> x >> y))
@@ -117,6 +119,7 @@ Result<void, Error> InstanceReader::loadNodeCoordinates(std::ifstream& file,VrpI
     return Result<void, Error>::ok();
 }
 
+//indeks = id - 1
 Result<void, Error> InstanceReader::loadNodeDemands(std::ifstream& file,VrpInstance& instance) {
     const int n = instance.getTotalNodes();
     std::vector<int> demands(n, 0);
@@ -134,6 +137,7 @@ Result<void, Error> InstanceReader::loadNodeDemands(std::ifstream& file,VrpInsta
     return Result<void, Error>::ok();
 }
 
+//ID MAGAZYNU = 1
 Result<void, Error> InstanceReader::loadDepotInformation(std::ifstream& file, VrpInstance& instance) {
     int depot;
     if (!(file >> depot)) return Result<void, Error>::fail(new Error("DEPOT_SECTION_TRUNCATED"));
@@ -143,12 +147,17 @@ Result<void, Error> InstanceReader::loadDepotInformation(std::ifstream& file, Vr
     return Result<void, Error>::ok();
 }
 
+// macierz [i,j] oznacza
+// i - indeks punktu startowego, j indeks punktu docelowego
+// i = ID - 1, j = ID - 1
+// matrix [i,j] dystans jaki trzeba pokonac miedzy nimi
+// tzn matrix[1,2] dystans od KLIENTA ID 2 do KLIENTA ID3 | matrix[0,1] dystans od MAGAZYNU (ID 1) do KLIENTA ID2
 Result<void, Error> InstanceReader::loadDistanceMatrix(std::ifstream& file, VrpInstance& instance) {
     const int n = instance.getTotalNodes();
     std::vector<std::vector<double>> matrix(n, std::vector<double>(n, 0.0));
 
-    for (int i = 1; i < n; ++i) {
-        for (int j = 0; j < i; ++j) {
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < i; j++) {
             double v;
             if (!(file >> v))
                 return Result<void, Error>::fail(new Error("EDGE_WEIGHT_SECTION_TRUNCATED"));

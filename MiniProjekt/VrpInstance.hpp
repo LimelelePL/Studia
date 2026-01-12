@@ -15,8 +15,6 @@ class VrpInstance {
 public:
     VrpInstance();
 
-    void initialize(int totalNodes, int maxLoad, int vehicleFleet, int depotNode);
-
     void setInstanceName(const std::string& name);
     void setDistanceType(const std::string& type);
     void setMaxDistance(double dist);

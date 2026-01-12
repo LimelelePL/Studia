@@ -8,7 +8,7 @@
 #include "RandomGenerator.h"
 
 Individual::Individual(const std::vector<int>& genotype) {
-    this->genotype = genotype;
+    this-> genotype = genotype;
     this-> fitness = DEFAULT_FITNESS;
 }
 
@@ -17,6 +17,7 @@ Individual::Individual(const Individual &other) {
     this -> fitness = other.fitness;
 }
 
+// oblicza fitness dla każdego osobnika
 double Individual::initFitness(const Evaluator &eval) {
     auto result = eval.evaluate(genotype);
     if(result.isSuccess()) {
@@ -28,10 +29,11 @@ double Individual::initFitness(const Evaluator &eval) {
 }
 
 // decyzja o tym czy krzyzowac czy nie bedzie w geneticAlgotirthm
-std::pair<Individual, Individual> Individual::cross(const Individual &other, RandomGenerator& generator) const {
+std::pair<Individual, Individual> Individual::cross(const Individual& other, RandomGenerator& generator) const {
     const int size = static_cast<int>(genotype.size());
-    const int cutPoint =generator.nextInt(1,size-1);
+    const int cutPoint = generator.nextInt(1,size-1);
 
+    // wybieramy dwoje dzieci
     Individual child1(*this);
     Individual child2(other);
 
@@ -41,7 +43,7 @@ std::pair<Individual, Individual> Individual::cross(const Individual &other, Ran
         child2.genotype[i] = this->genotype[i];
     }
 
-    // po modyfikacji genotypów należy ponownie policzyc funkcje przystosowania
+    // po modyfikacji genotypów należy ponownie policzyc funkcje przystosowania w algorytmie genetycznym
     child1.fitness = DEFAULT_FITNESS;
     child2.fitness = DEFAULT_FITNESS;
 
@@ -54,7 +56,7 @@ void Individual::mutate(double mutProb, RandomGenerator& generator, int numVehic
         // mutuje tylko ten gen który spełnia warunek p<=mutProb
         bool shouldMutate = generator.nextDouble(0,1) <= mutProb;
         if (shouldMutate) {
-            int newGen = generator.nextInt(0, numVehicles - 1);
+            const int newGen = generator.nextInt(0, numVehicles - 1);
             gene = newGen;
             // po zmianie choc jednego genu przystosowanie musi byc obliczone ponownie
             this->fitness = DEFAULT_FITNESS;
