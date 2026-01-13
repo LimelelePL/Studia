@@ -22,4 +22,6 @@ add_executable(Zadanie main.cpp
         SmartPointer/SmartPointer.h
         SmartPointer/RefCounter.cpp
         SmartPointer/RefCounter.h
+        SmartPointer/Product.cpp
+        SmartPointer/Product.h
 )

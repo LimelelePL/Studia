@@ -4,12 +4,17 @@
 
 #ifndef ZADANIE_SMARTPOINTER_H
 #define ZADANIE_SMARTPOINTER_H
-#include <functional>
+
+
 #include <vector>
+#include <map>
 
 #include "RefCounter.h"
+using namespace std;
 
 #endif //ZADANIE_SMARTPOINTER_H
+
+class Product;
 
 template<typename T>
 class SmartPointer {
@@ -26,10 +31,14 @@ public:
     SmartPointer& operator =(const SmartPointer& other);
     SmartPointer& operator =(SmartPointer&& other) noexcept;
 
+    RefCounter* getRefcounter() const;
+    T* get() const;
+
 private:
-    T* pointer;
     RefCounter* counter;
+    T* pointer;
 };
+
 
 template<typename T>
 SmartPointer<T>::SmartPointer() {
@@ -50,6 +59,8 @@ SmartPointer<T>::~SmartPointer() {
         if (counter->dec() == 0 ) {
             delete pointer;
             delete counter;
+            pointer = nullptr;
+            counter = nullptr;
         }
     }
 }
@@ -79,6 +90,8 @@ SmartPointer<T> & SmartPointer<T>::operator=(const SmartPointer &other) {
         if (counter->dec() == 0) {
             delete pointer;
             delete counter;
+            pointer = nullptr;
+            counter = nullptr;
         }
     }
 
@@ -96,6 +109,8 @@ SmartPointer<T> & SmartPointer<T>::operator=(SmartPointer &&other) noexcept {
 
     if (counter != nullptr) {
         if (counter->dec() == 0) {
+            delete pointer;
+            delete counter;
             pointer = nullptr;
             counter = nullptr;
         }
@@ -119,4 +134,56 @@ T * SmartPointer<T>::operator->() {
     return pointer;
 }
 
+template<typename T>
+RefCounter* SmartPointer<T>:: getRefcounter() const {
+    return counter;
+}
+
+
+template<typename T>
+T* SmartPointer<T>::get() const {
+    return pointer;
+}
+
+
+struct ElfReport {
+    int validGifts;
+    int lostInstructions;
+    int productsWithMissing;
+};
+
+ElfReport analyzeInstructions(std::vector<SmartPointer<Product> >& instructions){
+    ElfReport report{};
+    report.validGifts = 0;
+    report.lostInstructions = 0;
+    report.productsWithMissing = 0;
+
+    map<Product*, RefCounter*> productMap;
+
+    for (size_t i = 0; i < instructions.size(); i++) {
+        Product* p = instructions[i].get();
+        if (p != nullptr) {
+            productMap[p] = instructions[i].getRefcounter();
+        }
+    }
+
+    for (auto & it : productMap){
+        int refCount = it.second->get();
+
+        // 1 produkt - 1 prezent
+        report.validGifts++;
+
+        if (refCount > 1) {
+            report.lostInstructions += (refCount - 1);
+            report.productsWithMissing++;
+        }
+        else if (refCount == 0) {
+            //wszystkie zgubuone
+            report.lostInstructions++;
+            report.productsWithMissing++;
+        }
+    }
+
+    return report;
+}
 
