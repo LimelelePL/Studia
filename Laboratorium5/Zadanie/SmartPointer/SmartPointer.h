@@ -152,7 +152,7 @@ struct ElfReport {
     int productsWithMissing;
 };
 
-ElfReport analyzeInstructions(std::vector<SmartPointer<Product> >& instructions){
+static ElfReport analyzeInstructions(std::vector<SmartPointer<Product> >& instructions){
     ElfReport report{};
     report.validGifts = 0;
     report.lostInstructions = 0;
