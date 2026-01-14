@@ -28,12 +28,11 @@ double Individual::initFitness(const Evaluator &eval) {
     return fitness;
 }
 
-// decyzja o tym czy krzyzowac czy nie bedzie w geneticAlgotirthm
 std::pair<Individual, Individual> Individual::cross(const Individual& other, RandomGenerator& generator) const {
     const int size = static_cast<int>(genotype.size());
     const int cutPoint = generator.nextInt(1,size-1);
 
-    // wybieramy dwoje dzieci
+    // tworzymy dwoje dzieci
     Individual child1(*this);
     Individual child2(other);
 
@@ -50,11 +49,11 @@ std::pair<Individual, Individual> Individual::cross(const Individual& other, Ran
     return {child1, child2};
 }
 
-void Individual::mutate(double mutProb, RandomGenerator& generator, int numVehicles) {
+void Individual::mutate(const double mutProb, RandomGenerator& generator, const int numVehicles) {
 
-    for (int & gene : genotype) {
+    for (int &gene : genotype) {
         // mutuje tylko ten gen który spełnia warunek p<=mutProb
-        bool shouldMutate = generator.nextDouble(0,1) <= mutProb;
+        const bool shouldMutate = generator.nextDouble(0,1) <= mutProb;
         if (shouldMutate) {
             const int newGen = generator.nextInt(0, numVehicles - 1);
             gene = newGen;

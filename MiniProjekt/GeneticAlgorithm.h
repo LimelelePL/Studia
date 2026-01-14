@@ -14,8 +14,8 @@ public:
     GeneticAlgorithm(Evaluator &eval, RandomGenerator& generator, int popSize, double crossProb, double mutProb, int maxIterations);
     ~GeneticAlgorithm();
     void run();
-    std::vector<int> getBestSolution;
-    void printDetailedBest() const;
+    std::vector<int> getBestSolution() const;
+    //void printDetailedBest() const;
 
 
 private:

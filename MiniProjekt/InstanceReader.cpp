@@ -37,7 +37,8 @@ Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance&
 ) {
     try {
         std::string line;
-        while (std::getline(file, line)) {
+        bool stop = false;
+        while (std::getline(file, line) && !stop) {
             line = trim(line);
             if (line.empty()) continue;
 
@@ -82,7 +83,7 @@ Result<void, Error> InstanceReader::processFile(std::ifstream& file,VrpInstance&
                 if (!r.isSuccess()) return r;
             }
             else if (line.contains("EOF")) {
-                break;
+                stop = true;
             }
         }
     }

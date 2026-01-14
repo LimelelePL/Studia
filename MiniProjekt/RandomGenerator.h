@@ -7,11 +7,7 @@
 class RandomGenerator {
 public:
     RandomGenerator();
-
-    // Zwraca losową liczbę całkowitą z zakresu [min, max]
     int nextInt(int min, int max);
-
-    // Zwraca losową liczbę zmiennoprzecinkową z zakresu [min, max)
     double nextDouble(double min, double max);
 
 private:

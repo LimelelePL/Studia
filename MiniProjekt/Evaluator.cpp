@@ -43,10 +43,14 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
         return Result<void, Error>::fail(new Error("PERMUTATION_WRONG_SIZE"));
 
     // sprawdzenie czy klient nie zostanie przyporządkowany dwa razy do jednego samochodu
-    std::vector<bool> seen(data.getCustomerCount(), false);
+    //pierwszy klient w permutacji ma ID2 a ostatni ma ID = clientsCount + 1 (bo id = 1 to magazyn)
+    int firstClientID = 2;
+    int lastClientID = data.getCustomerCount() + 1;
+    std::vector<bool> seen(data.getCustomerCount() + firstClientID, false);
     for (const int clientID : data.getVisitOrder()) {
-        //pierwszy klient ma ID2 a ostatni ma ID = clientsCount + 1 (bo id = 1 to magazyn)
-        if (clientID < 2 || clientID>data.getCustomerCount()+1) return Result<void, Error>::fail(new Error("INVALID_PERMUTATION"));
+        if (clientID == getDepotNode() || clientID < firstClientID || clientID > lastClientID) {
+            return Result<void, Error>::fail(new Error("INVALID_PERMUTATION"));
+        }
         if (seen[clientID]) {
             return Result<void, Error>::fail(new Error("PERMUTATION_DUPLICATE"));
         }
@@ -55,7 +59,6 @@ Result<void,Error> Evaluator::loadFromFile(const std::string &folder, const std:
 
     if (!checkIfProblemIsSolvable())
         return Result<void, Error>::fail(new Error("PROBLEM_UNSOLVABLE"));
-
 
     numVehicles = data.getFleetSize();
 
@@ -76,13 +79,12 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     const bool hasDistanceLimit = data.hasDistanceLimit();
     const double maxDistance = data.getMaxDistance();
 
-    if (static_cast<int>(genotype.size()) != data.getCustomerCount())
+    if (static_cast<int>(genotype.size()) != data.getCustomerCount() || genotype.size() != permutation.size())
         return Result<double, Error>::fail(new Error("GENOTYPE_SIZE_MISMATCH"));
 
     for (int p : permutation) {
-        if (p == data.getDepotNode()) continue;
-
-        // indeks w macierzy dystansu/obciążeń -> indeks 0 = magazyn (ID1), indeks 1 = pierwszy klient (ID 2), indeks 2 drugi klient (ID 3)
+        // indeks w macierzy dystansu/obciążeń = ID - 1
+        // indeks 0 = magazyn (ID1), indeks 1 = pierwszy klient (ID 2), indeks 2 drugi klient (ID 3)
         int clientDataIdx = p - 1;
 
         //indeks w genotypie (samochodu dla klienta) p-2 bo i-ty indeks w permutacji to ID - 2;
@@ -113,7 +115,7 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
     }
 
     double totalDist = 0;
-    long totalPenalty = 0;
+    double totalPenalty = 0;
 
     for (int v = 0; v < numVehicles; v++) {
         //dla kazdego użytego samochodu doliczamy dystans od ostatniego odwiedzonego klienta do magazynu
@@ -123,7 +125,7 @@ Result<double, Error> Evaluator::evaluate(const std::vector<int>& genotype) cons
 
         // kara za przekroczenie dystansu przejechanego przez samochód
             if (hasDistanceLimit && vehicleFullRouteDist > maxDistance) {
-                totalPenalty += (vehicleFullRouteDist - maxDistance) * DEFAULT_PENALTY/100;
+                totalPenalty += (vehicleFullRouteDist - maxDistance) * DEFAULT_PENALTY/DISTANCE_PENALTY_SCALER;
             }
         }
 

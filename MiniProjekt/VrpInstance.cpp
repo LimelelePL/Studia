@@ -39,16 +39,16 @@ void VrpInstance::generateDistanceTable() {
 
 void VrpInstance::setInstanceName(const std::string& name) { instanceName = name; }
 void VrpInstance::setDistanceType(const std::string& type) { distanceType = type; }
-void VrpInstance::setMaxDistance(double dist) { maxDistance = dist; hasDistLimit = true; }
-void VrpInstance::setTotalNodes(int totalNodes) {this->totalNodes = totalNodes;}
-void VrpInstance::setCapacityLimit(int cLimit) {this->capacityLimit = cLimit;}
-void VrpInstance::setVehicleFleet(int vFleet) { this -> fleetSize = vFleet;}
-void VrpInstance::setDepotNode(int dNode) {this->depotNode = dNode;}
+void VrpInstance::setMaxDistance(const double dist) { maxDistance = dist; hasDistLimit = true; }
+void VrpInstance::setTotalNodes(const int tNodes) {this->totalNodes = tNodes;}
+void VrpInstance::setCapacityLimit(const int cLimit) {this->capacityLimit = cLimit;}
+void VrpInstance::setVehicleFleet(const int vFleet) { this -> fleetSize = vFleet;}
+void VrpInstance::setDepotNode(const int dNode) {this->depotNode = dNode;}
 
-void VrpInstance::assignCoordinates(const std::vector<Coordinate>& c) { coordinates = c; }
-void VrpInstance::assignDemands(const std::vector<int>& d) { demands = d; }
-void VrpInstance::assignVisitOrder(const std::vector<int>& o) { visitOrder = o; }
-void VrpInstance::assignDistanceTable(const std::vector<std::vector<double>>& t) { distanceTable = t; }
+void VrpInstance::assignCoordinates(const std::vector<Coordinate>& coords) { coordinates = coords; }
+void VrpInstance::assignDemands(const std::vector<int>& dems) { demands = dems; }
+void VrpInstance::assignVisitOrder(const std::vector<int>& order) { visitOrder = order; }
+void VrpInstance::assignDistanceTable(const std::vector<std::vector<double>>& table) { distanceTable = table; }
 
 std::string VrpInstance::getInstanceName() const { return instanceName; }
 int VrpInstance::getTotalNodes() const { return totalNodes; }

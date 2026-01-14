@@ -10,26 +10,27 @@
 
 #include "ConstantValues.h"
 
-static void printGenotype(Individual& ind, const std::string& file) {
-    const std::vector<int>& genotype = ind.getGenotype();
-    std::ostringstream oss;
-    oss << "Genotyp: ";
-    for (size_t i = 0; i < genotype.size(); ++i) {
-        oss << genotype[i];
-        if (i < genotype.size() - 1) oss << ",";
-    }
-    oss << " | size: " << genotype.size() << std::endl;
-    std::cout << oss.str();
+// static void printGenotype(Individual& ind, const std::string& file){
+//     const std::vector<int>& genotype = ind.getGenotype();
+//     std::ostringstream oss;
+//     oss << "Genotyp: ";
+//     for (size_t i = 0; i < genotype.size(); ++i) {
+//         oss << genotype[i];
+//         if (i < genotype.size() - 1) oss << ",";
+//     }
+//     oss << " | size: " << genotype.size() << std::endl;
+//     std::cout << oss.str();
+//
+//     if (!file.empty()) {
+//         std::ofstream ofs(file, std::ios::app);
+//         if (!ofs) {
+//             std::cerr << "Nie można otworzyć pliku: " << file << std::endl;
+//         } else {
+//             ofs << oss.str();
+//         }
+//     }
+// }
 
-    if (!file.empty()) {
-        std::ofstream ofs(file, std::ios::app);
-        if (!ofs) {
-            std::cerr << "Nie można otworzyć pliku: " << file << std::endl;
-        } else {
-            ofs << oss.str();
-        }
-    }
-}
 
 GeneticAlgorithm::GeneticAlgorithm(Evaluator &eval, RandomGenerator& generator, int popSize, double crossProb, double mutProb, int maxIterations) :
 crossProb(crossProb), mutProb(mutProb), maxIterations(maxIterations), bestSolution(nullptr), eval(eval), gen(generator) {
@@ -72,11 +73,8 @@ void GeneticAlgorithm::run() {
         if (bestSolution == nullptr || currentBest.getFitnes() > bestSolution->getFitnes()) {
             delete bestSolution;
             bestSolution = new Individual(currentBest);
-
-            cout<<"nowy najlepszy " << bestSolution->getFitnes() << endl;
-            printGenotype(*bestSolution, "data/wyniki.txt");
+            //printGenotype(*bestSolution, "data/wyniki.txt");
         }
-
     }
 }
 
@@ -164,7 +162,7 @@ Individual& GeneticAlgorithm::currentIterationBestSolution() {
 
     for (int i = 0; i<popSize; i++) {
 
-        Individual& in = population[i];
+        Individual in = population[i];
         double inFitness = in.getFitnes();
 
         if (inFitness>=0 && inFitness >= bestFitness) {
@@ -185,46 +183,54 @@ void GeneticAlgorithm::calcFitness() {
     }
 }
 
-void GeneticAlgorithm::printDetailedBest() const {
-    if (!bestSolution) return;
-
-    int maxCap = eval.getCapacity();
-    const std::vector<int>& genotype = bestSolution->getGenotype();
-    const std::vector<int>& demands = eval.getDemands();
-    const std::vector<int>& permutation = eval.getPermutation();
-
-    std::vector<int> loads(eval.getNumVehicles(), 0);
-    bool overallFeasible = true;
-
-    for (int p : permutation) {
-        if (p == eval.getDepotNode()) continue;
-        int genotypeIdx = p - 2;
-        int clientDistIdx = p - 1;
-
-        if (genotypeIdx >= 0 && genotypeIdx < static_cast<int>(genotype.size())) {
-            int vehicleIdx = genotype[genotypeIdx];
-            if (vehicleIdx >= 0 && vehicleIdx < static_cast<int>(loads.size())) {
-                loads[vehicleIdx] += demands[clientDistIdx];
-            }
-        }
-    }
-
-    std::cout << "\n=== SZCZEGOLOWY RAPORT DOPUSZCZALNOSCI ===" << std::endl;
-    for (size_t i = 0; i < loads.size(); i++) {
-        bool feasible = (loads[i] <= maxCap);
-        if (!feasible) overallFeasible = false;
-
-        if (loads[i] > 0) {
-            std::cout << "Pojazd #" << i << ": Ladunek = " << loads[i]
-                      << " / " << maxCap
-                      << (feasible ? " [OK]" : " [PRZEKROCZONE!]") << std::endl;
-        }
-    }
-
-    std::cout << "------------------------------------------" << std::endl;
-    std::cout << "STATUS ROZWIAZANIA: " << (overallFeasible ? "DOPUSZCZALNE" : "NIEDOPUSZCZALNE") << std::endl;
-    std::cout << "KONCOWY DYSTANS: " << (1.0 / bestSolution->getFitnes()) << std::endl;
-
-    printGenotype(*bestSolution, "data/wyniki.txt");
+std::vector<int> GeneticAlgorithm::getBestSolution() const {
+    if (bestSolution == nullptr) return {};
+        return bestSolution->getGenotype();
 }
+
+
+// void GeneticAlgorithm::printDetailedBest() const {
+//     if (!bestSolution) return;
+//
+//     int maxCap = eval.getCapacity();
+//     const std::vector<int>& genotype = bestSolution->getGenotype();
+//     const std::vector<int>& demands = eval.getDemands();
+//     const std::vector<int>& permutation = eval.getPermutation();
+//
+//     std::vector<int> loads(eval.getNumVehicles(), 0);
+//     bool overallFeasible = true;
+//
+//     for (int p : permutation) {
+//         if (p == eval.getDepotNode()) continue;
+//         int genotypeIdx = p - 2;
+//         int clientDistIdx = p - 1;
+//
+//         if (genotypeIdx >= 0 && genotypeIdx < static_cast<int>(genotype.size())) {
+//             int vehicleIdx = genotype[genotypeIdx];
+//             if (vehicleIdx >= 0 && vehicleIdx < static_cast<int>(loads.size())) {
+//                 loads[vehicleIdx] += demands[clientDistIdx];
+//             }
+//         }
+//     }
+//
+//     std::cout << "\n=== SZCZEGOLOWY RAPORT DOPUSZCZALNOSCI ===" << std::endl;
+//     for (size_t i = 0; i < loads.size(); i++) {
+//         bool feasible = (loads[i] <= maxCap);
+//         if (!feasible) overallFeasible = false;
+//
+//         if (loads[i] > 0) {
+//             std::cout << "Pojazd #" << i << ": Ladunek = " << loads[i]
+//                       << " / " << maxCap
+//                       << (feasible ? " [OK]" : " [PRZEKROCZONE!]") << std::endl;
+//         }
+//     }
+//
+//     std::cout << "------------------------------------------" << std::endl;
+//     std::cout << "STATUS ROZWIAZANIA: " << (overallFeasible ? "DOPUSZCZALNE" : "NIEDOPUSZCZALNE") << std::endl;
+//     std::cout << "KONCOWY DYSTANS: " << (1.0 / bestSolution->getFitnes()) << std::endl;
+//
+//     printGenotype(*bestSolution, "data/wyniki.txt");
+// }
+
+
 

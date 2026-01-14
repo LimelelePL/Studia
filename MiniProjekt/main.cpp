@@ -35,15 +35,15 @@ int main() {
     const std::string path = "data/wyniki.txt";
     std::ofstream ofs(path, std::ios::trunc);
 
-    std::string folder = "Vrp-Set-p";
-    std::string file = "p-n19-k2";
+    std::string folder = "Vrp-Set-A";
+    std::string file = "A-n31-mojTest";
 
     Evaluator evaluator;
 
     Result<void, Error> loadResult = evaluator.loadFromFile(folder,file);
 
     if (!loadResult.isSuccess()) {
-        std::cout << "BŁĄD KRYTYCZNY PODCZAS ŁADOWANIA:" << std::endl;
+        std::cout << "BLAD KRYTYCZNY PODCZAS LADOWANIA:" << std::endl;
         for (const Error* err : loadResult.getErrors()) {
             std::cout << " -> " << err->getCode() << std::endl;
         }
