@@ -11,7 +11,7 @@ Program do obliczania pola trójkąta z walidacją danych wejściowych.
 ---
 
 ## Instalacja
-
+u
 ```bash
 git clone <repo>
 cd <repo>
