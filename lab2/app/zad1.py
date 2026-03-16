@@ -1,14 +1,11 @@
 import sys
 import io
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
 def echo(sentence):
     return "("+sentence+")"
-
-def is_end_of_sentence(c: str) -> bool:
-    return c in ".!?"
-
 
 def skip_preamble() -> str:
     text = ""
@@ -49,7 +46,6 @@ def clean_inside_spaces(text: str) -> str:
 
     return result
 
-
 def print_processed_sentence(sentence: str, process_sentence: callable) -> None:
     normalized_sentence = clean_inside_spaces(sentence.strip())
     if normalized_sentence:
@@ -69,7 +65,7 @@ def process_char(c : str, sentence: str, prev_was_newline : bool, process_senten
     else:
         prev_was_newline = False
         sentence += c
-        if is_end_of_sentence(c):
+        if c in "!?.":
             print_processed_sentence(sentence, process_sentence)
             sentence = ""
 
@@ -77,7 +73,6 @@ def process_char(c : str, sentence: str, prev_was_newline : bool, process_senten
 
 def check_ending(sentence : str) -> bool:
     return sentence.endswith("-----")
-
 
 def process_preamble(process_sentence : callable) -> None:
     preamble = skip_preamble()
@@ -91,10 +86,11 @@ def process_preamble(process_sentence : callable) -> None:
         sentence, prev_was_newline = process_char(p, sentence, prev_was_newline, process_sentence)
         if check_ending(sentence):
             break
+    print_processed_sentence(sentence, process_sentence)
 
 
 def main(process_sentence):
-    process_preamble(echo)
+    process_preamble(process_sentence)
 
     sentence = ""
     prev_was_newline = False
@@ -108,8 +104,6 @@ def main(process_sentence):
         c = sys.stdin.read(1)
 
     print_processed_sentence(sentence, process_sentence)
-
-
 
 if __name__ == "__main__":
     try:

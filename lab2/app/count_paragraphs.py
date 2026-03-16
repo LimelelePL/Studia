@@ -6,7 +6,7 @@ def count_paragraphs():
     paragraphs = 0
     is_prev_empty = False
 
-    line = sys.stdin.readline()
+    line = read_line()
     while line:
         if line.strip() == "":
             is_prev_empty = True
@@ -15,7 +15,7 @@ def count_paragraphs():
                 paragraphs += 1
             is_prev_empty = False
 
-        line = sys.stdin.readline()
+        line = read_line()
 
     print("ilosc paragrafow ", paragraphs)
 
