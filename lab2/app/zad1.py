@@ -11,10 +11,9 @@ def is_end_of_sentence(c: str) -> bool:
 def skip_preamble() -> str:
     text = ""
     empty_counter = 0
-    newline_counter = 0
 
-    while newline_counter < 10:
-        c = sys.stdin.read(1)
+    for i in range(10):
+        c = sys.stdin.readline()
         text += c
 
         if not c:
@@ -22,11 +21,10 @@ def skip_preamble() -> str:
 
         if c == "\n":
             empty_counter += 1
-            newline_counter += 1
         else:
             empty_counter = 0
 
-        if empty_counter == 3:
+        if empty_counter == 2:
             text = ""
 
     return text
@@ -46,7 +44,6 @@ def clean_inside_spaces(text: str) -> str:
         else:
             result += ch
             in_space = False
-
 
     return result
 
