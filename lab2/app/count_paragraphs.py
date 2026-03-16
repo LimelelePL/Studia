@@ -17,7 +17,7 @@ def count_paragraphs():
 
         line = sys.stdin.readline()
 
-        print_using_stream("ilosc akapitów: ",str(paragraphs))
+    print("ilosc paragrafow ", paragraphs)
 
 if __name__ == "__main__":
     count_paragraphs()

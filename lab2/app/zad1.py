@@ -1,5 +1,7 @@
 import sys
 import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
 def echo(sentence):
     return "("+sentence+")"
@@ -110,6 +112,7 @@ def main(process_sentence):
 
 
 if __name__ == "__main__":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    main(echo)
+    try:
+        main(echo)
+    except BrokenPipeError:
+        sys.exit(0)
