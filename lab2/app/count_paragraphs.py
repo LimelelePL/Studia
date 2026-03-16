@@ -1,6 +1,7 @@
-#Zlicza akapity oddzielone pustą linią.
-#Na wejściu tekst, na wyjściu jedna liczba.
-from sentence_utils import *
+# Zlicza akapity oddzielone pustą linią.
+# Na wejściu tekst, na wyjściu jedna liczba.
+from sentence_utils import read_line
+
 
 def count_paragraphs():
     paragraphs = 0
@@ -18,6 +19,7 @@ def count_paragraphs():
         line = read_line()
 
     print("ilosc paragrafow ", paragraphs)
+
 
 if __name__ == "__main__":
     count_paragraphs()
