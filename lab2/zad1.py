@@ -1,9 +1,10 @@
 import sys
+import io
 
 def echo(sentence):
     return "("+sentence+")"
 
-def is_end_of_sentence(c):
+def is_end_of_sentence(c: str) -> bool:
     return c in ".!?"
 
 
@@ -31,12 +32,36 @@ def skip_preamble() -> str:
     return text
 
 
+def clean_inside_spaces(text: str) -> str:
+    result = ""
+    in_space = False
+
+    for i in range (len(text)):
+        ch = text[i]
+
+        if ch.isspace():
+            if not in_space:
+                result += " "
+                in_space = True
+        else:
+            result += ch
+            in_space = False
+
+
+    return result
+
+
+def print_processed_sentence(sentence: str, process_sentence: callable) -> None:
+    normalized_sentence = clean_inside_spaces(sentence.strip())
+    if normalized_sentence:
+        print(process_sentence(normalized_sentence))
+
+
 def process_char(c : str, sentence: str, prev_was_newline : bool, process_sentence : callable) -> (str, bool):
     if c == "\n":
         if prev_was_newline:
             # pusty wiersz koniec akapitu i zdania
-            if sentence.strip():
-                print(process_sentence(sentence.strip()))
+            print_processed_sentence(sentence, process_sentence)
             print()
             sentence = ""
         else:
@@ -46,7 +71,7 @@ def process_char(c : str, sentence: str, prev_was_newline : bool, process_senten
         prev_was_newline = False
         sentence += c
         if is_end_of_sentence(c):
-            print(process_sentence(sentence.strip()))
+            print_processed_sentence(sentence, process_sentence)
             sentence = ""
 
     return sentence, prev_was_newline
@@ -83,9 +108,11 @@ def main(process_sentence):
             break
         c = sys.stdin.read(1)
 
-    if sentence.strip():
-        print(process_sentence(sentence.strip()))
+    print_processed_sentence(sentence, process_sentence)
+
 
 
 if __name__ == "__main__":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
     main(echo)
