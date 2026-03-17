@@ -1,17 +1,19 @@
-import sys
 import io
+import sys
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+
 
 def echo(sentence):
-    return "("+sentence+")"
+    return "(" + sentence + ")"
+
 
 def skip_preamble() -> str:
     text = ""
     empty_counter = 0
 
-    for i in range(10):
+    for _ in range(10):
         c = sys.stdin.readline()
         text += c
 
@@ -33,7 +35,7 @@ def clean_inside_spaces(text: str) -> str:
     result = ""
     in_space = False
 
-    for i in range (len(text)):
+    for i in range(len(text)):
         ch = text[i]
 
         if ch.isspace():
@@ -46,13 +48,16 @@ def clean_inside_spaces(text: str) -> str:
 
     return result
 
+
 def print_processed_sentence(sentence: str, process_sentence: callable) -> None:
     normalized_sentence = clean_inside_spaces(sentence.strip())
     if normalized_sentence:
         print(process_sentence(normalized_sentence))
 
 
-def process_char(c : str, sentence: str, prev_was_newline : bool, process_sentence : callable) -> (str, bool):
+def process_char(
+    c: str, sentence: str, prev_was_newline: bool, process_sentence: callable
+) -> (str, bool):
     if c == "\n":
         if prev_was_newline:
             # pusty wiersz koniec akapitu i zdania
@@ -71,10 +76,12 @@ def process_char(c : str, sentence: str, prev_was_newline : bool, process_senten
 
     return sentence, prev_was_newline
 
-def check_ending(sentence : str) -> bool:
+
+def check_ending(sentence: str) -> bool:
     return sentence.endswith("-----")
 
-def process_preamble(process_sentence : callable) -> None:
+
+def process_preamble(process_sentence: callable) -> None:
     preamble = skip_preamble()
 
     if not preamble.strip():
@@ -83,7 +90,9 @@ def process_preamble(process_sentence : callable) -> None:
     sentence = ""
     prev_was_newline = False
     for p in preamble:
-        sentence, prev_was_newline = process_char(p, sentence, prev_was_newline, process_sentence)
+        sentence, prev_was_newline = process_char(
+            p, sentence, prev_was_newline, process_sentence
+        )
         if check_ending(sentence):
             break
     print_processed_sentence(sentence, process_sentence)
@@ -97,13 +106,15 @@ def main(process_sentence):
     c = sys.stdin.read(1)
 
     while c:
-        sentence, prev_was_newline = process_char(c, sentence, prev_was_newline, process_sentence)
-        if check_ending(sentence):
-            sentence = sentence[:-5]
-            break
+        sentence, prev_was_newline = process_char(
+            c, sentence, prev_was_newline, process_sentence
+        )
         c = sys.stdin.read(1)
+    if check_ending(sentence):
+        sentence = sentence[:-5]
 
     print_processed_sentence(sentence, process_sentence)
+
 
 if __name__ == "__main__":
     try:
