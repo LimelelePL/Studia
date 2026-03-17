@@ -49,6 +49,15 @@ def advance_to_next_word(s: str) -> str:
     return skip_non_alpha(skip_word(s))
 
 
+def get_next_word(s: str) -> str:
+    s = skip_non_alpha(s)
+    if not s:
+        return ""
+
+    rest = skip_word(s)
+    return s[: len(s) - len(rest)]
+
+
 def read_sentece() -> str:
     result = ""
     prev_was_newline = False

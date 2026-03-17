@@ -8,7 +8,7 @@ def questions_and_exclamations() -> str:
 
     while sentence:
         stripped = sentence.rstrip()
-
+        # zachowanie akapitow
         if not stripped:
             text += sentence
         elif stripped[-1] in "!?":
