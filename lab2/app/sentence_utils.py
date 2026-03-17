@@ -17,24 +17,30 @@ def read_line() -> str:
     return sys.stdin.readline()
 
 
+def update_max(current: str, best: str) -> str:
+    if len(current) > len(best):
+        return current
+    return best
+
+
+def skip_spaces(sentence: str, idx: int) -> int:
+    while idx < len(sentence) and sentence[idx].isspace():
+        idx += 1
+    return idx
+
+
 def read_sentece() -> str:
     result = ""
     prev_was_newline = False
 
     c = read_char()
-
     while c:
         result += c
 
-        # zachowujemy strukture akapitu
         if is_end_of_sentence(c):
-            c = read_char()
-            while c == "\n":
-                result += c
-                c = read_char()
             return result
 
-        elif c == "\n":
+        if c == "\n":
             if prev_was_newline:
                 return result
             prev_was_newline = True
