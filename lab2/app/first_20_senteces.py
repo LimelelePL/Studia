@@ -1,15 +1,18 @@
-# wypisuje 20 pierwszych zdań
-
-import io
 import sys
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+from sentence_utils import read_sentece
+
+sys.stdin.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8")
 
 
-def first_20_sentences():
-    return None
+def first_20_sentences() -> str:
+    result = ""
+    for _ in range(5):
+        result += read_sentece()
+
+    return result
 
 
 if __name__ == "__main__":
-    first_20_sentences()
+    print(first_20_sentences().strip())

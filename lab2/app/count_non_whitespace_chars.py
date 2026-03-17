@@ -1,6 +1,6 @@
 # zlicza wszystkie znaki oprócz białych znaków
 
-from lab2.app.sentence_utils import read_char
+from sentence_utils import read_char
 
 
 def count_non_whitespace_chars():
@@ -12,8 +12,6 @@ def count_non_whitespace_chars():
             counter += 1
         c = read_char()
 
-    print("ilosc znakow bez bialych znakow ", counter)
-
 
 if __name__ == "__main__":
-    count_non_whitespace_chars()
+    print(f"Iosc znakow bez bialych znakow {count_non_whitespace_chars()}")

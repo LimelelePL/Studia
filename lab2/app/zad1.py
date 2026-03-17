@@ -13,7 +13,7 @@ def skip_preamble() -> str:
     text = ""
     empty_counter = 0
 
-    for i in range(10):
+    for _ in range(10):
         c = sys.stdin.readline()
         text += c
 
@@ -109,10 +109,9 @@ def main(process_sentence):
         sentence, prev_was_newline = process_char(
             c, sentence, prev_was_newline, process_sentence
         )
-        if check_ending(sentence):
-            sentence = sentence[:-5]
-            break
         c = sys.stdin.read(1)
+    if check_ending(sentence):
+        sentence = sentence[:-5]
 
     print_processed_sentence(sentence, process_sentence)
 
