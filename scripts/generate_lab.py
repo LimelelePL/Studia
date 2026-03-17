@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+
 DEV_DEPENDENCIES = ["mypy", "pytest", "ruff"]
 DEPENDENCIES = []
 
@@ -57,7 +58,9 @@ def create_new_lab(directory: str, extra_deps: list[str]) -> None:
     subprocess.run(["uv", "init"], cwd=directory, check=True)
 
     if extra_deps:
-        subprocess.run(["uv", "add"] + extra_deps + DEPENDENCIES, cwd=directory, check=True)
+        subprocess.run(
+            ["uv", "add"] + extra_deps + DEPENDENCIES, cwd=directory, check=True
+        )
 
     subprocess.run(["uv", "add", "--dev"] + DEV_DEPENDENCIES, cwd=directory, check=True)
 
@@ -66,15 +69,20 @@ def create_new_lab(directory: str, extra_deps: list[str]) -> None:
 
     with open(os.path.join(directory, ".gitignore"), "a", encoding="utf-8") as f:
         f.write("\n.venv\n")
-    
+        f.write("\n__pycache__/\n")
+        f.write("\n*.pyc\n")
     with open(os.path.join(directory, "README.md"), "w", encoding="utf-8") as f:
         f.write(README_CONTENT)
 
     print("Environment configured successfully.")
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python generate_lab.py <directory_name> [additional_dependencies]")
+        print(
+            "Usage: python generate_lab.py <directory_name> [additional_dependencies]"
+        )
         sys.exit(1)
-        
+
     create_new_lab(sys.argv[1], sys.argv[2:])
+
