@@ -1,9 +1,9 @@
-from sentence_utils import read_line
+from sentence_utils import read_line, run_main
 
 
 def count_paragraphs() -> int:
     paragraphs = 0
-    is_prev_empty = False
+    is_prev_empty = True
 
     line = read_line()
     while line:
@@ -18,5 +18,9 @@ def count_paragraphs() -> int:
     return paragraphs
 
 
+def main() -> None:
+    print(f"Ilość akapitów: {count_paragraphs()}")
+
+
 if __name__ == "__main__":
-    print(f"Ilość paragrafów {count_paragraphs()}")
+    run_main(main)

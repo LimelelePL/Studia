@@ -1,11 +1,9 @@
-# wypisuje zdania zawierające co dwa wyrazy sposrod i oraz ale że lub
-# Wypisuje tylko zdania zakończone ? albo !
-import sys
-
-from sentence_utils import advance_to_next_word, get_next_word, read_sentece
-
-sys.stdin.reconfigure(encoding="utf-8")
-sys.stdout.reconfigure(encoding="utf-8")
+from sentence_utils import (
+    advance_to_next_word,
+    get_next_word,
+    read_sentece,
+    run_main,
+)
 
 
 def check_word(w: str) -> bool:
@@ -35,10 +33,10 @@ def sentences_with_two_connectors() -> str:
 
     while sentence:
         stripped = sentence.rstrip()
-        # zachowanie struktyy akapitow
+        # zachowanie struktury akapitow
         if not stripped:
             text += sentence
-        if count_connectors(sentence) == 2:
+        elif count_connectors(sentence) >= 2:
             text += sentence
 
         sentence = read_sentece()
@@ -46,5 +44,9 @@ def sentences_with_two_connectors() -> str:
     return text
 
 
-if __name__ == "__main__":
+def main() -> None:
     print(sentences_with_two_connectors(), end="")
+
+
+if __name__ == "__main__":
+    run_main(main)

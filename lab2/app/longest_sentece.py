@@ -1,6 +1,4 @@
-# najdłuższe zdanie według liczby znaków
-
-from sentence_utils import read_sentece, update_max
+from sentence_utils import read_sentece, run_main, update_max
 
 
 def longest_sentence() -> str:
@@ -21,5 +19,9 @@ def longest_sentence() -> str:
     return max_sentence
 
 
-if __name__ == "__main__":
+def main() -> None:
     print(longest_sentence())
+
+
+if __name__ == "__main__":
+    run_main(main)

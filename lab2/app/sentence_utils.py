@@ -79,3 +79,42 @@ def read_sentece() -> str:
         c = read_char()
 
     return result
+
+
+
+
+def format_stream_utf8() -> None:
+    sys.stdin.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8")
+
+
+def collect_sentences(predicate) -> str:
+    text = ""
+    sentence = read_sentece()
+    while sentence:
+        if not sentence.rstrip() or predicate(sentence):
+            text += sentence
+        sentence = read_sentece()
+    return text
+
+
+def run_main(fn) -> None:
+    format_stream_utf8()
+    try:
+        fn()
+    except BrokenPipeError:
+        pass
+    except KeyboardInterrupt:
+        pass
+    except ValueError as e:
+        print(f"Błąd: {e}", file=sys.stderr)
+        sys.exit(1)
+    finally:
+        try:
+            sys.stdout.flush()
+        except BrokenPipeError:
+            pass
+        try:
+            sys.stderr.flush()
+        except BrokenPipeError:
+            pass
