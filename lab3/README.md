@@ -1,4 +1,3 @@
-
 # Jężyki skryptowe
 
 ---
@@ -12,13 +11,20 @@
 ## Run
 
 Install dependencies:
+
 ```bash
 uv sync
 ```
 
 Run the script (example):
+
 ```bash
 uv run <filename>.py
 ```
 
-    
+Run main
+
+```bash
+uv run lab3
+```
+
