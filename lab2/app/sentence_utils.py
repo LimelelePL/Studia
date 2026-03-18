@@ -91,7 +91,6 @@ def format_stream_utf8() -> None:
 
 
 def collect_sentences(predicate) -> str:
-    """Zbiera zdania spełniające predykat, zachowując puste linie między akapitami."""
     text = ""
     sentence = read_sentece()
     while sentence:
@@ -102,25 +101,17 @@ def collect_sentences(predicate) -> str:
 
 
 def run_main(fn) -> None:
-    """Wywołuje fn() z obsługą wyjątków typowych dla programów potokowych."""
     format_stream_utf8()
     try:
         fn()
     except BrokenPipeError:
-        # odbiorca potoku (np. head, grep) zamknął swój koniec przed nami —
-        # normalny scenariusz, nie błąd użytkownika
         pass
     except KeyboardInterrupt:
-        # użytkownik przerwał program przez Ctrl+C — kończymy bez komunikatu
         pass
     except ValueError as e:
-        # błąd logiczny danych wejściowych (np. pusty tekst bez zdań)
         print(f"Błąd: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
-        # Python sam flushuje stdout przy wyjściu — jeśli potok już zamknięty,
-        # ten flush też rzuci BrokenPipeError; łapiemy go tutaj zamiast pozwolić
-        # interpreterowi wypisać "Exception ignored while flushing sys.stdout"
         try:
             sys.stdout.flush()
         except BrokenPipeError:

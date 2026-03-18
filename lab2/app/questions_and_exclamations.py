@@ -1,4 +1,3 @@
-# Wypisuje tylko zdania zakończone ? albo !
 from sentence_utils import read_sentece, run_main
 
 

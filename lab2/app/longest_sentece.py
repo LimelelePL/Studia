@@ -1,5 +1,3 @@
-# najdłuższe zdanie według liczby znaków
-
 from sentence_utils import read_sentece, run_main, update_max
 
 
