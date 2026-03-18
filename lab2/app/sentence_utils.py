@@ -81,8 +81,6 @@ def read_sentece() -> str:
     return result
 
 
-def get_sentece() -> str:
-    return read_sentece()
 
 
 def format_stream_utf8() -> None:

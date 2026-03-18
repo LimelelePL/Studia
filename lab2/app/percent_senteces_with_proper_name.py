@@ -1,5 +1,8 @@
 from sentence_utils import advance_to_next_word, read_sentece, run_main, skip_non_alpha
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+
 
 def has_proper_name(sentence: str) -> bool:
     sentence = advance_to_next_word(skip_non_alpha(sentence))
