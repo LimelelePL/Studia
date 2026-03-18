@@ -2,8 +2,21 @@ import datetime
 import sys
 from typing import Any
 
-from app.constants import EMPTY_FIELD
+from app.constants import (
+    EMPTY_FIELD,
+    HOST_INDEX,
+    METHOD_INDEX,
+    ORIG_H_INDEX,
+    ORIG_P_INDEX,
+    RESP_H_INDEX,
+    RESP_P_INDEX,
+    STATUS_CODE_INDEX,
+    TS_INDEX,
+    UID_INDEX,
+    URI_INDEX,
+)
 from app.types import HttpEntry
+
 # W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
 # reszta ewentualnie jest do dodania potem, bo jeszcze calej listy nie przeczytalem
 # dobrze tez by bylo uzywac named tuple zamiast zwyklej ale trzeba napisac maila do tego cwela czy mozna
@@ -19,30 +32,42 @@ def _to_datetime(value: Any) -> datetime.datetime | None:
 def _to_int(value: Any) -> int | None:
     try:
         return int(value)
-    except ValueError:
+    except (ValueError, TypeError):
         return None
 
 
 def _normalize_log_fields(log_fields: list[str]) -> HttpEntry:
     normalized = [None if x == EMPTY_FIELD else x for x in log_fields]
-    ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri = normalized  # tu moze być ValueError
-    return (_to_datetime(ts), uid, orig_h, _to_int(orig_p), resp_h, _to_int(resp_p), method, host, uri)
+    ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized  # tu moze być ValueError
+    return (
+        _to_datetime(ts),
+        uid,
+        orig_h,
+        _to_int(orig_p),
+        resp_h,
+        _to_int(resp_p),
+        method,
+        host,
+        uri,
+        _to_int(status_code),
+    )
 
 
 def _retrive_log_fields(
     log_line: str,
 ) -> list[str]:
-    fields = log_line.split()
+    fields = log_line.split("\t")
     return [
-        fields[0],
-        fields[1],
-        fields[2],
-        fields[3],
-        fields[4],
-        fields[5],
-        fields[7],
-        fields[8],
-        fields[9],
+        fields[TS_INDEX],
+        fields[UID_INDEX],
+        fields[ORIG_H_INDEX],
+        fields[ORIG_P_INDEX],
+        fields[RESP_H_INDEX],
+        fields[RESP_P_INDEX],
+        fields[METHOD_INDEX],
+        fields[HOST_INDEX],
+        fields[URI_INDEX],
+        fields[STATUS_CODE_INDEX],
     ]
 
 
