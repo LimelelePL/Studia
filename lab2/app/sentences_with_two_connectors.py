@@ -7,7 +7,9 @@ from sentence_utils import advance_to_next_word, get_next_word, read_sentece
 sys.stdin.reconfigure(encoding="utf-8")
 sys.stdout.reconfigure(encoding="utf-8")
 
-CONNECTORS = {"i", "oraz", "ale", "że", "lub"}
+
+def check_word(w: str) -> bool:
+    return w == "i" or w == "oraz" or w == "ale" or w == "że" or w == "lub"
 
 
 def count_connectors(sentence: str) -> int:
@@ -19,7 +21,7 @@ def count_connectors(sentence: str) -> int:
         if not word:
             break
 
-        if word.lower() in CONNECTORS:
+        if check_word(word.lower()):
             count += 1
 
         rest = advance_to_next_word(rest)

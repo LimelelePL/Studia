@@ -1,123 +1,108 @@
 import io
 import sys
 
+from sentence_utils import get_sentece
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-
-
-def echo(sentence):
-    return "(" + sentence + ")"
 
 
 def skip_preamble() -> str:
     text = ""
     empty_counter = 0
+    was_prev_empty = False
 
     for _ in range(10):
-        c = sys.stdin.readline()
-        text += c
+        sentence = get_sentece()
 
-        if not c:
+        if not sentence:
             break
 
-        if c == "\n":
+        if sentence.strip() == "":
+            was_prev_empty = True
             empty_counter += 1
+            if empty_counter == 2:
+                text = ""
         else:
+            if was_prev_empty:
+                text += "\n"
+            was_prev_empty = False
             empty_counter = 0
 
-        if empty_counter == 2:
-            text = ""
+        text += sentence
 
     return text
 
 
 def clean_inside_spaces(text: str) -> str:
     result = ""
-    in_space = False
+    was_space = False
 
-    for i in range(len(text)):
-        ch = text[i]
-
-        if ch.isspace():
-            if not in_space:
+    for ch in text:
+        # zachowujemy akapity
+        if ch == "\n":
+            result += "\n"
+            was_space = False
+        elif ch.isspace():
+            if not was_space:
                 result += " "
-                in_space = True
+                was_space = True
         else:
             result += ch
-            in_space = False
+            was_space = False
 
     return result
 
 
-def print_processed_sentence(sentence: str, process_sentence: callable) -> None:
-    normalized_sentence = clean_inside_spaces(sentence.strip())
-    if normalized_sentence:
-        print(process_sentence(normalized_sentence))
+def print_processed_sentence(sentence: str) -> None:
+    normalized_sentence = clean_inside_spaces(sentence)
+    if normalized_sentence.strip() == "":
+        return
+
+    print(normalized_sentence)
 
 
-def process_char(
-    c: str, sentence: str, prev_was_newline: bool, process_sentence: callable
-) -> (str, bool):
-    if c == "\n":
-        if prev_was_newline:
-            # pusty wiersz koniec akapitu i zdania
-            print_processed_sentence(sentence, process_sentence)
-            print()
-            sentence = ""
-        else:
-            prev_was_newline = True
-            sentence += c
-    else:
-        prev_was_newline = False
-        sentence += c
-        if c in "!?.":
-            print_processed_sentence(sentence, process_sentence)
-            sentence = ""
-
-    return sentence, prev_was_newline
+def has_ending_marker(text: str) -> bool:
+    return text.find("-----") != -1
 
 
-def check_ending(sentence: str) -> bool:
-    return sentence.endswith("-----")
+def remove_ending_marker(text: str) -> str:
+    marker_idx = text.find("-----")
+    if marker_idx == -1:
+        return text
+    return text[:marker_idx]
 
 
-def process_preamble(process_sentence: callable) -> None:
+def process_preamble() -> None:
     preamble = skip_preamble()
-
     if not preamble.strip():
         return
 
-    sentence = ""
-    prev_was_newline = False
-    for p in preamble:
-        sentence, prev_was_newline = process_char(
-            p, sentence, prev_was_newline, process_sentence
-        )
-        if check_ending(sentence):
+    preamble = remove_ending_marker(preamble)
+    print_processed_sentence(preamble)
+
+
+def main() -> None:
+    process_preamble()
+
+    should_stop = False
+    while not should_stop:
+        sentence = get_sentece()
+        if not sentence:
             break
-    print_processed_sentence(sentence, process_sentence)
 
+        if has_ending_marker(sentence):
+            sentence = remove_ending_marker(sentence)
+            should_stop = True
 
-def main(process_sentence):
-    process_preamble(process_sentence)
-
-    sentence = ""
-    prev_was_newline = False
-    c = sys.stdin.read(1)
-
-    while c:
-        sentence, prev_was_newline = process_char(
-            c, sentence, prev_was_newline, process_sentence
-        )
-        c = sys.stdin.read(1)
-    if check_ending(sentence):
-        sentence = sentence[:-5]
-
-    print_processed_sentence(sentence, process_sentence)
+        if sentence.strip() == "":
+            print()
+        else:
+            print_processed_sentence(sentence)
 
 
 if __name__ == "__main__":
     try:
-        main(echo)
+        main()
     except BrokenPipeError:
         sys.exit(0)
