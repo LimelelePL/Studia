@@ -1,5 +1,5 @@
 # Wypisuje tylko zdania zakończone ? albo !
-from sentence_utils import read_sentece
+from sentence_utils import read_sentece, run_main
 
 
 def questions_and_exclamations() -> str:
@@ -19,5 +19,9 @@ def questions_and_exclamations() -> str:
     return text
 
 
+def main() -> None:
+    print(questions_and_exclamations(), end="")
+
+
 if __name__ == "__main__":
-    print(questions_and_exclamations())
+    run_main(main)

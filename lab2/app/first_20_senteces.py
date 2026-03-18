@@ -1,9 +1,4 @@
-import sys
-
-from sentence_utils import read_sentece
-
-sys.stdin.reconfigure(encoding="utf-8")
-sys.stdout.reconfigure(encoding="utf-8")
+from sentence_utils import read_sentece, run_main
 
 
 def first_20_sentences() -> str:
@@ -14,5 +9,9 @@ def first_20_sentences() -> str:
     return result
 
 
-if __name__ == "__main__":
+def main() -> None:
     print(first_20_sentences().strip())
+
+
+if __name__ == "__main__":
+    run_main(main)
