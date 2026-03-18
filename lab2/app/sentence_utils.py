@@ -79,7 +79,3 @@ def read_sentece() -> str:
         c = read_char()
 
     return result
-
-
-def get_sentece() -> str:
-    return read_sentece()

@@ -1,47 +1,29 @@
 # Wypisuje najdłuższe zdanie, w którym żadne dwa
 # sąsiadujące słowa nie zaczynają się na tę samą literę.
-from sentence_utils import read_sentece, skip_spaces, update_max
+import sys
+
+from sentence_utils import advance_to_next_word, get_next_word, read_sentece, update_max
+
+sys.stdin.reconfigure(encoding="utf-8")
+sys.stdout.reconfigure(encoding="utf-8")
 
 
 def check(sentence: str) -> bool:
     sentence = sentence.strip()
-    first_idx = 0
+    rest = sentence
+    prev_initial = ""
 
-    while first_idx < len(sentence):
-        first = ""
-        second = ""
-
-        # pomijamy spacje przed pierwszym słowem
-        first_idx = skip_spaces(sentence, first_idx)
-
-        if first_idx >= len(sentence):
+    while True:
+        word = get_next_word(rest)
+        if not word:
             break
 
-        # szukamy pierwszego słowa
-        while first_idx < len(sentence):
-            if sentence[first_idx].isspace():
-                break
-            first += sentence[first_idx]
-            first_idx += 1
+        initial = word[0].lower()
+        if prev_initial and prev_initial == initial:
+            return False
 
-        # pomijamy spacje przed drugim słowem
-        second_idx = skip_spaces(sentence, first_idx)
-
-        if second_idx >= len(sentence):
-            break
-
-        # szukamy kolejnego słowa
-        while second_idx < len(sentence):
-            if sentence[second_idx].isspace():
-                break
-            second += sentence[second_idx]
-            second_idx += 1
-
-        if first and second:
-            if first[0].lower() == second[0].lower():
-                return False
-
-        first_idx = second_idx
+        prev_initial = initial
+        rest = advance_to_next_word(rest)
 
     return True
 

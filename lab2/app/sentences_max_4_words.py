@@ -5,6 +5,9 @@ import sys
 
 from sentence_utils import advance_to_next_word, read_sentece, skip_non_alpha
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+
 
 def count_words(sentence: str) -> int:
     count = 0
@@ -24,8 +27,6 @@ def sentences_max_4_words() -> None:
 
 
 if __name__ == "__main__":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
     try:
         sentences_max_4_words()
     except BrokenPipeError:

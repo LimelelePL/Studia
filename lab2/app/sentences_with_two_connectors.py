@@ -38,7 +38,7 @@ def sentences_with_two_connectors() -> str:
         # zachowanie struktyy akapitow
         if not stripped:
             text += sentence
-        if stripped and stripped[-1] in "!?" and count_connectors(sentence) == 2:
+        if count_connectors(sentence) == 2:
             text += sentence
 
         sentence = read_sentece()
