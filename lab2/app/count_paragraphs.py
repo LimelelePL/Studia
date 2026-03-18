@@ -1,7 +1,7 @@
 from sentence_utils import read_line
 
 
-def count_paragraphs():
+def count_paragraphs() -> int:
     paragraphs = 0
     is_prev_empty = False
 
