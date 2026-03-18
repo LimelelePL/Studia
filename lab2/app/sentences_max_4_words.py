@@ -1,5 +1,3 @@
-# Funkcja wypisująca tylko zdania zawierające co najwyżej 4 wyrazy.
-
 from sentence_utils import advance_to_next_word, read_sentece, run_main, skip_non_alpha
 
 

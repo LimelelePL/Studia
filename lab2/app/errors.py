@@ -1,1 +1,0 @@
-# wlasne wyjatki
