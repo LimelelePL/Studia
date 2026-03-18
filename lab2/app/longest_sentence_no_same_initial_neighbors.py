@@ -1,6 +1,6 @@
 # Wypisuje najdłuższe zdanie, w którym żadne dwa
 # sąsiadujące słowa nie zaczynają się na tę samą literę.
-from sentence_utils import read_sentece, skip_spaces, update_max
+from sentence_utils import read_sentece, run_main, skip_spaces, update_max
 
 
 def check(sentence: str) -> bool:
@@ -61,5 +61,9 @@ def longest_sentence_no_same_initial_neighbors() -> str:
     return best
 
 
-if __name__ == "__main__":
+def main() -> None:
     print(longest_sentence_no_same_initial_neighbors())
+
+
+if __name__ == "__main__":
+    run_main(main)

@@ -1,8 +1,9 @@
-# wypisuje zdania zawierające co dwa wyrazy sposrod i oraz ale że lub
-# Wypisuje tylko zdania zakończone ? albo !
-import sys
-
-from sentence_utils import advance_to_next_word, format_stream_utf8, get_next_word, read_sentece
+from sentence_utils import (
+    advance_to_next_word,
+    get_next_word,
+    read_sentece,
+    run_main,
+)
 
 
 def check_word(w: str) -> bool:
@@ -43,6 +44,9 @@ def sentences_with_two_connectors() -> str:
     return text
 
 
-if __name__ == "__main__":
-    format_stream_utf8()
+def main() -> None:
     print(sentences_with_two_connectors(), end="")
+
+
+if __name__ == "__main__":
+    run_main(main)

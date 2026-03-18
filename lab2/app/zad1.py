@@ -1,51 +1,48 @@
-import sys
-
-from sentence_utils import format_stream_utf8, get_sentece
+from sentence_utils import get_sentece, read_line, run_main
 
 
 def skip_preamble() -> str:
     text = ""
-    empty_counter = 0
-    was_prev_empty = False
+    prev_empty = False
 
     for _ in range(10):
-        sentence = get_sentece()
+        line = read_line()
 
-        if not sentence:
+        if not line:
             break
 
-        if sentence.strip() == "":
-            was_prev_empty = True
-            empty_counter += 1
-            if empty_counter == 2:
+        if line.strip() == "":
+            if prev_empty:
                 text = ""
+            else:
+                prev_empty = True
+                text += line
         else:
-            if was_prev_empty:
-                text += "\n"
-            was_prev_empty = False
-            empty_counter = 0
-
-        text += sentence
+            prev_empty = False
+            text += line
 
     return text
 
 
 def clean_inside_spaces(text: str) -> str:
     result = ""
-    was_space = False
+    pending_space = False
+    at_line_start = True
 
     for ch in text:
-        # zachowujemy akapity
         if ch == "\n":
+            pending_space = False  # odrzucamy spacje końcowe przed \n
             result += "\n"
-            was_space = False
+            at_line_start = True
         elif ch.isspace():
-            if not was_space:
-                result += " "
-                was_space = True
+            if not at_line_start:
+                pending_space = True  # odkładamy spację — może być końcowa
         else:
+            if pending_space:
+                result += " "
+                pending_space = False
+            at_line_start = False
             result += ch
-            was_space = False
 
     return result
 
@@ -98,8 +95,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    format_stream_utf8()
-    try:
-        main()
-    except BrokenPipeError:
-        sys.exit(0)
+    run_main(main)

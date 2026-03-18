@@ -1,4 +1,4 @@
-from sentence_utils import format_stream_utf8, read_sentece
+from sentence_utils import read_sentece, run_main
 
 
 def first_20_sentences() -> str:
@@ -9,6 +9,9 @@ def first_20_sentences() -> str:
     return result
 
 
-if __name__ == "__main__":
-    format_stream_utf8()
+def main() -> None:
     print(first_20_sentences().strip())
+
+
+if __name__ == "__main__":
+    run_main(main)

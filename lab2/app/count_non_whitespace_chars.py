@@ -1,4 +1,4 @@
-from sentence_utils import read_char
+from sentence_utils import read_char, run_main
 
 
 def count_non_whitespace_chars() -> int:
@@ -12,5 +12,9 @@ def count_non_whitespace_chars() -> int:
     return counter
 
 
+def main() -> None:
+    print(f"Ilość znaków bez białych znaków: {count_non_whitespace_chars()}")
+
+
 if __name__ == "__main__":
-    print(f"Iosc znakow bez bialych znakow {count_non_whitespace_chars()}")
+    run_main(main)

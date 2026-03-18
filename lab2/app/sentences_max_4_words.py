@@ -1,6 +1,6 @@
 # Funkcja wypisująca tylko zdania zawierające co najwyżej 4 wyrazy.
 
-from sentence_utils import advance_to_next_word, format_stream_utf8, read_sentece, skip_non_alpha
+from sentence_utils import advance_to_next_word, read_sentece, run_main, skip_non_alpha
 
 
 def count_words(sentence: str) -> int:
@@ -21,9 +21,4 @@ def sentences_max_4_words() -> None:
 
 
 if __name__ == "__main__":
-    import sys
-    format_stream_utf8()
-    try:
-        sentences_max_4_words()
-    except BrokenPipeError:
-        sys.exit(0)
+    run_main(sentences_max_4_words)
