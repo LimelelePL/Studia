@@ -1,9 +1,4 @@
-import sys
-
-from sentence_utils import read_sentece
-
-sys.stdin.reconfigure(encoding="utf-8")
-sys.stdout.reconfigure(encoding="utf-8")
+from sentence_utils import format_stream_utf8, read_sentece
 
 
 def first_20_sentences() -> str:
@@ -15,4 +10,5 @@ def first_20_sentences() -> str:
 
 
 if __name__ == "__main__":
+    format_stream_utf8()
     print(first_20_sentences().strip())

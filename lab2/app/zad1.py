@@ -1,10 +1,6 @@
-import io
 import sys
 
-from sentence_utils import get_sentece
-
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+from sentence_utils import format_stream_utf8, get_sentece
 
 
 def skip_preamble() -> str:
@@ -102,6 +98,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    format_stream_utf8()
     try:
         main()
     except BrokenPipeError:

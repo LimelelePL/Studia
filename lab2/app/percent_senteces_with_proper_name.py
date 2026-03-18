@@ -1,7 +1,4 @@
-import io
-import sys
-
-from sentence_utils import advance_to_next_word, read_sentece, skip_non_alpha
+from sentence_utils import advance_to_next_word, format_stream_utf8, read_sentece, skip_non_alpha
 
 
 def has_proper_name(sentence: str) -> bool:
@@ -34,8 +31,8 @@ def percent_sentences_with_proper_name() -> float:
 
 
 if __name__ == "__main__":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+    import sys
+    format_stream_utf8()
     try:
         result = percent_sentences_with_proper_name()
         print(f"Procent zdań z nazwą własną: {result:.2f}%")

@@ -83,3 +83,8 @@ def read_sentece() -> str:
 
 def get_sentece() -> str:
     return read_sentece()
+
+
+def format_stream_utf8() -> None:
+    sys.stdin.reconfigure(encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8")

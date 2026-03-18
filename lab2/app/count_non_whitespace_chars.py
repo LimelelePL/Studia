@@ -1,9 +1,7 @@
-# zlicza wszystkie znaki oprócz białych znaków
-
 from sentence_utils import read_char
 
 
-def count_non_whitespace_chars():
+def count_non_whitespace_chars() -> int:
     counter = 0
 
     c = read_char()

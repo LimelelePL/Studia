@@ -1,9 +1,6 @@
 # Funkcja wypisująca tylko zdania zawierające co najwyżej 4 wyrazy.
 
-import io
-import sys
-
-from sentence_utils import advance_to_next_word, read_sentece, skip_non_alpha
+from sentence_utils import advance_to_next_word, format_stream_utf8, read_sentece, skip_non_alpha
 
 
 def count_words(sentence: str) -> int:
@@ -24,8 +21,8 @@ def sentences_max_4_words() -> None:
 
 
 if __name__ == "__main__":
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+    import sys
+    format_stream_utf8()
     try:
         sentences_max_4_words()
     except BrokenPipeError:
