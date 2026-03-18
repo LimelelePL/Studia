@@ -3,6 +3,7 @@ import sys
 from app.converters import read_log
 from app.types import HttpEntry
 from app.utils import format_stream_utf8
+from app.sorts import sort_log
 
 
 def print_damaged_logs(logs: list[HttpEntry]) -> None:
@@ -25,7 +26,7 @@ def main() -> None:
     try:
         format_stream_utf8()
         logs = read_log()
-        print_all_logs(logs)
+        print_all_logs(sort_log(logs, 10))
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
     except EOFError:
