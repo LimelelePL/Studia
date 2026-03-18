@@ -15,6 +15,7 @@ def count_paragraphs():
             is_prev_empty = False
 
         line = read_line()
+    return paragraphs
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ def count_non_whitespace_chars():
         if not c.isspace():
             counter += 1
         c = read_char()
+    return counter
 
 
 if __name__ == "__main__":
