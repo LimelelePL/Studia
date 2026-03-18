@@ -1,19 +1,20 @@
 import datetime
 import sys
+from ipaddress import IPv4Address
 from typing import Any
 
 from app.constants import (
     EMPTY_FIELD,
-    HOST_INDEX,
-    METHOD_INDEX,
-    ORIG_H_INDEX,
-    ORIG_P_INDEX,
-    RESP_H_INDEX,
-    RESP_P_INDEX,
-    STATUS_CODE_INDEX,
-    TS_INDEX,
-    UID_INDEX,
-    URI_INDEX,
+    LOG_HOST_INDEX,
+    LOG_METHOD_INDEX,
+    LOG_ORIG_H_INDEX,
+    LOG_ORIG_P_INDEX,
+    LOG_RESP_H_INDEX,
+    LOG_RESP_P_INDEX,
+    LOG_STATUS_CODE_INDEX,
+    LOG_TS_INDEX,
+    LOG_UID_INDEX,
+    LOG_URI_INDEX,
 )
 from app.types import HttpEntry
 
@@ -36,18 +37,25 @@ def _to_int(value: Any) -> int | None:
         return None
 
 
+def _to_ip(value: Any) -> IPv4Address | None:
+    try:
+        return IPv4Address(value)
+    except (ValueError, TypeError):
+        return None
+
+
 def _normalize_log_fields(log_fields: list[str]) -> HttpEntry:
     normalized = [None if x == EMPTY_FIELD else x for x in log_fields]
     ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized  # tu moze być ValueError
     return (
         _to_datetime(ts),
         uid,
-        orig_h,
+        _to_ip(orig_h),
         _to_int(orig_p),
-        resp_h,
+        _to_ip(resp_h),
         _to_int(resp_p),
         method,
-        host,
+        _to_ip(host),
         uri,
         _to_int(status_code),
     )
@@ -58,16 +66,16 @@ def _retrive_log_fields(
 ) -> list[str]:
     fields = log_line.split("\t")
     return [
-        fields[TS_INDEX],
-        fields[UID_INDEX],
-        fields[ORIG_H_INDEX],
-        fields[ORIG_P_INDEX],
-        fields[RESP_H_INDEX],
-        fields[RESP_P_INDEX],
-        fields[METHOD_INDEX],
-        fields[HOST_INDEX],
-        fields[URI_INDEX],
-        fields[STATUS_CODE_INDEX],
+        fields[LOG_TS_INDEX],
+        fields[LOG_UID_INDEX],
+        fields[LOG_ORIG_H_INDEX],
+        fields[LOG_ORIG_P_INDEX],
+        fields[LOG_RESP_H_INDEX],
+        fields[LOG_RESP_P_INDEX],
+        fields[LOG_METHOD_INDEX],
+        fields[LOG_HOST_INDEX],
+        fields[LOG_URI_INDEX],
+        fields[LOG_STATUS_CODE_INDEX],
     ]
 
 
