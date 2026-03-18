@@ -10,4 +10,5 @@ type HttpEntry = tuple[
     str | None,  # method
     str | None,  # host
     str | None,  # uri
+    int | None,  # status_code
 ]
