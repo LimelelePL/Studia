@@ -55,7 +55,7 @@ def create_new_lab(directory: str, extra_deps: list[str]) -> None:
     os.makedirs(directory)
     print(f"Directory created: {directory}")
 
-    subprocess.run(["uv", "init"], cwd=directory, check=True)
+    subprocess.run(["uv", "init", "--lib"], cwd=directory, check=True)
 
     if extra_deps:
         subprocess.run(
@@ -85,4 +85,3 @@ if __name__ == "__main__":
         sys.exit(1)
 
     create_new_lab(sys.argv[1], sys.argv[2:])
-
