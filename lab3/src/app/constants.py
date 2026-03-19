@@ -1,28 +1,39 @@
-EMPTY_FIELD = "-"
+from enum import IntEnum
+from typing import Final, cast
 
-# Indeksy w surowej linii logu (po split("\t"))
-LOG_TS_INDEX = 0
-LOG_UID_INDEX = 1
-LOG_ORIG_H_INDEX = 2
-LOG_ORIG_P_INDEX = 3
-LOG_RESP_H_INDEX = 4
-LOG_RESP_P_INDEX = 5
-LOG_METHOD_INDEX = 7
-LOG_HOST_INDEX = 8
-LOG_URI_INDEX = 9
-LOG_STATUS_CODE_INDEX = 14
+from app.types import Entry
 
-# Indeksy w krotce HttpEntry
-TUPLE_TS_INDEX = 0
-TUPLE_UID_INDEX = 1
-TUPLE_ORIG_H_INDEX = 2
-TUPLE_ORIG_P_INDEX = 3
-TUPLE_RESP_H_INDEX = 4
-TUPLE_RESP_P_INDEX = 5
-TUPLE_METHOD_INDEX = 6
-TUPLE_HOST_INDEX = 7
-TUPLE_URI_INDEX = 8
-TUPLE_STATUS_CODE_INDEX = 9
+EMPTY_FIELD: Final = "-"
 
 
-LOG_INDEXES_WITH_IP = (TUPLE_ORIG_H_INDEX, TUPLE_RESP_H_INDEX, TUPLE_HOST_INDEX)
+class RawLogIndex(IntEnum):
+    TS = 0
+    UID = 1
+    ORIG_H = 2
+    ORIG_P = 3
+    RESP_H = 4
+    RESP_P = 5
+    METHOD = 7
+    HOST = 8
+    URI = 9
+    STATUS_CODE = 14
+
+
+class EntryIndex:
+    TS: Final = 0
+    UID: Final = 1
+    ORIG_H: Final = 2
+    ORIG_P: Final = 3
+    RESP_H: Final = 4
+    RESP_P: Final = 5
+    METHOD: Final = 6
+    HOST: Final = 7
+    URI: Final = 8
+    STATUS_CODE: Final = 9
+
+
+ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex.HOST)
+
+EMPTY_ENTRY = cast(Entry, (None,) * len(RawLogIndex))
+
+RAW_LOG_FIELD_INDEXES: Final = tuple(RawLogIndex)

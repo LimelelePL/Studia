@@ -1,7 +1,8 @@
 import datetime
+from http import HTTPStatus
 from ipaddress import IPv4Address
 
-type HttpEntry = tuple[
+type Entry = tuple[
     datetime.datetime | None,  # ts
     str | None,  # uid
     IPv4Address | None,  # orig_h
@@ -11,6 +12,5 @@ type HttpEntry = tuple[
     str | None,  # method
     IPv4Address | None,  # host
     str | None,  # uri
-    int | None,  # status_code
+    HTTPStatus | None,  # status_code
 ]
-# orig_h, resp_h,host
