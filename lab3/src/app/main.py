@@ -11,6 +11,7 @@ from app.utils import format_stream_utf8
 # TODO: change error messages to english
 # TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
 # TODO: Dodanie oblusgi bledow w przypadku podania niepoprawnego typu do funkcji
+# TODO: w na liscie nie ma wszystkich pol z ip w zadaniu 5
 
 
 def print_damaged_logs(logs: list[HttpEntry]) -> None:
