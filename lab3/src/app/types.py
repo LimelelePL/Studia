@@ -1,14 +1,16 @@
 import datetime
+from ipaddress import IPv4Address
 
 type HttpEntry = tuple[
     datetime.datetime | None,  # ts
     str | None,  # uid
-    str | None,  # orig_h
+    IPv4Address | None,  # orig_h
     int | None,  # orig_p
-    str | None,  # resp_h
+    IPv4Address | None,  # resp_h
     int | None,  # resp_p
     str | None,  # method
-    str | None,  # host
+    IPv4Address | None,  # host
     str | None,  # uri
     int | None,  # status_code
 ]
+# orig_h, resp_h,host
