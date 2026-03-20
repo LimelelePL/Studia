@@ -14,3 +14,4 @@ type Entry = tuple[
     str | None,  # uri
     HTTPStatus | None,  # status_code
 ]
+type Extension = str

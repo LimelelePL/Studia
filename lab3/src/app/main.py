@@ -1,10 +1,9 @@
 import sys
+from http import HTTPStatus
 from ipaddress import IPv4Address
 
-from app.constants import EntryIndex
 from app.converters import read_log
-from app.filters import get_entries_by_code, get_entries_by_extension, get_entries_by_ip, get_failed_reads
-from app.sorts import sort_log
+from app.filters import get_entries_by_code, get_entries_by_ip, get_failed_reads
 from app.types import Entry
 from app.utils import format_stream_utf8
 
@@ -12,6 +11,7 @@ from app.utils import format_stream_utf8
 # TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
 # TODO: Dodanie oblusgi bledow w przypadku podania niepoprawnego typu do funkcji
 # TODO: na liscie nie ma wszystkich pol z ip w zadaniu 5
+# Log- wszystkie dane, Entry - pojedynczy wpis, przedrostek RAW do niezformatowanych
 
 
 def print_damaged_entries(log: list[Entry]) -> None:
@@ -25,7 +25,7 @@ def print_log(log: list[Entry]) -> None:
         print(entry)
 
 
-def print_log_with_field(log: list[Entry], ids: list[int]) -> None:
+def print_log_field(log: list[Entry], ids: list[int]) -> None:
     for entry in log:
         print(tuple(entry[i] for i in ids))
 
@@ -35,7 +35,7 @@ def main() -> None:
         format_stream_utf8()
         log = read_log()
         # print_log(sort_log(log, EntryIndex.STATUS_CODE))
-        # print_log(get_entries_by_code(log, 404))
+        print_log(get_entries_by_code(log, HTTPStatus(400)))
         print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
         # print_log(get_entries_by_ip(log, IPv4Address("999.999.999.999")))
         client_errors, server_errors = get_failed_reads(log, False)

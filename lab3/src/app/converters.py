@@ -4,9 +4,8 @@ from http import HTTPStatus
 from ipaddress import IPv4Address
 from typing import Any
 
-from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES, RawLogIndex
+from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES
 from app.types import Entry
-
 
 # W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
 # reszta ewentualnie jest do dodania potem, bo jeszcze calej listy nie przeczytalem
@@ -45,7 +44,7 @@ def _to_ip(value: Any) -> IPv4Address | None:
         return None
 
 
-def _normalize_raw_log(raw_fields: list[str]) -> Entry:
+def _normalize_raw_entry(raw_fields: list[str]) -> Entry:
     normalized = [None if x == EMPTY_FIELD else x for x in raw_fields]
     ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized  # tu moze być ValueError
     return (
@@ -62,7 +61,7 @@ def _normalize_raw_log(raw_fields: list[str]) -> Entry:
     )
 
 
-def _extract_raw_log_fields(raw_log_line: str) -> list[str]:
+def _extract_raw_entry_fields(raw_log_line: str) -> list[str]:
     fields = raw_log_line.split("\t")
     return [fields[i] for i in RAW_LOG_FIELD_INDEXES]
 
@@ -72,7 +71,7 @@ def read_log() -> list[Entry]:
     for line in sys.stdin:
         if raw_log_line := line.strip():
             try:
-                log.append(_normalize_raw_log(_extract_raw_log_fields(raw_log_line)))
+                log.append(_normalize_raw_entry(_extract_raw_entry_fields(raw_log_line)))
             except (IndexError, ValueError):
                 # Obsługa błędu strukturalnego linii — zła liczba kolumn lub błąd rozpakowania,
                 # cała linia jest uszkodzona i zastępowana pustą krotką

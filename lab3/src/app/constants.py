@@ -6,6 +6,8 @@ from app.types import Entry
 EMPTY_FIELD: Final = "-"
 
 
+# this enum is iterable, this class must have exaclty the same number of entres as EntryIndex
+# in order to keep sort_log working
 class RawLogIndex(IntEnum):
     TS = 0
     UID = 1
@@ -34,6 +36,6 @@ class EntryIndex:
 
 ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex.HOST)
 
-EMPTY_ENTRY = cast(Entry, (None,) * len(RawLogIndex))
-
 RAW_LOG_FIELD_INDEXES: Final = tuple(RawLogIndex)
+
+EMPTY_ENTRY = cast(Entry, (None,) * len(RawLogIndex))

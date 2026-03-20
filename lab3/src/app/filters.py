@@ -8,19 +8,8 @@ from app.constants import ENTRY_INDEXES_WITH_IP, EntryIndex
 from app.types import Entry
 
 
-# Trzeba sie zdecydować czy do funkcji podajemy int -> konwertujemy na HttpStatus, str i konwertujemy na ipv4 lub /
-# podejmy httpStatus i ipv4 od razu, dwa podejscia (get_entries_by_code,get_entries_by_ip)
-
-
-def get_entries_by_code(log: list[Entry], code: int) -> list[Entry]:
-    try:
-        status = HTTPStatus(code)
-    except ValueError as e:
-        raise ValueError(
-            f"Nie udało się zwrócić logów z odpowiednim kodem. Podano nieprawidłowy kod statusu HTTP: {code}"
-        ) from e
-
-    return [x for x in log if x[EntryIndex.STATUS_CODE] == status]
+def get_entries_by_code(log: list[Entry], code: HTTPStatus) -> list[Entry]:
+    return [x for x in log if x[EntryIndex.STATUS_CODE] == code]
 
 
 def get_entries_by_ip(log: list[Entry], ip: IPv4Address) -> list[Entry]:
@@ -39,10 +28,10 @@ def get_failed_reads(log: list[Entry], merge: bool = False) -> list[Entry] | tup
     server_error_entries: list[Entry] = []
 
     for entry in log:
-        if s := entry[EntryIndex.STATUS_CODE]:
-            if s.is_client_error:
+        if status := entry[EntryIndex.STATUS_CODE]:
+            if status.is_client_error:
                 client_error_entries.append(entry)
-            elif s.is_server_error:
+            elif status.is_server_error:
                 server_error_entries.append(entry)
 
     if merge:
@@ -52,10 +41,16 @@ def get_failed_reads(log: list[Entry], merge: bool = False) -> list[Entry] | tup
     return (client_error_entries, server_error_entries)
 
 
-def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
-    target_ext = f".{ext.lstrip('.')}"
+def is_extension(ext: str) -> bool:
+    clean_ext = ext.strip()
+    return clean_ext.startswith(".") and len(clean_ext) > 1
 
+
+def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
     matched: list[Entry] = []
+    if not is_extension(ext):
+        raise ValueError("String have to be extension with '.'(dot) at beginning")
+    target_ext = ext.lower()
     for entry in log:
         if uri := entry[EntryIndex.URI]:
             path = urlparse(uri).path
