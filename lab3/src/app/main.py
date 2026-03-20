@@ -1,48 +1,52 @@
+import json
 import sys
-
+from http import HTTPStatus
 from ipaddress import IPv4Address
 
-from app.constants import TUPLE_STATUS_CODE_INDEX
-from app.converters import read_log
-from app.filters import get_entries_by_code, get_entries_by_extension, get_entries_by_ip, get_failed_reads
-from app.sorts import sort_log
-from app.types import HttpEntry
+from app.converters import log_to_dict, read_log
+from app.filters import get_entries_by_code, get_entries_by_ip, get_failed_reads
+from app.stats import count_status_classes, get_top_ips
+from app.types import Entry
 from app.utils import format_stream_utf8
+
 # TODO: change error messages to english
 # TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
 # TODO: Dodanie oblusgi bledow w przypadku podania niepoprawnego typu do funkcji
 # TODO: na liscie nie ma wszystkich pol z ip w zadaniu 5
+# Log- wszystkie dane, Entry - pojedynczy wpis, przedrostek RAW do niezformatowanych
 
 
-def print_damaged_logs(logs: list[HttpEntry]) -> None:
-    for log in logs:
-        if log.count(None):
-            print(log)
+def print_damaged_entries(log: list[Entry]) -> None:
+    for entry in log:
+        if entry.count(None):
+            print(entry)
 
 
-def print_all_logs(logs: list[HttpEntry]) -> None:
-    for log in logs:
-        print(log)
+def print_log(log: list[Entry]) -> None:
+    for entry in log:
+        print(entry)
 
 
-def print_logs_with_field(logs: list[HttpEntry], ids: list[int]) -> None:
-    for log in logs:
-        print(tuple(log[i] for i in ids))
+def print_log_field(log: list[Entry], ids: list[int]) -> None:
+    for entry in log:
+        print(tuple(entry[i] for i in ids))
 
 
 def main() -> None:
     try:
         format_stream_utf8()
-        logs = read_log()
-        # print_all_logs(sort_log(logs, TUPLE_STATUS_CODE_INDEX))
-        # print_all_logs(get_entries_by_code(logs, 404))
-        print_all_logs(get_entries_by_ip(logs, IPv4Address("192.168.202.110")))
-        # print_all_logs(get_entries_by_ip(logs, IPv4Address("999.999.999.999")))
-        client_errors, server_errors = get_failed_reads(logs, False)
-        print_all_logs(client_errors)
-        # print_all_logs(server_errors)
-        # print_all_logs(get_entries_by_extension(logs, "php"))  # poprawne
-        # print_all_logs(get_entries_by_extension(logs, ""))  # niepoprawne
+        log = read_log()
+        # print_log(sort_log(log, EntryIndex.STATUS_CODE))
+        # print_log(get_entries_by_code(log, HTTPStatus(400)))
+        # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
+        # print_log(get_entries_by_ip(log, IPv4Address("999.999.999.999")))
+        # client_errors, server_errors = get_failed_reads(log, False)
+        # print_log(client_errors)
+        # print_log(server_errors)
+        # print_log(get_entries_by_extension(log, "php"))  # poprawne
+        # print_log(get_entries_by_extension(log, ""))  # niepoprawne
+        print(*get_top_ips(log), sep="\n")
+        # print(count_status_classes(log), sep="\n")
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
     except EOFError:

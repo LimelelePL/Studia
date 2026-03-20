@@ -1,7 +1,9 @@
 import datetime
+from http import HTTPStatus
 from ipaddress import IPv4Address
+from typing import TypedDict
 
-type HttpEntry = tuple[
+type Entry = tuple[
     datetime.datetime | None,  # ts
     str | None,  # uid
     IPv4Address | None,  # orig_h
@@ -11,6 +13,19 @@ type HttpEntry = tuple[
     str | None,  # method
     IPv4Address | None,  # host
     str | None,  # uri
-    int | None,  # status_code
+    HTTPStatus | None,  # status_code
 ]
-# orig_h, resp_h,host
+type Extension = str
+
+
+class EntryDict(TypedDict):
+    ts: datetime.datetime | None
+    uid: str | None
+    orig_h: IPv4Address | None
+    orig_p: int | None
+    resp_h: IPv4Address | None
+    resp_p: int | None
+    method: str | None
+    host: IPv4Address | None
+    uri: str | None
+    status_code: HTTPStatus | None

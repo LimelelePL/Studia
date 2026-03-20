@@ -1,15 +1,14 @@
-from app.types import HttpEntry
+from app.constants import RawLogIndex
+from app.types import Entry
 
 
 # sortuje malejaca czy rosnaca? oczywiscie cwel nie raczyl powiedziec jednoczenie napisal jake funkcja ma miec
 # parametry wiec nie mozna przyjmowac parametru co do kolejnosci sortowanai
-def sort_log(logs: list[HttpEntry], index: int) -> list[HttpEntry]:
+def sort_log(log: list[Entry], index: int) -> list[Entry]:
+    max_index = len(RawLogIndex)
+    if not (-max_index <= index < max_index):
+        raise IndexError(f"Index out of range log range, last index is: {max_index} but {index} were given")
 
-    size = len(logs[0])
+    log.sort(key=lambda x: (x[index] is None, x[index]))
 
-    if not (-size <= index < size):
-        raise IndexError("Niepoprawny index")
-
-    logs.sort(key=lambda x: (x[index] is None, x[index]))
-
-    return logs
+    return log
