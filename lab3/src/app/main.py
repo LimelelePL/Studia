@@ -1,9 +1,11 @@
+import json
 import sys
 from http import HTTPStatus
 from ipaddress import IPv4Address
 
-from app.converters import read_log
+from app.converters import log_to_dict, read_log
 from app.filters import get_entries_by_code, get_entries_by_ip, get_failed_reads
+from app.stats import count_status_classes, get_top_ips
 from app.types import Entry
 from app.utils import format_stream_utf8
 
@@ -35,14 +37,16 @@ def main() -> None:
         format_stream_utf8()
         log = read_log()
         # print_log(sort_log(log, EntryIndex.STATUS_CODE))
-        print_log(get_entries_by_code(log, HTTPStatus(400)))
-        print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
+        # print_log(get_entries_by_code(log, HTTPStatus(400)))
+        # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
         # print_log(get_entries_by_ip(log, IPv4Address("999.999.999.999")))
-        client_errors, server_errors = get_failed_reads(log, False)
-        print_log(client_errors)
+        # client_errors, server_errors = get_failed_reads(log, False)
+        # print_log(client_errors)
         # print_log(server_errors)
         # print_log(get_entries_by_extension(log, "php"))  # poprawne
         # print_log(get_entries_by_extension(log, ""))  # niepoprawne
+        print(*get_top_ips(log), sep="\n")
+        # print(count_status_classes(log), sep="\n")
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
     except EOFError:

@@ -79,11 +79,11 @@ def read_log() -> list[Entry]:
     return log
 
 
-def log_to_dict(log: list[Entry]) -> dict[str | None, list[Entry]]:
-    result: dict[str | None, list[Entry]] = {}
+def log_to_dict(log: list[Entry]) -> dict[str, list[EntryDict]]:
+    result: dict[str, list[EntryDict]] = {}
     for entry in log:
-        uid = entry[EntryIndex.UID]
-        result.setdefault(uid, []).append(entry)
+        uid = entry[EntryIndex.UID] or "unknown"
+        result.setdefault(uid, []).append(entry_to_dict(entry))
     return result
 
 
