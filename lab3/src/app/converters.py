@@ -4,8 +4,8 @@ from http import HTTPStatus
 from ipaddress import IPv4Address
 from typing import Any
 
-from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES
-from app.types import Entry
+from app.constants import EMPTY_ENTRY, EMPTY_FIELD, EntryIndex, RAW_LOG_FIELD_INDEXES
+from app.types import Entry, EntryDict
 
 # W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
 # reszta ewentualnie jest do dodania potem, bo jeszcze calej listy nie przeczytalem
@@ -77,3 +77,26 @@ def read_log() -> list[Entry]:
                 # cała linia jest uszkodzona i zastępowana pustą krotką
                 log.append(EMPTY_ENTRY)
     return log
+
+
+def log_to_dict(log: list[Entry]) -> dict[str | None, list[Entry]]:
+    result: dict[str | None, list[Entry]] = {}
+    for entry in log:
+        uid = entry[EntryIndex.UID]
+        result.setdefault(uid, []).append(entry)
+    return result
+
+
+def entry_to_dict(entry: Entry) -> EntryDict:
+    return {
+        "ts": entry[EntryIndex.TS],
+        "uid": entry[EntryIndex.UID],
+        "orig_h": entry[EntryIndex.ORIG_H],
+        "orig_p": entry[EntryIndex.ORIG_P],
+        "resp_h": entry[EntryIndex.RESP_H],
+        "resp_p": entry[EntryIndex.RESP_P],
+        "method": entry[EntryIndex.METHOD],
+        "host": entry[EntryIndex.HOST],
+        "uri": entry[EntryIndex.URI],
+        "status_code": entry[EntryIndex.STATUS_CODE],
+    }
