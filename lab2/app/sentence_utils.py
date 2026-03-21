@@ -81,21 +81,9 @@ def read_sentece() -> str:
     return result
 
 
-
-
 def format_stream_utf8() -> None:
     sys.stdin.reconfigure(encoding="utf-8")
     sys.stdout.reconfigure(encoding="utf-8")
-
-
-def collect_sentences(predicate) -> str:
-    text = ""
-    sentence = read_sentece()
-    while sentence:
-        if not sentence.rstrip() or predicate(sentence):
-            text += sentence
-        sentence = read_sentece()
-    return text
 
 
 def run_main(fn) -> None:

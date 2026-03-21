@@ -4,7 +4,7 @@ from ipaddress import IPv4Address
 import pytest
 
 from app.filters import get_entries_by_code, get_entries_by_extension, get_entries_by_ip, get_failed_reads
-from app.types import Entry
+from app.my_types import Entry
 
 
 def test_get_entries_by_code_returns_only_matching(log: list[Entry]) -> None:

@@ -4,8 +4,8 @@ from http import HTTPStatus
 from ipaddress import IPv4Address
 from typing import Any
 
-from app.constants import EMPTY_ENTRY, EMPTY_FIELD, EntryIndex, RAW_LOG_FIELD_INDEXES
-from app.types import Entry, EntryDict
+from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES, EntryIndex
+from app.my_types import Entry, EntryDict
 
 # W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
 # reszta ewentualnie jest do dodania potem, bo jeszcze calej listy nie przeczytalem

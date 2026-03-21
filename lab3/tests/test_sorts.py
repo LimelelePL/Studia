@@ -1,8 +1,8 @@
 import pytest
 
 from app.constants import EntryIndex
+from app.my_types import Entry
 from app.sorts import sort_log
-from app.types import Entry
 
 
 def test_sort_by_status_code(log: list[Entry]) -> None:

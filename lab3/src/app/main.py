@@ -1,16 +1,13 @@
-import json
 import sys
 from http import HTTPStatus
-from ipaddress import IPv4Address
 
-from app.converters import log_to_dict, read_log
-from app.filters import get_entries_by_code, get_entries_by_ip, get_failed_reads
-from app.stats import count_status_classes, get_top_ips
-from app.types import Entry
+from app.converters import read_log
+from app.filters import get_entries_by_code
+from app.my_types import Entry
+from app.stats import get_top_ips
 from app.utils import format_stream_utf8
 
-# TODO: change error messages to english
-# TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
+# TODO: change error messages to englishgi# TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
 # TODO: Dodanie oblusgi bledow w przypadku podania niepoprawnego typu do funkcji
 # TODO: na liscie nie ma wszystkich pol z ip w zadaniu 5
 # Log- wszystkie dane, Entry - pojedynczy wpis, przedrostek RAW do niezformatowanych
@@ -37,7 +34,7 @@ def main() -> None:
         format_stream_utf8()
         log = read_log()
         # print_log(sort_log(log, EntryIndex.STATUS_CODE))
-        # print_log(get_entries_by_code(log, HTTPStatus(400)))
+        print_log(get_entries_by_code(log, HTTPStatus(400)))
         # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
         # print_log(get_entries_by_ip(log, IPv4Address("999.999.999.999")))
         # client_errors, server_errors = get_failed_reads(log, False)

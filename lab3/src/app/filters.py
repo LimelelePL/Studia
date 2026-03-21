@@ -5,7 +5,7 @@ from typing import Literal, overload
 from urllib.parse import urlparse
 
 from app.constants import ENTRY_INDEXES_WITH_IP, EntryIndex
-from app.types import Entry
+from app.my_types import Entry
 
 
 def get_entries_by_code(log: list[Entry], code: HTTPStatus) -> list[Entry]:

@@ -1,8 +1,5 @@
 from sentence_utils import advance_to_next_word, read_sentece, run_main, skip_non_alpha
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
-
 
 def count_words(sentence: str) -> int:
     count = 0

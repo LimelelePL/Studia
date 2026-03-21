@@ -3,7 +3,7 @@ from ipaddress import IPv4Address
 from typing import cast
 
 from app.constants import ENTRY_INDEXES_WITH_IP, EntryIndex
-from app.types import Entry
+from app.my_types import Entry
 
 
 def get_top_ips(log: list[Entry], n: int = 10) -> list[tuple[IPv4Address, int]]:
