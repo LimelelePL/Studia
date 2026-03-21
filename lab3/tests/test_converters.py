@@ -1,14 +1,25 @@
-from ipaddress import IPv4Address
-from http import HTTPStatus
 import datetime
+from http import HTTPStatus
+from ipaddress import IPv4Address
 
 from app.converters import entry_to_dict, log_to_dict
-from app.types import Entry
+from app.my_types import Entry
 
 
 def test_entry_to_dict_keys(log: list[Entry]) -> None:
     d = entry_to_dict(log[0])
-    assert set(d.keys()) == {"ts", "uid", "orig_h", "orig_p", "resp_h", "resp_p", "method", "host", "uri", "status_code"}
+    assert set(d.keys()) == {
+        "ts",
+        "uid",
+        "orig_h",
+        "orig_p",
+        "resp_h",
+        "resp_p",
+        "method",
+        "host",
+        "uri",
+        "status_code",
+    }
 
 
 def test_entry_to_dict_types(log: list[Entry]) -> None:

@@ -1,5 +1,5 @@
 from app.constants import RawLogIndex
-from app.types import Entry
+from app.my_types import Entry
 
 
 # sortuje malejaca czy rosnaca? oczywiscie cwel nie raczyl powiedziec jednoczenie napisal jake funkcja ma miec

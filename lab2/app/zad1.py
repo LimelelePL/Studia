@@ -1,4 +1,4 @@
-from sentence_utils import get_sentece, read_line, run_main
+from sentence_utils import read_line, read_sentece, run_main
 
 
 def skip_preamble() -> str:
@@ -31,12 +31,12 @@ def clean_inside_spaces(text: str) -> str:
 
     for ch in text:
         if ch == "\n":
-            pending_space = False  # odrzucamy spacje końcowe przed \n
+            pending_space = False
             result += "\n"
             at_line_start = True
         elif ch.isspace():
             if not at_line_start:
-                pending_space = True  # odkładamy spację — może być końcowa
+                pending_space = True
         else:
             if pending_space:
                 result += " "
@@ -80,7 +80,7 @@ def main() -> None:
 
     should_stop = False
     while not should_stop:
-        sentence = get_sentece()
+        sentence = read_sentece()
         if not sentence:
             break
 

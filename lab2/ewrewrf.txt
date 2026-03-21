@@ -1,0 +1,7 @@
+1) usuwac z raportów: obramowania, dodać liczbe porzadkowa, usunac naprzemienne kolory, dodać etykiety z =Nazwisko &" "& Imie & "-" & Idu
+2) kompaktuj baze danych
+3) w tabelach sortowac po Idu -> Im -> Nazw 
+4) wlaściwosci sprzezenia w kwerendach -> na strzalke -> wlasciwosci sprzezenia -> Wszyscy uczniowie
+5) & laczy pola o roznych typach a + wymaga jednakowego typu
+6) srednia robic z Dlookup i sr::IIF (tablica ; = ,)
+7) uporzadkowanie poprzez indeks (opcjonalnie)

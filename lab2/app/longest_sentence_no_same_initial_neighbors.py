@@ -1,9 +1,10 @@
-# Wypisuje najdłuższe zdanie, w którym żadne dwa
-# sąsiadujące słowa nie zaczynają się na tę samą literę.
-from sentence_utils import read_sentece, run_main, skip_spaces, update_max
-
-
-
+from sentence_utils import (
+    advance_to_next_word,
+    get_next_word,
+    read_sentece,
+    run_main,
+    update_max,
+)
 
 
 def check(sentence: str) -> bool:

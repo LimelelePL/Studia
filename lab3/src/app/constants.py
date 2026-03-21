@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import Final, cast
 
-from app.types import Entry
+from app.my_types import Entry
 
 EMPTY_FIELD: Final = "-"
 
