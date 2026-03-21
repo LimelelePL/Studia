@@ -36,7 +36,6 @@ def count_status_classes(log: list[Entry]) -> Counter[str]:
     return stats_code_counter
 
 
-# konwersja bo w poleceniu jest ze ma byc slownik? czy on uznaje dict za slownik????????????//?/ nigga???
 def count_by_method(log: list[Entry]) -> dict[str, int]:
     method_count_map: Counter[str] = Counter()
 
@@ -45,3 +44,16 @@ def count_by_method(log: list[Entry]) -> dict[str, int]:
             method_count_map[method] += 1
 
     return dict(method_count_map)
+
+
+def get_top_uris(log: list[Entry], n: int = 10) -> list[str]:
+    if n < 0:
+        raise ValueError(f"Number of records can't be negative, given: {n}")
+    uris_counter: Counter[str] = Counter()
+
+    for entry in log:
+        if uri := entry[EntryIndex.URI]:
+            uris_counter[uri] += 1
+    most_common_res: list[tuple[str, int]] = uris_counter.most_common(min(n, len(log)))
+
+    return [t[0] for t in most_common_res]

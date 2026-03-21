@@ -2,7 +2,7 @@ import sys
 
 from app.converters import read_log
 from app.my_types import Entry
-from app.stats import get_top_ips
+from app.stats import get_top_uris
 from app.utils import format_stream_utf8
 
 # TODO: change error messages to englishgi# TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
@@ -40,8 +40,13 @@ def main() -> None:
         # print_log(server_errors)
         # print_log(get_entries_by_extension(log, "php"))  # poprawne
         # print_log(get_entries_by_extension(log, ""))  # niepoprawne
-        print(*get_top_ips(log), sep="\n")
+        # print(*get_top_ips(log), sep="\n")
         # print(count_status_classes(log), sep="\n")
+        # print(*get_unique_methods(log), sep="\n")
+        # print(get_entries_in_time_range(log, datetime(1980, 3, 21, 19, 54), datetime(2026, 3, 21, 19, 54)), sep="\n")
+        # print(count_by_method(log))
+        print(get_top_uris(log))
+
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
     except EOFError:
