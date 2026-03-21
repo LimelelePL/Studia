@@ -73,11 +73,6 @@ def get_unique_methods(log: list[Entry]) -> list[str]:
     return list(unique_method)
 
 
-"""9. Zakres czasu 
-Napisz  funkcję  get_entries_in_time_range(log,  start,  end),  która  zwraca  wpisy  w  zadanym 
-zakresie czasu: start ≤ ts < end. """
-
-
 def is_in_date_range(start: datetime.datetime, end: datetime.datetime, target: datetime.datetime) -> bool:
     return start <= target < end
 
