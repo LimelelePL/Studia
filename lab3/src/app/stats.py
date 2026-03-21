@@ -34,3 +34,17 @@ def count_status_classes(log: list[Entry]) -> Counter[str]:
                 case _:
                     pass
     return stats_code_counter
+
+
+""" 8. Unikalne metody HTTP 
+Napisz  funkcję  get_unique_methods(log),  która  zwraca  listę  wszystkich  metod  HTTP,  które 
+wystapiło w logu, bez powtórzeń"""
+
+
+def get_unique_methods(log: list[Entry]) -> list[str]:
+    unique_method: set[str] = set()
+    for l in log:
+        method = l[EntryIndex.METHOD]
+        if method is not None:
+            unique_method.add(method)
+    return list(unique_method)

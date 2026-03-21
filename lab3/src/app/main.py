@@ -1,8 +1,6 @@
 import sys
-from http import HTTPStatus
 
 from app.converters import read_log
-from app.filters import get_entries_by_code
 from app.my_types import Entry
 from app.stats import get_top_ips
 from app.utils import format_stream_utf8
@@ -34,7 +32,7 @@ def main() -> None:
         format_stream_utf8()
         log = read_log()
         # print_log(sort_log(log, EntryIndex.STATUS_CODE))
-        print_log(get_entries_by_code(log, HTTPStatus(400)))
+        # print_log(get_entries_by_code(log, HTTPStatus(400)))
         # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
         # print_log(get_entries_by_ip(log, IPv4Address("999.999.999.999")))
         # client_errors, server_errors = get_failed_reads(log, False)
