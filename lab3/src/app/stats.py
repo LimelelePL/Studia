@@ -34,3 +34,14 @@ def count_status_classes(log: list[Entry]) -> Counter[str]:
                 case _:
                     pass
     return stats_code_counter
+
+
+# konwersja bo w poleceniu jest ze ma byc slownik? czy on uznaje dict za slownik????????????//?/ nigga???
+def count_by_method(log: list[Entry]) -> dict[str, int]:
+    method_count_map: Counter[str] = Counter()
+
+    for entry in log:
+        if method := entry[EntryIndex.METHOD]:
+            method_count_map[method] += 1
+
+    return dict(method_count_map)
