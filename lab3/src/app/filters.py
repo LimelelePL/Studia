@@ -1,3 +1,4 @@
+import datetime
 from http import HTTPStatus
 from ipaddress import IPv4Address
 from pathlib import Path
@@ -61,3 +62,30 @@ def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
                 matched.append(entry)
 
     return matched
+
+
+def get_unique_methods(log: list[Entry]) -> list[str]:
+    unique_method: set[str] = set()
+    for entry in log:
+        method = entry[EntryIndex.METHOD]
+        if method is not None:
+            unique_method.add(method)
+    return list(unique_method)
+
+
+"""9. Zakres czasu 
+Napisz  funkcję  get_entries_in_time_range(log,  start,  end),  która  zwraca  wpisy  w  zadanym 
+zakresie czasu: start ≤ ts < end. """
+
+
+def is_in_date_range(start: datetime.datetime, end: datetime.datetime, target: datetime.datetime) -> bool:
+    return start <= target < end
+
+
+def get_entries_in_time_range(log: list[Entry], start: datetime.datetime, end: datetime.datetime) -> list[Entry]:
+    result: list[Entry] = []
+    for entry in log:
+        ts = entry[EntryIndex.TS]
+        if ts is not None and is_in_date_range(start, end, ts):
+            result.append(entry)
+    return result
