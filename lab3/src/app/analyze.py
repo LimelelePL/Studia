@@ -2,10 +2,15 @@ from collections import Counter
 from datetime import datetime
 from http import HTTPStatus
 from ipaddress import IPv4Address
+from pathlib import Path
+from typing import Any
+from urllib.parse import urlparse
 
 from app.constants import EntryIndex
 from app.converters import log_to_dict
 from app.my_types import Entry, EntryDict
+from app.sorts import sort_log
+from app.stats import count_status_classes, get_top_ips, get_top_uris
 
 
 def get_paths(session: list[EntryDict]) -> list[str]:
@@ -107,3 +112,59 @@ def detect_sus(
     suspects.update(interval_ratios.keys())
 
     return list(suspects)
+
+
+def get_extension_stats(log: list[Entry]) -> dict[str, int]:
+    extension_counter: Counter[str] = Counter()
+
+    for entry in log:
+        if uri := entry[EntryIndex.URI]:
+            path = urlparse(uri).path
+            file_ext = Path(path).suffix.lstrip(".").lower()
+            if file_ext:
+                extension_counter[file_ext] += 1
+
+    return dict(extension_counter)
+
+
+def calc_avg_interval(log: list[Entry]) -> float:
+    sorted_by_ts = sort_log(log, EntryIndex.TS)
+
+    if not sorted_by_ts:
+        return 0.0
+
+    sum_of_times = 0
+    no_of_times = 0
+    for i in range(1, len(sorted_by_ts)):
+        j = i - 1
+
+        curr = (sorted_by_ts[i])[EntryIndex.TS]
+        prev = (sorted_by_ts[j])[EntryIndex.TS]
+
+        if not curr or not prev:
+            continue
+
+        diff = abs((prev - curr).total_seconds())
+        sum_of_times += diff
+        no_of_times += 1
+
+    return 1000 * (sum_of_times / no_of_times) if no_of_times != 0 else 0.0
+
+
+def analyze_log(log: list[Entry]) -> dict[str, Any]:
+    top_ips: list[tuple[IPv4Address, int]] = get_top_ips(log, 3)
+    top_uris: list[str] = get_top_uris(log, 3)
+    # method_distribution: dict[str, int] = count_by_method(log)
+    status_classes_count = count_status_classes(log)
+    error_count: int = status_classes_count["4xx"] + status_classes_count["5xx"]
+    no_of_uid: int = len(log_to_dict(log))
+    avg_interval_ms = calc_avg_interval(log)
+
+    return {
+        "top_ips": top_ips,
+        "top_uris": top_uris,
+        "error_count": error_count,
+        "no_of_uid": no_of_uid,
+        "avg_interval_ms": avg_interval_ms,
+        # "method_distribution": method_distribution,
+    }
