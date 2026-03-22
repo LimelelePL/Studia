@@ -10,6 +10,7 @@ from collections import Counter
 from ipaddress import IPv4Address
 
 from app.my_types import EntryDict
+from app.utils import get_num_of_requests
 
 
 def get_session_hosts(session: list[EntryDict]) -> list[IPv4Address]:
@@ -18,10 +19,6 @@ def get_session_hosts(session: list[EntryDict]) -> list[IPv4Address]:
         if host := entry["host"]:
             unique_hosts.add(host)
     return list(unique_hosts)
-
-
-def get_num_of_requests(session: list[EntryDict]) -> int:
-    return len(session)
 
 
 def get_first_request(session: list[EntryDict]) -> datetime.datetime | None:
