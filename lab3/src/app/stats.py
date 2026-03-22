@@ -3,7 +3,8 @@ from ipaddress import IPv4Address
 from typing import cast
 
 from app.constants import ENTRY_INDEXES_WITH_IP, EntryIndex
-from app.my_types import Entry
+from app.my_types import Entry, EntryDict
+from app.printing import get_num_of_requests
 
 
 def get_top_ips(log: list[Entry], n: int = 10) -> list[tuple[IPv4Address, int]]:
@@ -57,3 +58,14 @@ def get_top_uris(log: list[Entry], n: int = 10) -> list[str]:
     most_common_res: list[tuple[str, int]] = uris_counter.most_common(min(n, len(log)))
 
     return [t[0] for t in most_common_res]
+
+
+def session_with_most_request(log_dict: dict[str, list[EntryDict]]) -> str | None:
+    max_request = 0
+    best_uid: str | None = None
+    for uid, session in log_dict.items():
+        req = get_num_of_requests(session)
+        if req > max_request:
+            max_request = req
+            best_uid = uid
+    return best_uid
