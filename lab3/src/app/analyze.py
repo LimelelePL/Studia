@@ -75,6 +75,7 @@ def ip_404_ratio(log: list[Entry], treshold_errors: float) -> dict[IPv4Address, 
     return result
 
 
+# Oblicza dla każdego IP stosunek roznicy zapytan do wszystkich par zapytań tego adresu.
 def count_short_intervals(log: list[Entry], threshold_miliseconds: float) -> dict[IPv4Address, float]:
     last_seen: dict[IPv4Address, datetime] = {}
     short_counts: Counter[IPv4Address] = Counter()
@@ -133,7 +134,7 @@ def calc_avg_interval(log: list[Entry]) -> float:
     if not sorted_by_ts:
         return 0.0
 
-    sum_of_times = 0
+    sum_of_times = 0.0
     no_of_times = 0
     for i in range(1, len(sorted_by_ts)):
         j = i - 1
@@ -154,7 +155,7 @@ def calc_avg_interval(log: list[Entry]) -> float:
 def analyze_log(log: list[Entry]) -> dict[str, Any]:
     top_ips: list[tuple[IPv4Address, int]] = get_top_ips(log, 3)
     top_uris: list[str] = get_top_uris(log, 3)
-    # method_distribution: dict[str, int] = count_by_method(log)
+    method_distribution: dict[str, int] = count_by_method(log)
     status_classes_count = count_status_classes(log)
     error_count: int = status_classes_count["4xx"] + status_classes_count["5xx"]
     no_of_uid: int = len(log_to_dict(log))
@@ -166,5 +167,5 @@ def analyze_log(log: list[Entry]) -> dict[str, Any]:
         "error_count": error_count,
         "no_of_uid": no_of_uid,
         "avg_interval_ms": avg_interval_ms,
-        # "method_distribution": method_distribution,
+        "method_distribution": method_distribution,
     }
