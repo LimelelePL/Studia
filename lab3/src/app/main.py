@@ -1,6 +1,6 @@
 import sys
 
-from app.analyze import detect_sus
+from app.analyze import analyze_log
 from app.converters import log_to_dict, read_log
 from app.my_types import Entry
 from app.utils import format_stream_utf8
@@ -52,7 +52,9 @@ def main() -> None:
         # print(session_with_most_request(log_dict))
         # print(get_session_paths(log))
 
-        print(detect_sus(log, 0.02, 0.15, 100))
+        # print(detect_sus(log, 0.02, 0.15, 50))
+        # print(get_extension_stats(log))
+        print(analyze_log(log))
 
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
