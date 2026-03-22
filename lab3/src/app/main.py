@@ -1,8 +1,9 @@
 import sys
 
-from app.converters import read_log
+from printing import print_dict_entry_dates
+
+from app.converters import log_to_dict, read_log
 from app.my_types import Entry
-from app.stats import get_top_uris
 from app.utils import format_stream_utf8
 
 # TODO: change error messages to englishgi# TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
@@ -31,6 +32,7 @@ def main() -> None:
     try:
         format_stream_utf8()
         log = read_log()
+        log_dict = log_to_dict(log)
         # print_log(sort_log(log, EntryIndex.STATUS_CODE))
         # print_log(get_entries_by_code(log, HTTPStatus(400)))
         # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
@@ -45,7 +47,8 @@ def main() -> None:
         # print(*get_unique_methods(log), sep="\n")
         # print(get_entries_in_time_range(log, datetime(1980, 3, 21, 19, 54), datetime(2026, 3, 21, 19, 54)), sep="\n")
         # print(count_by_method(log))
-        print(get_top_uris(log))
+        # print(get_top_uris(log))
+        print_dict_entry_dates(log_dict)
 
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
