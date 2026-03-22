@@ -78,11 +78,12 @@ def count_short_intervals(log: list[Entry], threshold_miliseconds: float) -> dic
     for entry in log:
         if client_ip := entry[EntryIndex.ORIG_H]:
             if ts := entry[EntryIndex.TS]:
-                if prev_ts := last_seen[client_ip]:
-                    total_pairs[client_ip] += 1
+                if client_ip in last_seen:
+                    if prev_ts := last_seen[client_ip]:
+                        total_pairs[client_ip] += 1
 
-                    if (ts - prev_ts).total_seconds() * 1000 < threshold_miliseconds:
-                        short_counts[client_ip] += 1
+                        if (ts - prev_ts).total_seconds() * 1000 < threshold_miliseconds:
+                            short_counts[client_ip] += 1
                 last_seen[client_ip] = ts
 
     result: dict[IPv4Address, float] = {}

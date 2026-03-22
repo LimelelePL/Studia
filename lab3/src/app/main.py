@@ -1,8 +1,8 @@
 import sys
 
+from app.analyze import detect_sus
 from app.converters import log_to_dict, read_log
 from app.my_types import Entry
-from app.stats import session_with_most_request
 from app.utils import format_stream_utf8
 
 # TODO: change error messages to englishgi# TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
@@ -49,7 +49,10 @@ def main() -> None:
         # print(count_by_method(log))
         # print(get_top_uris(log))
         # print_dict_entry_dates(log_dict)
-        print(session_with_most_request(log_dict))
+        # print(session_with_most_request(log_dict))
+        # print(get_session_paths(log))
+
+        print(detect_sus(log, 0.02, 0.15, 100))
 
     except KeyboardInterrupt:
         sys.exit(0)  # użytkownik przerwał Ctrl+C
