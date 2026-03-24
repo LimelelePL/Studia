@@ -34,6 +34,8 @@ class EntryIndex:
     STATUS_CODE: Final = 9
 
 
+ENTRY_NAMES_WITH_IP: Final = ("host", "orig_h", "resp_h")
+
 ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex.HOST)
 
 RAW_LOG_FIELD_INDEXES: Final = tuple(RawLogIndex)

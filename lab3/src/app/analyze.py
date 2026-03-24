@@ -10,7 +10,7 @@ from app.constants import EntryIndex
 from app.converters import log_to_dict
 from app.my_types import Entry, EntryDict
 from app.sorts import sort_log
-from app.stats import count_status_classes, get_top_ips, get_top_uris
+from app.stats import count_by_method, count_status_classes, get_top_ips, get_top_uris
 
 
 def get_paths(session: list[EntryDict]) -> list[str]:
