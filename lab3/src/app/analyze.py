@@ -129,7 +129,7 @@ def get_extension_stats(log: list[Entry]) -> dict[str, int]:
 
 
 def calc_avg_interval(log: list[Entry]) -> float:
-    sorted_by_ts = sort_log(log, EntryIndex.TS)
+    sorted_by_ts: list[Entry] = sort_log(log, EntryIndex.TS)
 
     if not sorted_by_ts:
         return 0.0

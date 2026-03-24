@@ -10,11 +10,21 @@ from app.my_types import Entry
 
 
 def get_entries_by_code(log: list[Entry], code: HTTPStatus) -> list[Entry]:
-    return [x for x in log if x[EntryIndex.STATUS_CODE] == code]
+    matched: list[Entry] = []
+    for entry in log:
+        if entry[EntryIndex.STATUS_CODE] == code:
+            matched.append(entry)
+    return matched
 
 
 def get_entries_by_ip(log: list[Entry], ip: IPv4Address) -> list[Entry]:
-    return [x for x in log if any(x[i] == ip for i in ENTRY_INDEXES_WITH_IP)]
+    matched: list[Entry] = []
+    for entry in log:
+        for i in ENTRY_INDEXES_WITH_IP:
+            if entry[i] == ip:
+                matched.append(entry)
+                break
+    return matched
 
 
 @overload

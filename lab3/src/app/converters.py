@@ -63,6 +63,7 @@ def _normalize_raw_entry(raw_fields: list[str]) -> Entry:
 
 def _extract_raw_entry_fields(raw_log_line: str) -> list[str]:
     fields = raw_log_line.split("\t")
+    # wybieramy tylko interesujące nas pola z tekstu
     return [fields[i] for i in RAW_LOG_FIELD_INDEXES]
 
 
@@ -79,6 +80,7 @@ def read_log() -> list[Entry]:
     return log
 
 
+# klucz - uid, wartość lista slownikow (EntryDictKey - value)
 def log_to_dict(log: list[Entry]) -> dict[str, list[EntryDict]]:
     result: dict[str, list[EntryDict]] = {}
     for entry in log:
