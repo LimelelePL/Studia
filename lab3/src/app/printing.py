@@ -9,6 +9,7 @@ import datetime
 from collections import Counter
 from ipaddress import IPv4Address
 
+from app.constants import ENTRY_NAMES_WITH_IP
 from app.my_types import EntryDict
 from app.utils import get_num_of_requests
 
@@ -16,8 +17,9 @@ from app.utils import get_num_of_requests
 def get_session_hosts(session: list[EntryDict]) -> list[IPv4Address]:
     unique_hosts: set[IPv4Address] = set()
     for entry in session:
-        if host := entry["host"]:
-            unique_hosts.add(host)
+        for ip_name in ENTRY_NAMES_WITH_IP:
+            if host := entry[ip_name]:
+                unique_hosts.add(host)
     return list(unique_hosts)
 
 

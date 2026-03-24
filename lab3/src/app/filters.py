@@ -67,8 +67,7 @@ def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
 def get_unique_methods(log: list[Entry]) -> list[str]:
     unique_method: set[str] = set()
     for entry in log:
-        method = entry[EntryIndex.METHOD]
-        if method is not None:
+        if method := entry[EntryIndex.METHOD]:
             unique_method.add(method)
     return list(unique_method)
 
