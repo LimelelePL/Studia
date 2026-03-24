@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from app.constants import EntryIndex
+from app.constants import EntryDictKey, EntryIndex
 from app.converters import log_to_dict
 from app.my_types import Entry, EntryDict
 from app.sorts import sort_log
@@ -16,7 +16,7 @@ from app.stats import count_by_method, count_status_classes, get_top_ips, get_to
 def get_paths(session: list[EntryDict]) -> list[str]:
     paths: list[str] = []
     for entry in session:
-        if path := entry["uri"]:
+        if path := entry[EntryDictKey.URI]:
             paths.append(path)
     return paths
 
@@ -32,7 +32,7 @@ def get_session_paths(logs: list[Entry]) -> dict[str, list[str]]:
     return result
 
 
-# keku obczaj czy tak moze byc
+# oblicza stosunek zapytan z danego adresu ip do wszystkich zapytan
 def reqest_ratio_ipAddress(log: list[Entry], treshold: float) -> dict[IPv4Address, float]:
     request_count: Counter[IPv4Address] = Counter()
     for entry in log:

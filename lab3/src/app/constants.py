@@ -34,7 +34,20 @@ class EntryIndex:
     STATUS_CODE: Final = 9
 
 
-ENTRY_NAMES_WITH_IP: Final = ("host", "orig_h", "resp_h")
+class EntryDictKey:
+    TS: Final = "ts"
+    UID: Final = "uid"
+    ORIG_H: Final = "orig_h"
+    ORIG_P: Final = "orig_p"
+    RESP_H: Final = "resp_h"
+    RESP_P: Final = "resp_p"
+    METHOD: Final = "method"
+    HOST: Final = "host"
+    URI: Final = "uri"
+    STATUS_CODE: Final = "status_code"
+
+
+ENTRY_NAMES_WITH_IP: Final = (EntryDictKey.HOST, EntryDictKey.ORIG_H, EntryDictKey.RESP_H)
 
 ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex.HOST)
 

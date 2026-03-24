@@ -9,7 +9,7 @@ import datetime
 from collections import Counter
 from ipaddress import IPv4Address
 
-from app.constants import ENTRY_NAMES_WITH_IP
+from app.constants import ENTRY_NAMES_WITH_IP, EntryDictKey
 from app.my_types import EntryDict
 from app.utils import get_num_of_requests
 
@@ -26,7 +26,7 @@ def get_session_hosts(session: list[EntryDict]) -> list[IPv4Address]:
 def get_first_request(session: list[EntryDict]) -> datetime.datetime | None:
     first: datetime.datetime | None = None
     for entry in session:
-        if ts := entry["ts"]:
+        if ts := entry[EntryDictKey.TS]:
             if first is None or ts < first:
                 first = ts
     return first
@@ -35,7 +35,7 @@ def get_first_request(session: list[EntryDict]) -> datetime.datetime | None:
 def get_last_request(session: list[EntryDict]) -> datetime.datetime | None:
     last: datetime.datetime | None = None
     for entry in session:
-        if ts := entry["ts"]:
+        if ts := entry[EntryDictKey.TS]:
             if last is None or ts > last:
                 last = ts
     return last
@@ -45,7 +45,7 @@ def get_propotion_of_methods(session: list[EntryDict]) -> dict[str, float]:
     count_method_freq: Counter[str] = Counter()
 
     for entry in session:
-        if method := entry["method"]:
+        if method := entry[EntryDictKey.METHOD]:
             count_method_freq[method] += 1
 
     total = sum(count_method_freq.values())
@@ -64,7 +64,7 @@ def get_proportion_of_2xx_codes(session: list[EntryDict]) -> float:
     num_of_2xx_codes: int = 0
 
     for entry in session:
-        if code := entry["status_code"]:
+        if code := entry[EntryDictKey.STATUS_CODE]:
             num_of_codes += 1
             if code.value // 100 == 2:
                 num_of_2xx_codes += 1
