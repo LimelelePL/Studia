@@ -1,10 +1,3 @@
-"""
-Napisz funkcję print_dict_entry_dates(log_dict), która dla każdej sesji:
--  wypisuje:  adresy IP / hosty, liczbę żądań, datę pierwszego i ostatniego żądania.
--  procentowy udział metod HTTP
--  stosunek liczby kodów 2xx do wszystkich
-"""
-
 import datetime
 from collections import Counter
 from ipaddress import IPv4Address

@@ -9,7 +9,7 @@ def main() -> None:
     try:
         format_stream_utf8()
         log = read_log()
-        # log_dict = log_to_dict(log)
+        log_dict = log_to_dict(log)
         # print_log_field(sort_log(log, EntryIndex.STATUS_CODE), [EntryIndex.STATUS_CODE])
         # print_log_field(get_entries_by_code(log, HTTPStatus(400)), [EntryIndex.STATUS_CODE])
         # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
