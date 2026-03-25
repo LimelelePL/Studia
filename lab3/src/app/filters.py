@@ -5,14 +5,14 @@ from pathlib import Path
 from typing import Literal, overload
 from urllib.parse import urlparse
 
-from app.constants import ENTRY_INDEXES_WITH_IP, EntryIndex
+from app.constants import ENTRY_INDEXES_WITH_IP
 from app.my_types import Entry
 
 
 def get_entries_by_code(log: list[Entry], code: HTTPStatus) -> list[Entry]:
     matched: list[Entry] = []
     for entry in log:
-        if entry[EntryIndex.STATUS_CODE] == code:
+        if entry.status_code == code:
             matched.append(entry)
     return matched
 
@@ -39,7 +39,7 @@ def get_failed_reads(log: list[Entry], merge: bool = False) -> list[Entry] | tup
     server_error_entries: list[Entry] = []
 
     for entry in log:
-        if status := entry[EntryIndex.STATUS_CODE]:
+        if status := entry.status_code:
             if status.is_client_error:
                 client_error_entries.append(entry)
             elif status.is_server_error:
@@ -63,7 +63,7 @@ def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
         raise ValueError("String have to be extension with '.'(dot) at beginning")
     target_ext = ext.lower()
     for entry in log:
-        if uri := entry[EntryIndex.URI]:
+        if uri := entry.uri:
             path = urlparse(uri).path
 
             file_ext = Path(path).suffix
@@ -77,7 +77,7 @@ def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
 def get_unique_methods(log: list[Entry]) -> list[str]:
     unique_methods: set[str] = set()
     for entry in log:
-        if method := entry[EntryIndex.METHOD]:
+        if method := entry.method:
             unique_methods.add(method)
     return list(unique_methods)
 
@@ -89,7 +89,7 @@ def is_in_date_range(start: datetime.datetime, end: datetime.datetime, target: d
 def get_entries_in_time_range(log: list[Entry], start: datetime.datetime, end: datetime.datetime) -> list[Entry]:
     entries_in_time_range: list[Entry] = []
     for entry in log:
-        timestamp = entry[EntryIndex.TS]
+        timestamp = entry.ts
         if timestamp and is_in_date_range(start, end, timestamp):
             entries_in_time_range.append(entry)
     return entries_in_time_range

@@ -1,6 +1,10 @@
+from http import HTTPStatus
 import sys
 
-from app.converters import log_to_dict, read_log
+from app.constants import EntryIndex
+from app.converters import read_log
+from app.printing import print_log_field
+from app.sorts import sort_log
 from app.utils import format_stream_utf8
 
 
@@ -8,9 +12,9 @@ def main() -> None:
     try:
         format_stream_utf8()
         log = read_log()
-        log_dict = log_to_dict(log)
-        # print_log(sort_log(log, EntryIndex.STATUS_CODE))
-        # print_log(get_entries_by_code(log, HTTPStatus(400)))
+        # log_dict = log_to_dict(log)
+        print_log_field(sort_log(log, EntryIndex.STATUS_CODE), [EntryIndex.STATUS_CODE])
+        # print_log_field(get_entries_by_code(log, HTTPStatus(400)), [EntryIndex.STATUS_CODE])
         # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
         # print_log(get_entries_by_ip(log, IPv4Address("999.999.999.999")))
         # client_errors, server_errors = get_failed_reads(log, False)
@@ -33,7 +37,7 @@ def main() -> None:
         # print(get_extension_stats(log))
         # print(analyze_log(log))
 
-        print(log_dict, sep="\n")
+        # print(log_dict, sep="\n")
 
     except KeyboardInterrupt:
         sys.exit(0)
@@ -41,6 +45,9 @@ def main() -> None:
         sys.exit(0)
     except BrokenPipeError:
         sys.exit(0)
+    except OSError as e:
+        print(f"Błąd odczytu z wejścia standardwoego: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

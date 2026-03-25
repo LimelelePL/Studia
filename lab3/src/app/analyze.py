@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from app.constants import EntryDictKey, EntryIndex
+from app.constants import EntryDictKey, EntryIndex  # EntryIndex używany w sort_log
 from app.converters import log_to_dict
 from app.my_types import Entry, EntryDict
 from app.sorts import sort_log
@@ -33,7 +33,7 @@ def get_session_paths(logs: list[Entry]) -> dict[str, list[str]]:
 def request_ratio_ip(log: list[Entry], treshold: float) -> dict[IPv4Address, float]:
     request_count: Counter[IPv4Address] = Counter()
     for entry in log:
-        if client_ip := entry[EntryIndex.ORIG_H]:
+        if client_ip := entry.orig_h:
             request_count[client_ip] += 1
 
     total_requests = sum(request_count.values())
@@ -48,27 +48,22 @@ def request_ratio_ip(log: list[Entry], treshold: float) -> dict[IPv4Address, flo
     return result
 
 
-def is_error_404(status: HTTPStatus | None) -> bool:
-    return status == HTTPStatus.NOT_FOUND
-
-
 # liczy stosunek bledow 404 na liczbe zapytan z danego adresu ip
 def ip_404_ratio(log: list[Entry], treshold_errors: float) -> dict[IPv4Address, float]:
     totals: Counter[IPv4Address] = Counter()
     not_found: Counter[IPv4Address] = Counter()
 
     for entry in log:
-        if ip := entry[EntryIndex.ORIG_H]:
+        if ip := entry.orig_h:
             totals[ip] += 1
-            if entry[EntryIndex.STATUS_CODE] and entry[EntryIndex.STATUS_CODE].status == HTTPStatus.NOT_FOUND:
+            if entry.status_code == HTTPStatus.NOT_FOUND:
                 not_found[ip] += 1
 
     result: dict[IPv4Address, float] = {}
     for ip in totals:
-        if totals[ip]:
-            ratio = not_found[ip] / totals[ip]
-            if ratio > treshold_errors:
-                result[ip] = ratio
+        ratio = not_found[ip] / totals[ip]
+        if ratio > treshold_errors:
+            result[ip] = ratio
     return result
 
 
@@ -79,8 +74,8 @@ def count_short_intervals(log: list[Entry], threshold_miliseconds: float) -> dic
     total_pairs: Counter[IPv4Address] = Counter()
 
     for entry in log:
-        if client_ip := entry[EntryIndex.ORIG_H]:
-            if ts := entry[EntryIndex.TS]:
+        if client_ip := entry.orig_h:
+            if ts := entry.ts:
                 if client_ip in last_seen:
                     if prev_ts := last_seen[client_ip]:
                         total_pairs[client_ip] += 1
@@ -115,7 +110,7 @@ def get_extension_stats(log: list[Entry]) -> dict[str, int]:
     extension_counter: Counter[str] = Counter()
 
     for entry in log:
-        if uri := entry[EntryIndex.URI]:
+        if uri := entry.uri:
             path = urlparse(uri).path
             file_ext = Path(path).suffix.lstrip(".").lower()
             if file_ext:
@@ -135,8 +130,8 @@ def calc_avg_interval(log: list[Entry]) -> float:
     for i in range(1, len(sorted_by_ts)):
         j = i - 1
 
-        curr = (sorted_by_ts[i])[EntryIndex.TS]
-        prev = (sorted_by_ts[j])[EntryIndex.TS]
+        curr = sorted_by_ts[i].ts
+        prev = sorted_by_ts[j].ts
 
         if not curr or not prev:
             continue

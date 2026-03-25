@@ -1,5 +1,5 @@
 from enum import IntEnum
-from typing import Final, cast
+from typing import Final
 
 from app.my_types import Entry
 
@@ -21,7 +21,6 @@ class RawLogIndex(IntEnum):
     STATUS_CODE = 14
 
 
-# TODO: ewentuwalnie pozmieniac typy
 class EntryIndex:
     TS: Final = 0
     UID: Final = 1
@@ -54,4 +53,4 @@ ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex
 
 RAW_LOG_FIELD_INDEXES: Final = tuple(RawLogIndex)
 
-EMPTY_ENTRY = cast(Entry, (None,) * len(RawLogIndex))
+EMPTY_ENTRY = Entry(None, None, None, None, None, None, None, None, None, None)

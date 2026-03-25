@@ -4,7 +4,7 @@ from http import HTTPStatus
 from ipaddress import IPv4Address
 from typing import Any
 
-from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES, EntryIndex
+from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES
 from app.my_types import Entry, EntryDict
 
 # W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
@@ -13,7 +13,7 @@ from app.my_types import Entry, EntryDict
 def _to_datetime(value: Any) -> datetime.datetime | None:
     try:
         return datetime.datetime.fromtimestamp(float(value))
-    except (ValueError, OSError):
+    except (ValueError, OSError, TypeError):
         return None
 
 
@@ -41,17 +41,17 @@ def _to_ip(value: Any) -> IPv4Address | None:
 def _normalize_raw_entry(raw_fields: list[str]) -> Entry:
     normalized_entry = [None if x == EMPTY_FIELD else x for x in raw_fields]
     ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized_entry  # tu moze być ValueError
-    return (
-        _to_datetime(ts),
-        uid,
-        _to_ip(orig_h),
-        _to_int(orig_p),
-        _to_ip(resp_h),
-        _to_int(resp_p),
-        method,
-        _to_ip(host),
-        uri,
-        _to_http_status(status_code),
+    return Entry(
+        ts=_to_datetime(ts),
+        uid=uid,
+        orig_h=_to_ip(orig_h),
+        orig_p=_to_int(orig_p),
+        resp_h=_to_ip(resp_h),
+        resp_p=_to_int(resp_p),
+        method=method,
+        host=_to_ip(host),
+        uri=uri,
+        status_code=_to_http_status(status_code),
     )
 
 
@@ -68,8 +68,6 @@ def read_log() -> list[Entry]:
             try:
                 log.append(_normalize_raw_entry(_extract_raw_entry_fields(raw_log_line)))
             except (IndexError, ValueError):
-                # Obsługa błędu strukturalnego linii — zła liczba kolumn lub błąd rozpakowania,
-                # cała linia jest uszkodzona i zastępowana pustą krotką
                 log.append(EMPTY_ENTRY)
     return log
 
@@ -78,21 +76,21 @@ def read_log() -> list[Entry]:
 def log_to_dict(log: list[Entry]) -> dict[str, list[EntryDict]]:
     result: dict[str, list[EntryDict]] = {}
     for entry in log:
-        uid = entry[EntryIndex.UID] or "unknown"
+        uid = entry.uid or "unknown"
         result.setdefault(uid, []).append(entry_to_dict(entry))
     return result
 
 
 def entry_to_dict(entry: Entry) -> EntryDict:
     return {
-        "ts": entry[EntryIndex.TS],
-        "uid": entry[EntryIndex.UID],
-        "orig_h": entry[EntryIndex.ORIG_H],
-        "orig_p": entry[EntryIndex.ORIG_P],
-        "resp_h": entry[EntryIndex.RESP_H],
-        "resp_p": entry[EntryIndex.RESP_P],
-        "method": entry[EntryIndex.METHOD],
-        "host": entry[EntryIndex.HOST],
-        "uri": entry[EntryIndex.URI],
-        "status_code": entry[EntryIndex.STATUS_CODE],
+        "ts": entry.ts,
+        "uid": entry.uid,
+        "orig_h": entry.orig_h,
+        "orig_p": entry.orig_p,
+        "resp_h": entry.resp_h,
+        "resp_p": entry.resp_p,
+        "method": entry.method,
+        "host": entry.host,
+        "uri": entry.uri,
+        "status_code": entry.status_code,
     }
