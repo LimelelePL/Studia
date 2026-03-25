@@ -4,7 +4,6 @@ from typing import cast
 
 from app.constants import ENTRY_INDEXES_WITH_IP
 from app.my_types import Entry, EntryDict
-from app.printing import get_num_of_requests
 
 
 def get_top_ips(log: list[Entry], n: int = 10) -> list[tuple[IPv4Address, int]]:
