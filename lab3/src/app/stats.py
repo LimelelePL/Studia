@@ -19,32 +19,32 @@ def get_top_ips(log: list[Entry], n: int = 10) -> list[tuple[IPv4Address, int]]:
     return ip_counts.most_common(min(n, len(log)))
 
 
-def count_status_classes(log: list[Entry]) -> Counter[str]:
-    stats_code_counter: Counter[str] = Counter()
+def count_status_classes(log: list[Entry]) -> dict[str, int]:
+    status_code_counter: Counter[str] = Counter()
     for entry in log:
         if http_status := entry[EntryIndex.STATUS_CODE]:
             match http_status.value // 100:
                 case 2:
-                    stats_code_counter["2xx"] += 1
+                    status_code_counter["2xx"] += 1
                 case 3:
-                    stats_code_counter["3xx"] += 1
+                    status_code_counter["3xx"] += 1
                 case 4:
-                    stats_code_counter["4xx"] += 1
+                    status_code_counter["4xx"] += 1
                 case 5:
-                    stats_code_counter["5xx"] += 1
+                    status_code_counter["5xx"] += 1
                 case _:
                     pass
-    return stats_code_counter
+    return dict(status_code_counter)
 
 
 def count_by_method(log: list[Entry]) -> dict[str, int]:
-    method_count_map: Counter[str] = Counter()
+    method_counter: Counter[str] = Counter()
 
     for entry in log:
         if method := entry[EntryIndex.METHOD]:
-            method_count_map[method] += 1
+            method_counter[method] += 1
 
-    return dict(method_count_map)
+    return dict(method_counter)
 
 
 def get_top_uris(log: list[Entry], n: int = 10) -> list[str]:
@@ -55,17 +55,17 @@ def get_top_uris(log: list[Entry], n: int = 10) -> list[str]:
     for entry in log:
         if uri := entry[EntryIndex.URI]:
             uris_counter[uri] += 1
-    most_common_res: list[tuple[str, int]] = uris_counter.most_common(min(n, len(log)))
+    most_common_uris = uris_counter.most_common(min(n, len(log)))
 
-    return [t[0] for t in most_common_res]
+    return [uri for uri, _ in most_common_uris]
 
 
 def session_with_most_request(log_dict: dict[str, list[EntryDict]]) -> str | None:
-    max_request = 0
-    best_uid: str | None = None
+    max_num_of_requests = 0
+    best_uid = None
     for uid, session in log_dict.items():
-        req = get_num_of_requests(session)
-        if req > max_request:
-            max_request = req
+        num_of_requests = len(session)
+        if num_of_requests > max_num_of_requests:
+            max_num_of_requests = num_of_requests
             best_uid = uid
     return best_uid

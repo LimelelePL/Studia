@@ -1,29 +1,7 @@
 import sys
 
 from app.converters import log_to_dict, read_log
-from app.my_types import Entry
 from app.utils import format_stream_utf8
-
-# TODO: change error messages to englishgi# TODO: napisać maila czy można uzywać HttpStatus i Ipv4Address z biblioteki standardowej
-# TODO: Dodanie oblusgi bledow w przypadku podania niepoprawnego typu do funkcji
-# TODO: na liscie nie ma wszystkich pol z ip w zadaniu 5
-# Log- wszystkie dane, Entry - pojedynczy wpis, przedrostek RAW do niezformatowanych
-
-
-def print_damaged_entries(log: list[Entry]) -> None:
-    for entry in log:
-        if entry.count(None):
-            print(entry)
-
-
-def print_log(log: list[Entry]) -> None:
-    for entry in log:
-        print(entry)
-
-
-def print_log_field(log: list[Entry], ids: list[int]) -> None:
-    for entry in log:
-        print(tuple(entry[i] for i in ids))
 
 
 def main() -> None:
@@ -58,9 +36,9 @@ def main() -> None:
         print(log_dict, sep="\n")
 
     except KeyboardInterrupt:
-        sys.exit(0)  # użytkownik przerwał Ctrl+C
+        sys.exit(0)
     except EOFError:
-        sys.exit(0)  # stdin został zamknięty (np. koniec pliku)
+        sys.exit(0)
     except BrokenPipeError:
         sys.exit(0)
 

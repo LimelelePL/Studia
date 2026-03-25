@@ -8,12 +8,9 @@ from app.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES, Entry
 from app.my_types import Entry, EntryDict
 
 # W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
-# reszta ewentualnie jest do dodania potem, bo jeszcze calej listy nie przeczytalem
-# dobrze tez by bylo uzywac named tuple zamiast zwyklej ale trzeba napisac maila do tego cwela czy mozna
 
 
 def _to_datetime(value: Any) -> datetime.datetime | None:
-    # Obsługa błędu pojedynczego pola — uszkodzony timestamp zwraca None, reszta linii pozostaje niezmieniona
     try:
         return datetime.datetime.fromtimestamp(float(value))
     except (ValueError, OSError):
@@ -21,7 +18,6 @@ def _to_datetime(value: Any) -> datetime.datetime | None:
 
 
 def _to_int(value: Any) -> int | None:
-    # Obsługa błędu pojedynczego pola — uszkodzona liczba zwraca None, reszta linii pozostaje niezmieniona
     try:
         return int(value)
     except (ValueError, TypeError):
@@ -29,7 +25,6 @@ def _to_int(value: Any) -> int | None:
 
 
 def _to_http_status(value: Any) -> HTTPStatus | None:
-    # Obsługa błędu pojedynczego pola — niestandardowy lub uszkodzony kod zwraca None, reszta linii pozostaje niezmieniona
     try:
         return HTTPStatus(int(value))
     except (ValueError, TypeError):
@@ -37,7 +32,6 @@ def _to_http_status(value: Any) -> HTTPStatus | None:
 
 
 def _to_ip(value: Any) -> IPv4Address | None:
-    # Obsługa błędu pojedynczego pola — uszkodzony adres IP zwraca None, reszta linii pozostaje niezmieniona
     try:
         return IPv4Address(value)
     except (ValueError, TypeError):
@@ -45,8 +39,8 @@ def _to_ip(value: Any) -> IPv4Address | None:
 
 
 def _normalize_raw_entry(raw_fields: list[str]) -> Entry:
-    normalized = [None if x == EMPTY_FIELD else x for x in raw_fields]
-    ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized  # tu moze być ValueError
+    normalized_entry = [None if x == EMPTY_FIELD else x for x in raw_fields]
+    ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized_entry  # tu moze być ValueError
     return (
         _to_datetime(ts),
         uid,

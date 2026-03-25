@@ -75,11 +75,11 @@ def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
 
 
 def get_unique_methods(log: list[Entry]) -> list[str]:
-    unique_method: set[str] = set()
+    unique_methods: set[str] = set()
     for entry in log:
         if method := entry[EntryIndex.METHOD]:
-            unique_method.add(method)
-    return list(unique_method)
+            unique_methods.add(method)
+    return list(unique_methods)
 
 
 def is_in_date_range(start: datetime.datetime, end: datetime.datetime, target: datetime.datetime) -> bool:
@@ -87,9 +87,9 @@ def is_in_date_range(start: datetime.datetime, end: datetime.datetime, target: d
 
 
 def get_entries_in_time_range(log: list[Entry], start: datetime.datetime, end: datetime.datetime) -> list[Entry]:
-    result: list[Entry] = []
+    entries_in_time_range: list[Entry] = []
     for entry in log:
-        ts = entry[EntryIndex.TS]
-        if ts is not None and is_in_date_range(start, end, ts):
-            result.append(entry)
-    return result
+        timestamp = entry[EntryIndex.TS]
+        if timestamp and is_in_date_range(start, end, timestamp):
+            entries_in_time_range.append(entry)
+    return entries_in_time_range

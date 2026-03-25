@@ -21,6 +21,7 @@ class RawLogIndex(IntEnum):
     STATUS_CODE = 14
 
 
+# TODO: ewentuwalnie pozmieniac typy
 class EntryIndex:
     TS: Final = 0
     UID: Final = 1
@@ -47,7 +48,7 @@ class EntryDictKey:
     STATUS_CODE: Final = "status_code"
 
 
-ENTRY_NAMES_WITH_IP: Final = (EntryDictKey.HOST, EntryDictKey.ORIG_H, EntryDictKey.RESP_H)
+ENTRY_KEYS_WITH_IP: Final = (EntryDictKey.HOST, EntryDictKey.ORIG_H, EntryDictKey.RESP_H)
 
 ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex.HOST)
 

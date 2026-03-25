@@ -9,22 +9,21 @@ import datetime
 from collections import Counter
 from ipaddress import IPv4Address
 
-from app.constants import ENTRY_NAMES_WITH_IP, EntryDictKey
-from app.my_types import EntryDict
-from app.utils import get_num_of_requests
+from app.constants import ENTRY_KEYS_WITH_IP, EntryDictKey
+from app.my_types import Entry, EntryDict
 
 
-def get_session_hosts(session: list[EntryDict]) -> list[IPv4Address]:
+def get_session_ips(session: list[EntryDict]) -> set[IPv4Address]:
     unique_hosts: set[IPv4Address] = set()
     for entry in session:
-        for ip_name in ENTRY_NAMES_WITH_IP:
-            if host := entry[ip_name]:
+        for ip_key in ENTRY_KEYS_WITH_IP:
+            if host := entry[ip_key]:
                 unique_hosts.add(host)
-    return list(unique_hosts)
+    return unique_hosts
 
 
 def get_first_request(session: list[EntryDict]) -> datetime.datetime | None:
-    first: datetime.datetime | None = None
+    first = None
     for entry in session:
         if ts := entry[EntryDictKey.TS]:
             if first is None or ts < first:
@@ -33,7 +32,7 @@ def get_first_request(session: list[EntryDict]) -> datetime.datetime | None:
 
 
 def get_last_request(session: list[EntryDict]) -> datetime.datetime | None:
-    last: datetime.datetime | None = None
+    last = None
     for entry in session:
         if ts := entry[EntryDictKey.TS]:
             if last is None or ts > last:
@@ -42,18 +41,18 @@ def get_last_request(session: list[EntryDict]) -> datetime.datetime | None:
 
 
 def get_propotion_of_methods(session: list[EntryDict]) -> dict[str, float]:
-    count_method_freq: Counter[str] = Counter()
+    method_counter: Counter[str] = Counter()
 
     for entry in session:
         if method := entry[EntryDictKey.METHOD]:
-            count_method_freq[method] += 1
+            method_counter[method] += 1
 
-    total = sum(count_method_freq.values())
+    total = sum(method_counter.values())
     if total == 0:
         return {}
 
     result: dict[str, float] = {}
-    for method, count in count_method_freq.items():
+    for method, count in method_counter.items():
         result[method] = count / total
 
     return result
@@ -66,7 +65,7 @@ def get_proportion_of_2xx_codes(session: list[EntryDict]) -> float:
     for entry in session:
         if code := entry[EntryDictKey.STATUS_CODE]:
             num_of_codes += 1
-            if code.value // 100 == 2:
+            if code.is_success:
                 num_of_2xx_codes += 1
 
     return num_of_2xx_codes / num_of_codes if num_of_codes != 0 else 0.0
@@ -75,11 +74,27 @@ def get_proportion_of_2xx_codes(session: list[EntryDict]) -> float:
 def print_dict_entry_dates(log_dict: dict[str, list[EntryDict]]) -> None:
     for uid, session in log_dict.items():
         print(f"=== SESJA ID: {uid} ===")
-        print("hosty: ", get_session_hosts(session))
-        print("liczba żądań: ", get_num_of_requests(session))
+        print("adresy ip: ", get_session_ips(session))
+        print("liczba żądań: ", len(session))
         print("pierwsze żądanie: ", get_first_request(session))
         print("ostatnie żądanie: ", get_last_request(session))
         print("procentowy udział metod http: ", get_propotion_of_methods(session))
         print("stosunek kodów 2xx do wszystkich: ", get_proportion_of_2xx_codes(session))
         print("-" * 30)
         print()
+
+
+def print_damaged_entries(log: list[Entry]) -> None:
+    for entry in log:
+        if entry.count(None):
+            print(entry)
+
+
+def print_log(log: list[Entry]) -> None:
+    for entry in log:
+        print(entry)
+
+
+def print_log_field(log: list[Entry], ids: list[int]) -> None:
+    for entry in log:
+        print(tuple(entry[i] for i in ids))

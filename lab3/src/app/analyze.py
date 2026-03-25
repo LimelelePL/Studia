@@ -21,8 +21,6 @@ def get_paths(session: list[EntryDict]) -> list[str]:
     return paths
 
 
-# pytanie czy log w parametrze wedlug niego to lista logow,
-# czy tez moze byc ten slownik
 def get_session_paths(logs: list[Entry]) -> dict[str, list[str]]:
 
     logs_dict: dict[str, list[EntryDict]] = log_to_dict(logs)
@@ -32,8 +30,7 @@ def get_session_paths(logs: list[Entry]) -> dict[str, list[str]]:
     return result
 
 
-# oblicza stosunek zapytan z danego adresu ip do wszystkich zapytan
-def reqest_ratio_ipAddress(log: list[Entry], treshold: float) -> dict[IPv4Address, float]:
+def request_ratio_ip(log: list[Entry], treshold: float) -> dict[IPv4Address, float]:
     request_count: Counter[IPv4Address] = Counter()
     for entry in log:
         if client_ip := entry[EntryIndex.ORIG_H]:
@@ -51,7 +48,7 @@ def reqest_ratio_ipAddress(log: list[Entry], treshold: float) -> dict[IPv4Addres
     return result
 
 
-def is_error(status: HTTPStatus | None) -> bool:
+def is_error_404(status: HTTPStatus | None) -> bool:
     return status == HTTPStatus.NOT_FOUND
 
 
@@ -63,7 +60,7 @@ def ip_404_ratio(log: list[Entry], treshold_errors: float) -> dict[IPv4Address, 
     for entry in log:
         if ip := entry[EntryIndex.ORIG_H]:
             totals[ip] += 1
-            if is_error(entry[EntryIndex.STATUS_CODE]):
+            if entry[EntryIndex.STATUS_CODE] and entry[EntryIndex.STATUS_CODE].status == HTTPStatus.NOT_FOUND:
                 not_found[ip] += 1
 
     result: dict[IPv4Address, float] = {}
@@ -71,7 +68,7 @@ def ip_404_ratio(log: list[Entry], treshold_errors: float) -> dict[IPv4Address, 
         if totals[ip]:
             ratio = not_found[ip] / totals[ip]
             if ratio > treshold_errors:
-                result[ip] = not_found[ip] / totals[ip]
+                result[ip] = ratio
     return result
 
 
@@ -87,7 +84,6 @@ def count_short_intervals(log: list[Entry], threshold_miliseconds: float) -> dic
                 if client_ip in last_seen:
                     if prev_ts := last_seen[client_ip]:
                         total_pairs[client_ip] += 1
-
                         if (ts - prev_ts).total_seconds() * 1000 < threshold_miliseconds:
                             short_counts[client_ip] += 1
                 last_seen[client_ip] = ts
@@ -102,7 +98,7 @@ def count_short_intervals(log: list[Entry], threshold_miliseconds: float) -> dic
 def detect_sus(
     log: list[Entry], req_treshold: float, err_treshold: float, interval_treshold_ms: float
 ) -> list[IPv4Address]:
-    req_ratios: dict[IPv4Address, float] = reqest_ratio_ipAddress(log, req_treshold)
+    req_ratios: dict[IPv4Address, float] = request_ratio_ip(log, req_treshold)
     err_ratios: dict[IPv4Address, float] = ip_404_ratio(log, err_treshold)
     interval_ratios: dict[IPv4Address, float] = count_short_intervals(log, interval_treshold_ms)
 
