@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="zadania1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Lab2/zadania1/out/production/zadania1/SubsequenceIterator.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Lab2/zadania1/out/production/zadania1/subsequence.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Lab2/zadania1/out/production/zadania1/zadania.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
