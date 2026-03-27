@@ -1,0 +1,44 @@
+# === Scala / Metals / Bloop / sbt ===
+.metals/
+.bloop/
+.bsp/
+target/
+project/target/
+project/project/
+project/metals.sbt
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# === VS Code ===
+.vscode/
+
+# === Maven / Gradle (jeśli jakieś resztki w projekcie) ===
+target/
+!.mvn/wrapper/maven-wrapper.jar
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# === OCaml / opam ===
+_opam/
+.ocamlinit
+*.cmo
+*.cmi
+*.cmx
+*.o
+*.out
+
+# === Systemowe ===
+.DS_Store
+Thumbs.db
+
+# Scala temporary build dirs
+.scala-build/
+
+
+
