@@ -164,3 +164,24 @@ def analyze_log(log: list[Entry]) -> dict[str, Any]:
         "avg_interval_ms": avg_interval_ms,
         "method_distribution": method_distribution,
     }
+
+
+def get_most_active_ip(log: list[Entry]) -> IPv4Address | None:
+    ip_timestamps: dict[IPv4Address, list[datetime]] = {}
+
+    for entry in log:
+        if entry.orig_h and entry.ts:
+            ip_timestamps.setdefault(entry.orig_h, []).append(entry.ts)
+    max_total = 0.0
+    max_ip = None
+    for ip, timestamps in ip_timestamps.items():
+        total = 0.0
+        if len(timestamps) < 2:
+            continue
+        sorted_ts = sorted(timestamps)
+        for i in range(1, len(sorted_ts)):
+            total += (sorted_ts[i] - sorted_ts[i - 1]).total_seconds()
+        if total > max_total:
+            max_total = total
+            max_ip = ip
+    return max_ip
