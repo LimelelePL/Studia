@@ -1,7 +1,7 @@
 import sys
 
-from app.analyze import detect_sus
 from app.converters import read_log
+from app.modyfikacja import get_most_active_ip
 from app.utils import format_stream_utf8
 
 
@@ -9,7 +9,7 @@ def main() -> None:
     try:
         format_stream_utf8()
         log = read_log()
-        log_dict = log_to_dict(log)
+        # log_dict = log_to_dict(log)
         # print_log_field(sort_log(log, EntryIndex.STATUS_CODE), [EntryIndex.STATUS_CODE])
         # print_log_field(get_entries_by_code(log, HTTPStatus(400)), [EntryIndex.STATUS_CODE])
         # print_log(get_entries_by_ip(log, IPv4Address("192.168.202.110")))
@@ -30,11 +30,13 @@ def main() -> None:
         # print(session_with_most_request(log_dict))
         # print(get_session_paths(log))
 
-        print(detect_sus(log, 0.02, 0.15, 50))
+        # print(detect_sus(log, 0.02, 0.15, 50))
         # print(get_extension_stats(log))
         # print(analyze_log(log))
 
         # print(log_dict, sep="\n")
+
+        print(get_most_active_ip(log))
 
     except KeyboardInterrupt:
         sys.exit(0)
