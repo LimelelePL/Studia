@@ -2,15 +2,14 @@ import os
 import sys
 from pathlib import Path
 
-from app.cosntants import zad2Constans
-from app.utils import parse_filters, visit_executable, walktree
+from app.constants import PathMode
 
 
 def get_path_variable() -> str | None:
     return os.environ.get("PATH")
 
 
-def split_to_directories(path_variable: str | None):
+def split_to_directories(path_variable: str | None) -> list[Path] | None:
 
     if not path_variable:
         return None
@@ -18,13 +17,23 @@ def split_to_directories(path_variable: str | None):
     return [Path(p) for p in path_variable.split(os.pathsep)]
 
 
-def print_executables(path_directories: list[Path] | None):
+def walktree(top: Path, callback) -> None:
+    try:
+        for path in top.iterdir():
+            if path.is_file():
+                callback(path)
+    except PermissionError:
+        pass
 
-    args = parse_filters(sys.argv[1:])
-    if not args:
-        print("Brak parametrów! Użyj all albo only_dirs .")
-        return
-    filter = args[0]
+
+def visit_executable(file: Path) -> None:
+    if os.access(str(file), os.X_OK):
+        print(f"  [EXE] {file.name}")
+
+
+def print_executables(path_directories: list[Path] | None) -> None:
+
+    arg = sys.argv[1].lower()
 
     if not path_directories:
         print("Brak ")
@@ -32,13 +41,13 @@ def print_executables(path_directories: list[Path] | None):
 
     for directory in path_directories:
         if directory.is_dir():
-            if filter == zad2Constans.ONLY_DIRS:
+            if arg == PathMode.ONLY_DIRS:
                 print(f"\n {directory}")
-            elif filter == zad2Constans.ALL:
+            elif arg == PathMode.ALL:
                 print(f"\n--- KATALOG: {directory} ---")
                 walktree(directory, visit_executable)
             else:
-                print("unknown parameter: ")
+                print("unknown parameter")
                 break
 
 
