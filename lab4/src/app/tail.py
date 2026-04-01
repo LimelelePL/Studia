@@ -3,12 +3,7 @@ import sys
 import time
 from collections import deque
 from pathlib import Path
-
-try:
-    from app.constants import TailParams
-except ModuleNotFoundError:
-    from constants import TailParams
-
+from app.constants import TailParams
 
 def parse_tail_arguments() -> TailParams:
     lines = 10
