@@ -52,9 +52,9 @@ def point_to_target(filename: Path, lines: int) -> int:
         current_line = 0
         position = 0
         while current_line < target_line:
-            position = f.tell()
             if not f.readline():
                 break
+            position = f.tell()
             current_line += 1
     return position
 
@@ -66,16 +66,18 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
         while True:
             line = file.readline()
             if line:
-                print(line, end="")
+                sys.stdout.write(line)
+                sys.stdout.flush()
                 continue
             if not params.follow:
                 break
             time.sleep(0.5)
             size = os.stat(filename).st_size
 
-            # jezeli plik sie skurczyl to wracamy na poczatek
+            # jezeli plik zostal nadpisany to ponownie wypisujemy n lini
             if file.tell() > size:
-                file.seek(0)
+                file.seek(point_to_target(filename, params.lines))
+                continue
 
 
 # mega smart posuniecie ze strony koleig z ameryki
@@ -84,9 +86,12 @@ def print_stdin_tail(lines: int) -> None:
     for line in sys.stdin:
         buffer.append(line)
     for line in buffer:
-        print(line, end="")
+        print(line, end="", flush=True)
 
 
+# todo kurwa nie wiem jak ktos usunie jakas linie z pliku to co ma sie dziac????
+# na wykladzie w przykladowym wskaznik wraca na góre i wypisuje caly plik z góry
+# ale tutaj nie wiem jak ma być. Wypisywać znowu n lini z dolu????
 def tail() -> None:
     params = parse_tail_arguments()
     stdin_has_data = not sys.stdin.isatty()
