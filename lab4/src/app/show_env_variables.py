@@ -3,10 +3,6 @@ import sys
 from collections.abc import Iterable
 
 
-def parse_filters(args: list[str]) -> list[str]:
-    return [arg for arg in args if arg]
-
-
 def filter_env_variables(env_items: list[tuple[str, str]], filters: list[str]) -> list[tuple[str, str]]:
 
     if not filters:
@@ -35,7 +31,7 @@ def print_env_variables(env_variables: Iterable[tuple[str, str]]) -> None:
 
 
 def show_env_variables() -> None:
-    filters = parse_filters(list(sys.argv[1:]))
+    filters = list(filter(None, sys.argv[1:]))
     env_variables = filter_env_variables(list(os.environ.items()), filters)
     print_env_variables(sorted_env_variables(env_variables))
 
