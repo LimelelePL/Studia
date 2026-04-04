@@ -3,7 +3,9 @@ import sys
 import time
 from collections import deque
 from pathlib import Path
+
 from app.constants import TailParams
+
 
 def parse_tail_arguments() -> TailParams:
     lines = 10
