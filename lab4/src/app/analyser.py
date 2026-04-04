@@ -61,7 +61,7 @@ def analyse() -> None | dict[str, int | str]:
     files_in_dir = find_txt_files(entry_path)
     stats: list[dict[str, Any]] = []
 
-    for file in sorted(files_in_dir):
+    for file in files_in_dir:
         process_result = subprocess.run(
             ["python", "src/app/text_analyser.py"],
             input=f"{file}\n",
