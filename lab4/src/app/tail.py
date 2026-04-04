@@ -65,7 +65,6 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
             if line:
                 sys.stdout.write(line)
                 sys.stdout.flush()
-                continue
             if not params.follow:
                 break
             time.sleep(0.5)
@@ -74,16 +73,16 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
             # jezeli plik zostal nadpisany to ponownie wypisujemy n lini
             if file.tell() > size:
                 file.seek(point_to_target(filename, params.lines))
-                continue
 
 
 # mega smart posuniecie ze strony koleig z ameryki
 def print_stdin_tail(lines: int) -> None:
-    buffer = deque(maxlen=max(0, lines))
+    buffer: deque[str] = deque(maxlen=max(0, lines))
     for line in sys.stdin:
         buffer.append(line)
     for line in buffer:
-        print(line, end="", flush=True)
+        sys.stdout.write(line)
+        sys.stdout.flush()
 
 
 # todo kurwa nie wiem jak ktos usunie jakas linie z pliku to co ma sie dziac????

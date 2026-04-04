@@ -1,5 +1,6 @@
 import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from app.constants import PathMode
@@ -17,7 +18,7 @@ def split_to_directories(path_variable: str | None) -> list[Path] | None:
     return [Path(p) for p in path_variable.split(os.pathsep)]
 
 
-def walktree(top: Path, callback) -> None:
+def walktree(top: Path, callback: Callable[[Path], None]) -> None:
     try:
         for path in top.iterdir():
             if path.is_file():
