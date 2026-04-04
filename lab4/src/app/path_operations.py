@@ -1,5 +1,6 @@
 import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from app.constants import PathMode
@@ -17,7 +18,7 @@ def split_to_directories(path_variable: str | None) -> list[Path] | None:
     return [Path(p) for p in path_variable.split(os.pathsep)]
 
 
-def walktree(top: Path, callback) -> None:
+def walktree(top: Path, callback: Callable[[Path], None]) -> None:
     try:
         for path in top.iterdir():
             if path.is_file():
@@ -27,27 +28,33 @@ def walktree(top: Path, callback) -> None:
 
 
 def visit_executable(file: Path) -> None:
+    # ewentualnie gdy brak uprawien mozna by to wypisac
     if os.access(str(file), os.X_OK):
         print(f"  [EXE] {file.name}")
 
 
 def print_executables(path_directories: list[Path] | None) -> None:
+    # Trzeba określić zachowanie gdy nie podano żadnych argumentów lub więcej niż jeden, imo po prostu domyslne same
+    # katalogi a gdy więcej niż jeden argument to ignorujemy reszte
 
-    arg = sys.argv[1].lower()
+    cli_args = PathMode.DIR if len(sys.argv) < 2 else sys.argv[1].casefold()
 
     if not path_directories:
-        print("Brak ")
+        print("Brak danych w zmiennej środowiskowej PATH")
         return
 
+    # Można by sie zastanowić czy nie lepiej tutaj zrobić 2 funkcje print_files print_dir czy cos
     for directory in path_directories:
         if directory.is_dir():
-            if arg == PathMode.ONLY_DIRS:
+            if cli_args == PathMode.DIR:
                 print(f"\n {directory}")
-            elif arg == PathMode.ALL:
+            elif cli_args == PathMode.ALL:
                 print(f"\n--- KATALOG: {directory} ---")
                 walktree(directory, visit_executable)
             else:
-                print("unknown parameter")
+                print(
+                    "Podano niepoprawny parametr, poprawne parametry: dir - lista katalogów, exe - lista katalogów i plików"  # noqa: E501
+                )
                 break
 
 
