@@ -8,13 +8,13 @@ def filter_env_variables(env_items: list[tuple[str, str]], filters: list[str]) -
     if not filters:
         return env_items
 
-    lowered_filters = [f.lower() for f in filters]
+    lowered_filters = [f.casefold() for f in filters]
     filtered: list[tuple[str, str]] = []
 
     for name, value in env_items:
-        name_lower = name.lower()
-        for term in lowered_filters:
-            if term in name_lower:
+        name_lower = name.casefold()
+        for filter in lowered_filters:
+            if filter in name_lower:
                 filtered.append((name, value))
                 break
 
@@ -22,7 +22,7 @@ def filter_env_variables(env_items: list[tuple[str, str]], filters: list[str]) -
 
 
 def sorted_env_variables(env_variables: list[tuple[str, str]]) -> list[tuple[str, str]]:
-    return sorted(env_variables, key=lambda item: item[0].lower())
+    return sorted(env_variables, key=lambda item: item[0].casefold())
 
 
 def print_env_variables(env_variables: Iterable[tuple[str, str]]) -> None:
@@ -31,8 +31,9 @@ def print_env_variables(env_variables: Iterable[tuple[str, str]]) -> None:
 
 
 def show_env_variables() -> None:
-    filters = list(filter(None, sys.argv[1:]))
-    env_variables = filter_env_variables(list(os.environ.items()), filters)
+    cli_args = list(filter(None, sys.argv[1:]))
+    env_variables = list(os.environ.items())
+    env_variables = filter_env_variables(env_variables, cli_args)
     print_env_variables(sorted_env_variables(env_variables))
 
 

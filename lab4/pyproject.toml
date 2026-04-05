@@ -41,7 +41,6 @@ select = [
     "C4",   # flake8-comprehensions
     "RUF",  # ruff-specific
     "SIM",  # flake8-simplify
-    "T20",  # flake8-print (no stray print())
     "PT",   # flake8-pytest-style
     "ERA",  # eradicate (no commented-out code)
     "S",    # flake8-bandit (security)
