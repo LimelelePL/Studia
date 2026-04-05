@@ -2,27 +2,9 @@ import json
 import subprocess
 import sys
 from collections import Counter
-from pathlib import Path
 from typing import Any
 
-
-def read_dir_path() -> Path | None:
-    if len(sys.argv) < 2:
-        return None
-
-    arg = Path(sys.argv[1])
-    if not arg.is_dir():
-        return None
-
-    return arg
-
-
-def find_txt_files(dir_path: Path) -> set[Path]:
-    result: set[Path] = set()
-    for file in dir_path.iterdir():
-        if file.is_file() and file.suffix == ".txt":
-            result.add(file)
-    return result
+from utils import find_txt_files, read_dir_path_from_cli
 
 
 def calculate_stats(stats: list[dict[str, Any]]) -> dict[str, int | str]:
@@ -53,8 +35,8 @@ def calculate_stats(stats: list[dict[str, Any]]) -> dict[str, int | str]:
     }
 
 
-def analyse() -> None | dict[str, int | str]:
-    entry_path = read_dir_path()
+def analyse() -> dict[str, int | str] | None:
+    entry_path = read_dir_path_from_cli()
     if not entry_path:
         return None
 
@@ -63,7 +45,7 @@ def analyse() -> None | dict[str, int | str]:
 
     for file in files_in_dir:
         process_result = subprocess.run(
-            ["python", "src/app/text_analyser.py"],
+            [sys.executable, "src/app/text_analyser.py"],
             input=f"{file}\n",
             text=True,
             capture_output=True,

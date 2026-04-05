@@ -4,7 +4,7 @@ from collections import Counter
 from pathlib import Path
 
 
-def read_file_path() -> Path | None:
+def read_txt_file_path() -> Path | None:
     raw_path = sys.stdin.readline().strip()
     if not raw_path:
         return None
@@ -41,7 +41,7 @@ def stats(path: Path) -> str | None:
 
 
 if __name__ == "__main__":
-    path = read_file_path()
+    path = read_txt_file_path()
     if path:
         result = stats(path)
         if result:
