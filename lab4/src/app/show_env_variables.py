@@ -27,7 +27,7 @@ def sorted_env_variables(env_variables: list[tuple[str, str]]) -> list[tuple[str
 
 def print_env_variables(env_variables: Iterable[tuple[str, str]]) -> None:
     for name, value in env_variables:
-        print(f"{name}={value}")  # noqa: T201
+        print(f"{name}={value}")
 
 
 def show_env_variables() -> None:
