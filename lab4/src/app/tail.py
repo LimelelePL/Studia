@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import time
@@ -8,23 +9,14 @@ from app.constants import TailParams
 
 
 def parse_tail_arguments() -> TailParams:
-    lines = 10
-    file_path = None
-    follow = False
+    parser = argparse.ArgumentParser()
 
-    for arg in sys.argv[1:]:
-        if arg.startswith("--lines="):
-            try:
-                value = int(arg.split("=", 1)[1])
-            except (ValueError, IndexError):
-                continue
-            lines = max(0, value)
-        elif arg == "--follow":
-            follow = True
-        elif not arg.startswith("--") and file_path is None:
-            file_path = Path(arg)
+    parser.add_argument("file_path", type=Path)
+    parser.add_argument("--lines", type=int, default=10)
+    parser.add_argument("--follow", action="store_true")
 
-    return TailParams(lines=lines, file_path=file_path, follow=follow)
+    args = parser.parse_args()
+    return TailParams(lines=args.lines, file_path=args.file_path, follow=args.follow)
 
 
 def get_file_length(file: Path) -> int:

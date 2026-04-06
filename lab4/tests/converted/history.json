@@ -1,0 +1,16 @@
+[
+    {
+        "timestamp": "2026-04-06 22:09:43",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\Oxygen.mp3",
+        "output_format": ".webm",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-Oxygen.webm",
+        "program": "ffmpeg"
+    },
+    {
+        "timestamp": "2026-04-06 22:10:04",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\pomidor.jpg",
+        "output_format": ".png",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-pomidor.png",
+        "program": "magick"
+    }
+]
