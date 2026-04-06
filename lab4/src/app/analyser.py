@@ -4,7 +4,7 @@ import sys
 from collections import Counter
 from typing import Any
 
-from utils import find_txt_files, read_dir_path_from_cli
+from utils import find_txt_files, read_cli_dir
 
 
 def calculate_stats(stats: list[dict[str, Any]]) -> dict[str, int | str]:
@@ -36,7 +36,7 @@ def calculate_stats(stats: list[dict[str, Any]]) -> dict[str, int | str]:
 
 
 def analyse() -> dict[str, int | str] | None:
-    entry_path = read_dir_path_from_cli()
+    entry_path = read_cli_dir()
     if not entry_path:
         return None
 
