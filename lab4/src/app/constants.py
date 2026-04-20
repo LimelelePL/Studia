@@ -5,7 +5,7 @@ from typing import NamedTuple
 
 class PathMode(StrEnum):
     DIR = "dir"
-    ALL = "all"
+    EXE = "exe"
 
 
 class TailParams(NamedTuple):
