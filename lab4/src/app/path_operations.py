@@ -48,7 +48,7 @@ def print_executables(path_directories: list[Path] | None) -> None:
         if directory.is_dir():
             if cli_args == PathMode.DIR:
                 print(f"\n {directory}")
-            elif cli_args == PathMode.ALL:
+            elif cli_args == PathMode.EXE:
                 print(f"\n--- KATALOG: {directory} ---")
                 walktree(directory, visit_executable)
             else:

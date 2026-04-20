@@ -19,7 +19,7 @@ def parse_tail_arguments() -> TailParams:
     return TailParams(lines=args.lines, file_path=args.file_path, follow=args.follow)
 
 
-def get_file_length(file: Path) -> int:
+def get_lines_count(file: Path) -> int:
     count = 0
     with open(file) as f:
         f.seek(0)
@@ -30,8 +30,9 @@ def get_file_length(file: Path) -> int:
     return count
 
 
+# zwraca pozycje wskaźnika w miejscu gdzie powinno się zacząć wypisywanie pliku
 def point_to_target(filename: Path, lines: int) -> int:
-    total = get_file_length(filename)
+    total = get_lines_count(filename)
     target_line = total - lines
     if target_line <= 0:
         return 0
@@ -48,6 +49,12 @@ def point_to_target(filename: Path, lines: int) -> int:
     return position
 
 
+# wedlug mnie to ma dzialac tak:
+# - na poczatku ma wypisać n ostatnich lini
+# - dopiszemy jakieś linie do końca pliku to je wypisuje niezależnie od tego ile ich dopisano
+# - skrócono plik to wpisuje znowu końcowe n lini (wersja z wykladu wraca na poczatek i wypisuje caly plik od zera)
+
+
 def print_file_tail(filename: Path, params: TailParams) -> None:
     position = point_to_target(filename, params.lines)
     with open(filename) as file:
@@ -59,15 +66,17 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
                 sys.stdout.flush()
             if not params.follow:
                 break
-            time.sleep(0.5)
-            size = os.stat(filename).st_size
 
-            # jezeli plik zostal nadpisany to ponownie wypisujemy n lini
-            if file.tell() > size:
-                file.seek(point_to_target(filename, params.lines))
+            time.sleep(0.2)
+            if params.follow:
+                size = os.stat(filename).st_size
+
+                if file.tell() > size:
+                    sys.stdout.write("\n")
+                    file.seek(point_to_target(filename, params.lines))
 
 
-# mega smart posuniecie ze strony koleig z ameryki
+# TRZEBA ZAIMPLEMENTOWAC FOLLOW DLA TEJ OPCJI!
 def print_stdin_tail(lines: int) -> None:
     buffer: deque[str] = deque(maxlen=max(0, lines))
     for line in sys.stdin:
@@ -77,9 +86,6 @@ def print_stdin_tail(lines: int) -> None:
         sys.stdout.flush()
 
 
-# todo kurwa nie wiem jak ktos usunie jakas linie z pliku to co ma sie dziac????
-# na wykladzie w przykladowym wskaznik wraca na góre i wypisuje caly plik z góry
-# ale tutaj nie wiem jak ma być. Wypisywać znowu n lini z dolu????
 def tail() -> None:
     params = parse_tail_arguments()
     stdin_has_data = not sys.stdin.isatty()
