@@ -33,8 +33,8 @@ def stats(path: Path) -> str | None:
         "char count": char_counter.total(),
         "word count": word_counter.total(),
         "lines count": lines_count,
-        "most frequent char": list(char_counter.most_common(1)[0]) if char_counter else ["", 0],
-        "most frequent word": list(word_counter.most_common(1)[0]) if word_counter else ["", 0],
+        "most frequent char": list(char_counter.most_common(1)[0]),
+        "most frequent word": list(word_counter.most_common(1)[0]),
     }
 
     return json.dumps(stats, indent=4, ensure_ascii=False)
