@@ -11,7 +11,7 @@ from app.constants import TailParams
 def parse_tail_arguments() -> TailParams:
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("file_path", type=Path)
+    parser.add_argument("file_path", nargs="?", type=Path)
     parser.add_argument("--lines", type=int, default=10)
     parser.add_argument("--follow", action="store_true")
 
@@ -76,12 +76,14 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
                     file.seek(point_to_target(filename, params.lines))
 
 
-# TRZEBA ZAIMPLEMENTOWAC FOLLOW DLA TEJ OPCJI!
+# TRZEBA ZAIMPLEMENTOWAC FOLLOW DLA TEJ OPCJI ALE NIE WIEM JAK!!!!!!!!!!!
+# nie da sie dynamicznie sprawdzac dlugosci pliku xd to chyba wyjebane w to?
 def print_stdin_tail(lines: int) -> None:
     buffer: deque[str] = deque(maxlen=max(0, lines))
     for line in sys.stdin:
         buffer.append(line)
     for line in buffer:
+        time.sleep(0.2)
         sys.stdout.write(line)
         sys.stdout.flush()
 
