@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 from constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
 from utils import (
@@ -25,17 +26,17 @@ def convert_files():
         output_name = build_output_name(f.stem, format)
         output_path = get_output_dir() / output_name
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        #zeby 2 razy tego samego pliku nie konwertowac
+
+        # zeby 2 razy tego samego pliku nie konwertowac
         if output_path.exists():
             continue
 
         if is_audio_file(f) and is_video_file(f) and output_suffix not in AUDIO_SUFFIXES.union(VIDEO_SUFFIXES):
-            subprocess.run(["ffmpeg", "-y", "-i", str(f), str(output_path)], check=True)
+            subprocess.run([sys.executable, "ffmpeg", "-y", "-i", str(f), str(output_path)], check=True)
             program = "ffmpeg"
             converted = True
         elif is_image_file(f) and output_suffix in IMAGE_SUFFIXES:
-            subprocess.run(["magick", str(f), str(output_path)], check=True)
+            subprocess.run([sys.executable, "magick", str(f), str(output_path)], check=True)
             program = "magick"
             converted = True
         else:

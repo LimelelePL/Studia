@@ -1,9 +1,9 @@
 import argparse
 import json
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
-import sys
 
 from constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
 
@@ -73,14 +73,14 @@ def find_txt_files(dir_path: Path) -> set[Path]:
             result.add(file)
     return result
 
+
 def read_cli_dir():
     res = Path(sys.argv[1])
-    
-    if res.is_dir():
+
+    if not res.is_dir():
         raise NotADirectoryError(f"Ścieżka '{res}' nie jest katalogiem!")
-    
+
     return res
-        
 
 
 def is_audio_file(file: Path) -> bool:
