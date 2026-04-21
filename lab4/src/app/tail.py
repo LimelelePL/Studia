@@ -64,8 +64,9 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
             if line:
                 sys.stdout.write(line)
                 sys.stdout.flush()
-            if not params.follow:
-                break
+            else:
+                if not params.follow:
+                    break
 
             time.sleep(0.2)
             if params.follow:

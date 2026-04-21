@@ -1,5 +1,4 @@
 import subprocess
-import sys
 
 from constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
 from utils import (
@@ -16,14 +15,13 @@ from utils import (
 
 
 def convert_files():
-    path, format = read_media_converts_args()
-    media_files = find_media_files(path)
+    source_directory, output_suffix = read_media_converts_args()
+    media_files = find_media_files(source_directory)
     program: str = ""
     converted = False
-    output_suffix = format
 
-    for f in media_files:
-        output_name = build_output_name(f.stem, format)
+    for input_file in media_files:
+        output_name = build_output_name(f.stem, output_suffix)
         output_path = get_output_dir() / output_name
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -31,17 +29,21 @@ def convert_files():
         if output_path.exists():
             continue
 
-        if is_audio_file(f) and is_video_file(f) and output_suffix not in AUDIO_SUFFIXES.union(VIDEO_SUFFIXES):
-            subprocess.run([sys.executable, "ffmpeg", "-y", "-i", str(f), str(output_path)], check=True)
+        if (
+            is_audio_file(input_file)
+            and is_video_file(input_file)
+            and output_suffix in AUDIO_SUFFIXES.union(VIDEO_SUFFIXES)
+        ):
+            subprocess.run(["ffmpeg", "-y", "-i", str(input_file), str(output_path)], check=True)
             program = "ffmpeg"
             converted = True
         elif is_image_file(f) and output_suffix in IMAGE_SUFFIXES:
-            subprocess.run([sys.executable, "magick", str(f), str(output_path)], check=True)
+            subprocess.run(["magick", str(input_file), str(output_path)], check=True)
             program = "magick"
             converted = True
         else:
             continue
-        history = write_history(str(f), format, str(output_path), program)
+        history = write_history(str(input), output_suffix, str(output_path), program)
         if converted:
             append_history_to_file(get_output_dir(), history)
 
