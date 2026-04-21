@@ -1,4 +1,5 @@
 import argparse
+from decimal import InvalidOperation
 import os
 import sys
 import time
@@ -30,7 +31,6 @@ def get_lines_count(file: Path) -> int:
     return count
 
 
-# zwraca pozycje wskaźnika w miejscu gdzie powinno się zacząć wypisywanie pliku
 def point_to_target(filename: Path, lines: int) -> int:
     total = get_lines_count(filename)
     target_line = total - lines
@@ -47,12 +47,6 @@ def point_to_target(filename: Path, lines: int) -> int:
             position = f.tell()
             current_line += 1
     return position
-
-
-# wedlug mnie to ma dzialac tak:
-# - na poczatku ma wypisać n ostatnich lini
-# - dopiszemy jakieś linie do końca pliku to je wypisuje niezależnie od tego ile ich dopisano
-# - skrócono plik to wpisuje znowu końcowe n lini (wersja z wykladu wraca na poczatek i wypisuje caly plik od zera)
 
 
 def print_file_tail(filename: Path, params: TailParams) -> None:
@@ -77,8 +71,6 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
                     file.seek(point_to_target(filename, params.lines))
 
 
-# TRZEBA ZAIMPLEMENTOWAC FOLLOW DLA TEJ OPCJI ALE NIE WIEM JAK!!!!!!!!!!!
-# nie da sie dynamicznie sprawdzac dlugosci pliku xd to chyba wyjebane w to?
 def print_stdin_tail(lines: int) -> None:
     buffer: deque[str] = deque(maxlen=max(0, lines))
     for line in sys.stdin:
@@ -96,6 +88,9 @@ def tail() -> None:
     if params.file_path:
         print_file_tail(params.file_path, params)
     elif stdin_has_data:
+        if params.follow:
+            print("Nie można użyc parametru --follow z poleceniem które przekazuje dane potokowo")
+            return
         print_stdin_tail(params.lines)
 
 
