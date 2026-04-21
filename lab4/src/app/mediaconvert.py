@@ -1,7 +1,7 @@
 import subprocess
 
-from app.constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
-from app.utils import (
+from constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
+from utils import (
     append_history_to_file,
     build_output_name,
     find_media_files,
@@ -12,7 +12,6 @@ from app.utils import (
     read_media_converts_args,
     write_history,
 )
-
 
 def convert_files():
     source_directory, output_suffix = read_media_converts_args()
@@ -33,13 +32,16 @@ def convert_files():
         ):
             subprocess.run(["ffmpeg", "-y", "-i", str(input_file), str(output_path)], check=True)
             program = "ffmpeg"
+            converted = True
         elif is_image_file(input_file) and output_suffix in IMAGE_SUFFIXES:
             subprocess.run(["magick", str(input_file), str(output_path)], check=True)
             program = "magick"
+            converted = True
         else:
             continue
-        history = write_history(str(input_file), output_suffix, str(output_path), program)
-        append_history_to_file(get_output_dir(), history)
+        history = write_history(str(input), output_suffix, str(output_path), program)
+        if converted:
+            append_history_to_file(get_output_dir(), history)
 
 
 if __name__ == "__main__":
