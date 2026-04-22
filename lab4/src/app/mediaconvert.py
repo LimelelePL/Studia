@@ -13,6 +13,7 @@ from utils import (
     write_history,
 )
 
+
 def convert_files():
     source_directory, output_suffix = read_media_converts_args()
     media_files = find_media_files(source_directory)
@@ -24,6 +25,7 @@ def convert_files():
         output_path = get_output_dir() / output_name
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # zeby 2 razy tego samego pliku nie konwertowac
         if output_path.exists():
             continue
 
