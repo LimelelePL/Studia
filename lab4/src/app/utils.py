@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from app.constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
+from constants import AUDIO_SUFFIXES, IMAGE_SUFFIXES, VIDEO_SUFFIXES
 
 
 def read_media_converts_args() -> tuple[Path, str]:
@@ -14,7 +14,7 @@ def read_media_converts_args() -> tuple[Path, str]:
     parser.add_argument("dir", type=Path)
     parser.add_argument("format", type=str)
 
-    allowed_suffixes = [suffix for suffix in AUDIO_SUFFIXES.union(IMAGE_SUFFIXES).union(VIDEO_SUFFIXES)]
+    allowed_suffixes = list(AUDIO_SUFFIXES.union(IMAGE_SUFFIXES).union(VIDEO_SUFFIXES))
     args = parser.parse_args()
 
     if not Path(args.dir).is_dir():

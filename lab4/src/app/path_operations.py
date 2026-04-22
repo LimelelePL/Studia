@@ -28,22 +28,17 @@ def walktree(top: Path, callback: Callable[[Path], None]) -> None:
 
 
 def visit_executable(file: Path) -> None:
-    # ewentualnie gdy brak uprawien mozna by to wypisac
     if os.access(str(file), os.X_OK):
         print(f"  [EXE] {file.name}")
 
 
 def print_executables(path_directories: list[Path] | None) -> None:
-    # Trzeba określić zachowanie gdy nie podano żadnych argumentów lub więcej niż jeden, imo po prostu domyslne same
-    # katalogi a gdy więcej niż jeden argument to ignorujemy reszte
-
     cli_args = PathMode.DIR if len(sys.argv) < 2 else sys.argv[1].casefold()
 
     if not path_directories:
         print("Brak danych w zmiennej środowiskowej PATH")
         return
 
-    # Można by sie zastanowić czy nie lepiej tutaj zrobić 2 funkcje print_files print_dir czy cos
     for directory in path_directories:
         if directory.is_dir():
             if cli_args == PathMode.DIR:
