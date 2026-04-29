@@ -5,6 +5,8 @@ from lab5.src.app.constants import StationData
 
 from app.parser import parse_stations
 
+# TODO: przetestowac
+
 
 # ul. chopina 10
 def get_street_name(address: str) -> str:
