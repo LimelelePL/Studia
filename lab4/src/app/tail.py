@@ -1,5 +1,4 @@
 import argparse
-from decimal import InvalidOperation
 import os
 import sys
 import time
@@ -15,7 +14,6 @@ def parse_tail_arguments() -> TailParams:
     parser.add_argument("file_path", nargs="?", type=Path)
     parser.add_argument("--lines", type=int, default=10)
     parser.add_argument("--follow", action="store_true")
-
     args = parser.parse_args()
     return TailParams(lines=args.lines, file_path=args.file_path, follow=args.follow)
 
@@ -46,11 +44,39 @@ def point_to_target(filename: Path, lines: int) -> int:
                 break
             position = f.tell()
             current_line += 1
+
     return position
 
 
 def print_file_tail(filename: Path, params: TailParams) -> None:
+    tail_mode = os.environ.get("TAIL_MODE", "lines")
+    tail_reverse = os.environ.get("TAIL_REVERSE", "") == "1"
+
+    if tail_mode == "chars":
+        size = os.stat(filename).st_size
+        position = max(0, size - params.lines)
+        with open(filename) as file:
+            file.seek(position)
+            content = file.read(params.lines)
+        if tail_reverse:
+            content = content[::-1]
+        sys.stdout.write(content)
+        sys.stdout.flush()
+        return
+
     position = point_to_target(filename, params.lines)
+
+    if not params.follow:
+        with open(filename) as file:
+            file.seek(position)
+            lines = file.readlines()
+        if tail_reverse:
+            lines = list(reversed(lines))
+        for line in lines:
+            sys.stdout.write(line)
+            sys.stdout.flush()
+        return
+
     with open(filename) as file:
         file.seek(position)
         while True:
@@ -59,24 +85,31 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
                 sys.stdout.write(line)
                 sys.stdout.flush()
             else:
-                if not params.follow:
-                    break
-
-            time.sleep(0.2)
-            if params.follow:
+                time.sleep(0.2)
                 size = os.stat(filename).st_size
-
                 if file.tell() > size:
                     sys.stdout.write("\n")
                     file.seek(point_to_target(filename, params.lines))
 
 
 def print_stdin_tail(lines: int) -> None:
-    buffer: deque[str] = deque(maxlen=max(0, lines))
+    tail_mode = os.environ.get("TAIL_MODE", "lines")
+    tail_reverse = os.environ.get("TAIL_REVERSE", "") == "1"
+
+    if tail_mode == "chars":
+        buffer: deque[str] = deque(maxlen=max(0, lines))
+        for char in sys.stdin.read():
+            buffer.append(char)
+        output = list(reversed(buffer)) if tail_reverse else list(buffer)
+        sys.stdout.write("".join(output))
+        sys.stdout.flush()
+        return
+
+    line_buffer: deque[str] = deque(maxlen=max(0, lines))
     for line in sys.stdin:
-        buffer.append(line)
-    for line in buffer:
-        time.sleep(0.2)
+        line_buffer.append(line)
+    output_lines = list(reversed(line_buffer)) if tail_reverse else list(line_buffer)
+    for line in output_lines:
         sys.stdout.write(line)
         sys.stdout.flush()
 
