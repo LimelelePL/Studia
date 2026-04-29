@@ -4,7 +4,6 @@ from pathlib import Path
 
 from app.constants import (
     MEASUREMENTS_PATH,
-    STATIONS_PATH,
     MeasurementsRawEntry,
     SingeMeasurement,
     StationData,
@@ -33,10 +32,10 @@ def parse_measurement_datetime(date_str: str) -> datetime:
     raise ValueError(f"Unsupported measurement datetime format: {date_str!r}")
 
 
-def parse_stations() -> dict[str, list[StationData]]:
+def parse_stations(path: Path) -> dict[str, list[StationData]]:
     result = {}
 
-    with open(STATIONS_PATH, encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for entry in reader:
             code = entry[StationEntry.kod_stacji]
