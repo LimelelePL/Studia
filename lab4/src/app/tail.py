@@ -18,6 +18,10 @@ def parse_tail_arguments() -> TailParams:
     return TailParams(lines=args.lines, file_path=args.file_path, follow=args.follow)
 
 
+def get_env_params():
+    return os.environ.get("TAIL_MODE"), os.environ.get("TAIL_CHARS")
+
+
 def get_lines_count(file: Path) -> int:
     count = 0
     with open(file) as f:
@@ -92,6 +96,24 @@ def print_file_tail(filename: Path, params: TailParams) -> None:
                     file.seek(point_to_target(filename, params.lines))
 
 
+def print_file_tail_chars(filename: Path, params: TailParams, chars: int) -> None:
+    position = point_to_target_char(filename, chars)
+    #print("reeefwfwefwefwefwef")
+    with open(filename, "rb") as file:
+        file.seek(position)
+        while True:
+            char = file.read()
+            if char:
+                sys.stdout.write(char.decode("utf-8"))
+                sys.stdout.flush()
+            else:
+                time.sleep(0.2)
+                size = os.stat(filename).st_size
+                if file.tell() > size:
+                    file.seek(point_to_target(filename, params.lines))
+                    buffer.clear()
+
+
 def print_stdin_tail(lines: int) -> None:
     tail_mode = os.environ.get("TAIL_MODE", "lines")
     tail_reverse = os.environ.get("TAIL_REVERSE", "") == "1"
@@ -117,14 +139,32 @@ def print_stdin_tail(lines: int) -> None:
 def tail() -> None:
     params = parse_tail_arguments()
     stdin_has_data = not sys.stdin.isatty()
+    tail, chars = get_env_params()
 
     if params.file_path:
-        print_file_tail(params.file_path, params)
+        if tail:
+            if tail == "1":
+                
+        
+                
+        if chars:
+            print_file_tail_chars(params.file_path, params, int(chars))
+        else:
+            print_file_tail(params.file_path, params)
+
     elif stdin_has_data:
         if params.follow:
             print("Nie można użyc parametru --follow z poleceniem które przekazuje dane potokowo")
             return
-        print_stdin_tail(params.lines)
+        if tail:
+            if tail == "1":
+                print_stdin_tail_reverse(params.lines)
+            else:
+                print_stdin_tail(params.lines)
+        elif chars:
+            print_stdin_tail_chars(int(chars))
+        else:
+            print_stdin_tail(params.lines)
 
 
 if __name__ == "__main__":
