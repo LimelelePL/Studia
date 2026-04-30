@@ -1,5 +1,4 @@
 import csv
-from datetime import datetime
 from pathlib import Path
 
 from app.constants import (
@@ -11,29 +10,14 @@ from app.constants import (
     StationSeries,
 )
 
-
-def parse_date(date_str: str) -> datetime | None:
-    if not date_str or date_str.strip() == "":
-        return None
-    try:
-        return datetime.strptime(date_str.strip(), "%Y-%m-%d")
-    except ValueError:
-        return None
-
-
-def parse_measurement_datetime(date_str: str) -> datetime:
-    value = date_str.strip()
-    for date_format in ("%m/%d/%y %H:%M", "%d/%m/%y %H:%M"):
-        try:
-            return datetime.strptime(value, date_format)
-        except ValueError:
-            pass
-
-    raise ValueError(f"Unsupported measurement datetime format: {date_str!r}")
+# dane typu data szerokosc geograficzna są stringami bo trzeba pozniej w zadaniach operowac na nich regexem
 
 
 def parse_stations(path: Path) -> dict[str, list[StationData]]:
     result = {}
+
+    if not path.is_file():
+        raise FileExistsError("podany plik nie istnieje! ")
 
     with open(path, encoding="utf-8") as file:
         reader = csv.DictReader(file)
@@ -47,16 +31,16 @@ def parse_stations(path: Path) -> dict[str, list[StationData]]:
                     kod_miedzynarodowy=entry[StationEntry.kod_int] or None,
                     nazwa_stacji=entry[StationEntry.nazwa],
                     stary_kod_stacji=entry[StationEntry.stary_kod].strip() or None,
-                    data_uruchomienia=parse_date(entry[StationEntry.data_uruchomienia]),
-                    data_zamkniecia=parse_date(entry[StationEntry.data_zamkniecia]),
+                    data_uruchomienia=entry[StationEntry.data_uruchomienia].strip(),
+                    data_zamkniecia=entry[StationEntry.data_zamkniecia].strip(),
                     typ_stacji=entry[StationEntry.typ_stacji],
                     typ_obszaru=entry[StationEntry.typ_obszaru],
                     rodzaj_stacji=entry[StationEntry.rodzaj_stacji],
                     wojewodztwo=entry[StationEntry.wojewodztwo],
                     miejscowosc=entry[StationEntry.miejscowosc],
                     adres=entry[StationEntry.adres] or None,
-                    wgs84_n=float(entry[StationEntry.WGS84_N].split()[0].replace(",", ".")),
-                    wgs84_e=float(entry[StationEntry.WGS84_E].split()[0].replace(",", ".")),
+                    wgs84_n=entry[StationEntry.WGS84_N].split()[0].replace(",", "."),
+                    wgs84_e=entry[StationEntry.WGS84_E].split()[0].replace(",", "."),
                 )
             )
 
@@ -84,7 +68,7 @@ def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
         series: list[SingeMeasurement] = []
 
         for row in data_rows:
-            dt = parse_measurement_datetime(row[0])
+            dt = row[0]
             raw_val = row[idx].replace(",", ".") if idx < len(row) else ""
             val = float(raw_val) if raw_val.strip() else None
             series.append(SingeMeasurement(timestamp=dt, value=val))

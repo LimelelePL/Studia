@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from datetime import datetime
 from enum import IntEnum, StrEnum
 from pathlib import Path
 
 STATIONS_PATH = Path("resources/stacje.csv")
 MEASUREMENTS_PATH = Path("resources/measurements")
+POLISH_SPECIAL_ALPHA = "ĄĘŻŹÓŁąężźółćĆ"
 
 
 @dataclass
@@ -14,16 +14,16 @@ class StationData:
     kod_miedzynarodowy: str | None
     nazwa_stacji: str
     stary_kod_stacji: str | None
-    data_uruchomienia: datetime | None
-    data_zamkniecia: datetime | None
+    data_uruchomienia: str | None
+    data_zamkniecia: str | None
     typ_stacji: str
     typ_obszaru: str
     rodzaj_stacji: str
     wojewodztwo: str
     miejscowosc: str
     adres: str | None
-    wgs84_n: float
-    wgs84_e: float
+    wgs84_n: str
+    wgs84_e: str
 
 
 class StationEntry(StrEnum):
@@ -56,7 +56,7 @@ class MeasurementsRawEntry(IntEnum):
 
 @dataclass
 class SingeMeasurement:
-    timestamp: datetime
+    timestamp: str
     value: float | None
 
 
