@@ -64,7 +64,7 @@ def change_space_to_(name: str) -> str:
 
 
 def change_polish_special_alpha(name: str) -> str:
-    for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ"):
+    for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ", strict=False):
         res = re.sub(pl, lat, name.strip())
     return res
 
@@ -93,3 +93,37 @@ def verify_mob_ending(stations: dict[str, list[StationData]]) -> bool:
             if has_mob_ending(name) and type_s.strip() != "mobilna":
                 return False
     return True
+
+
+def has_name_with_three_dashes(name: str) -> bool:
+    pattern = re.compile(r"^\w+-\w+-\w+$")
+    return bool(pattern.match(name))
+
+
+def find_stations_with_three_sashes(stations: dict[str, list[StationData]]) -> list[str]:
+    result = set()
+    for _, data in stations.items():
+        for d in data:
+            name = d.nazwa_stacji
+            if has_name_with_three_dashes(name):
+                result.add(name)
+
+    return list(result)
+
+
+# Znajdź lokalizacje zawierające przecinek i nazwę ulicy (ul.) lub alei (al.)
+# Głogów, ul. Orzechowa
+def has_ul_or_al(name: str) -> bool:
+    pattern = re.compile(r"(\w|\s)+\,\s+(ul\.){1}.+$")
+    return bool(pattern.match(name))
+
+
+def find_stations_with_ul_or_al(stations: dict[str, list[StationData]]) -> list[str]:
+    result = set()
+    for _, data in stations.items():
+        for d in data:
+            name = d.nazwa_stacji
+            if has_ul_or_al(name):
+                result.add(name)
+
+    return list(result)

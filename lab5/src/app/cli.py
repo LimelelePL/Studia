@@ -97,7 +97,7 @@ def get_name_and_address(station_code: str) -> dict[str, str]:
 
 
 def print_random_station(records: list[dict]) -> None:
-    station_codes = list(set(record["station_code"] for record in records))
+    station_codes = list({record["station_code"] for record in records})
 
     if not station_codes:
         raise SystemExit("brak stacji dla podanych parametrow")
