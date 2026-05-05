@@ -1,4 +1,5 @@
 import csv
+import logging
 from pathlib import Path
 
 from app.constants import (
@@ -12,16 +13,21 @@ from app.constants import (
 
 # dane typu data szerokosc geograficzna są stringami bo trzeba pozniej w zadaniach operowac na nich regexem
 
+logger = logging.getLogger(__name__)
+
 
 def parse_stations(path: Path) -> dict[str, list[StationData]]:
     result = {}
 
     if not path.is_file():
-        raise FileExistsError("podany plik nie istnieje! ")
+        logger.error("Plik nie istnieje: %s", path)
+        raise FileNotFoundError(f"Plik nie istnieje: {path}")
 
+    logger.info("Otwarto plik: %s", path)
     with open(path, encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for entry in reader:
+            logger.debug("Przeczytano %d bajtów", len(",".join(entry.values()).encode("utf-8")))
             code = entry[StationEntry.kod_stacji]
 
             result.setdefault(code, []).append(
@@ -43,24 +49,32 @@ def parse_stations(path: Path) -> dict[str, list[StationData]]:
                     wgs84_e=entry[StationEntry.WGS84_E].split()[0].replace(",", "."),
                 )
             )
+    logger.info("Zamknięto plik: %s", path)
 
     return result
 
 
 def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
     path = MEASUREMENTS_PATH / file_name
+
+    if not path.is_file():
+        logger.error("Plik nie istnieje: %s", path)
+        raise FileNotFoundError(f"Plik nie istnieje: {path}")
+
+    logger.info("Otwarto plik: %s", path)
     with open(path, encoding="utf-8") as file:
         rows = list(csv.reader(file))
+    logger.info("Zamknięto plik: %s", path)
 
-        if not rows:
-            return {}
+    if not rows:
+        return {}
 
     station_codes = rows[MeasurementsRawEntry.kod_stacji][1:]
-    indicatiors = rows[MeasurementsRawEntry.wskaznik][1:]
+    indicators = rows[MeasurementsRawEntry.wskaznik][1:]
     averaging_time = rows[MeasurementsRawEntry.czas_usrednienia][1:]
     unit = rows[MeasurementsRawEntry.jednostka][1:]
-    code = rows[MeasurementsRawEntry.kod_stanowsika][1:]
-    data_rows = rows[MeasurementsRawEntry.dane :]
+    code = rows[MeasurementsRawEntry.kod_stanowiska][1:]
+    data_rows = rows[MeasurementsRawEntry.dane:]
 
     result = {}
 
@@ -68,6 +82,7 @@ def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
         series: list[SingeMeasurement] = []
 
         for row in data_rows:
+            logger.debug("Przeczytano %d bajtów", len(",".join(row).encode("utf-8")))
             dt = row[0]
             raw_val = row[idx].replace(",", ".") if idx < len(row) else ""
             val = float(raw_val) if raw_val.strip() else None
@@ -76,7 +91,7 @@ def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
         result.setdefault(station_code.strip(), []).append(
             StationSeries(
                 kod_stacji=station_code.strip(),
-                wskaznik=indicatiors[idx - 1].strip(),
+                wskaznik=indicators[idx - 1].strip(),
                 jednostka=unit[idx - 1].strip(),
                 czas_usredniania=averaging_time[idx - 1].strip(),
                 kod_stanowiska=code[idx - 1].strip(),

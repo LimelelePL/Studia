@@ -1,8 +1,7 @@
 import re
 from pathlib import Path
 
-from lab5.src.app.constants import StationData
-
+from app.constants import StationData
 from app.parser import parse_stations
 
 # TODO: przetestowac
@@ -19,7 +18,7 @@ def get_house_number(address: str) -> str:
     return match.group(1) if match else ""
 
 
-def get_adresses(path: Path, city: str) -> list[tuple[str, str, str, str]]:
+def get_adresses(path: Path, city: str) -> list[tuple[str, str, str | None, str | None]]:
     if not path.is_file():
         raise FileNotFoundError("podany plik nie istnieje!")
 

@@ -4,7 +4,6 @@ from pathlib import Path
 
 STATIONS_PATH = Path("resources/stacje.csv")
 MEASUREMENTS_PATH = Path("resources/measurements")
-POLISH_SPECIAL_ALPHA = "ĄĘŻŹÓŁąężźółćĆ"
 
 
 @dataclass
@@ -50,7 +49,7 @@ class MeasurementsRawEntry(IntEnum):
     wskaznik = 2
     czas_usrednienia = 3
     jednostka = 4
-    kod_stanowsika = 5
+    kod_stanowiska = 5
     dane = 6  # dane od 6 miejsca do konca
 
 

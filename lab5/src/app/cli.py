@@ -1,5 +1,8 @@
 import argparse
+import logging
 import random
+import sys
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from statistics import mean, pstdev
@@ -8,7 +11,37 @@ from app.constants import MEASUREMENTS_PATH, STATIONS_PATH
 from app.group_measurement_files_by_key import group_measurement_files_by_key
 from app.parser import parse_measurment, parse_stations
 
-SUPPORTED_FREQUENCIES = {"1g", "24g"}
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class _MaxLevelFilter(logging.Filter):
+    max_level: int
+
+    def __post_init__(self) -> None:
+        super().__init__()
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return record.levelno < self.max_level
+
+
+def setup_logging() -> None:
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+
+    fmt = logging.Formatter("%(levelname)s %(name)s: %(message)s")
+
+    stdout_handler = logging.StreamHandler(sys.stdout)
+    stdout_handler.setLevel(logging.DEBUG)
+    stdout_handler.addFilter(_MaxLevelFilter(logging.ERROR))
+    stdout_handler.setFormatter(fmt)
+
+    stderr_handler = logging.StreamHandler(sys.stderr)
+    stderr_handler.setLevel(logging.ERROR)
+    stderr_handler.setFormatter(fmt)
+
+    root.addHandler(stdout_handler)
+    root.addHandler(stderr_handler)
 
 
 def possible_unit_measurements(directory: Path) -> tuple[list[str], list[str]]:
@@ -56,6 +89,9 @@ def get_filtered_pathes(measurement: str, frequency: str) -> list[Path]:
         if m == measurement and f == frequency:
             result.add(path)
 
+    if not result:
+        logger.warning("Wskaźnik '%s' z częstotliwością '%s' nie występuje na żadnej stacji", measurement, frequency)
+
     return list(result)
 
 
@@ -76,6 +112,9 @@ def get_all_measurements_in_range(filtered_list: list[Path], start: datetime, en
                         }
                         result.append(record)
 
+    if not result:
+        logger.warning("Brak dostępnych pomiarów dla zadanych parametrów w podanym przedziale czasowym")
+
     return result
 
 
@@ -84,6 +123,7 @@ def get_name_and_address(station_code: str) -> dict[str, str]:
     target = stations.get(station_code)
 
     if not target:
+        logger.warning("Nie znaleziono stacji o kodzie: %s", station_code)
         return {}
 
     data = target[0]
@@ -100,18 +140,19 @@ def print_random_station(records: list[dict]) -> None:
     station_codes = list({record["station_code"] for record in records})
 
     if not station_codes:
-        raise SystemExit("brak stacji dla podanych parametrow")
+        logger.warning("Brak stacji pomiarowych dla podanych parametrów")
+        raise SystemExit(1)
 
     station_code = random.choice(station_codes)
     data = get_name_and_address(station_code)
 
     if not data:
-        raise SystemExit(f"brak danych stacji: {station_code}")
+        raise SystemExit(1)
 
-    print(f"kod stacji: {station_code}")
-    print(f"nazwa stacji: {data['station_name']}")
-    print(f"miejscowosc: {data['station_city']}")
-    print(f"adres: {data['station_address']}")
+    print(f"kod stacji: {station_code}")  # noqa: T201
+    print(f"nazwa stacji: {data['station_name']}")  # noqa: T201
+    print(f"miejscowosc: {data['station_city']}")  # noqa: T201
+    print(f"adres: {data['station_address']}")  # noqa: T201
 
 
 def print_stats(records: list[dict], station_code: str) -> None:
@@ -120,12 +161,13 @@ def print_stats(records: list[dict], station_code: str) -> None:
     ]
 
     if not values:
-        raise SystemExit("brak pomiarow dla podanej stacji i zakresu dat")
+        logger.warning("Stacja '%s' nie wspiera podanego wskaźnika lub nie ma pomiarów w zadanym przedziale", station_code)
+        raise SystemExit(1)
 
-    print(f"kod stacji: {station_code}")
-    print(f"liczba pomiarow: {len(values)}")
-    print(f"srednia: {mean(values):.4f}")
-    print(f"odchylenie standardowe: {pstdev(values):.4f}")
+    print(f"kod stacji: {station_code}")  # noqa: T201
+    print(f"liczba pomiarow: {len(values)}")  # noqa: T201
+    print(f"srednia: {mean(values):.4f}")  # noqa: T201
+    print(f"odchylenie standardowe: {pstdev(values):.4f}")  # noqa: T201
 
 
 def parse_args():
@@ -147,21 +189,27 @@ def parse_args():
 
 
 def main() -> None:
-    args = parse_args()
-    filtered_list = get_filtered_pathes(args.sensor, args.frequency)
+    setup_logging()
+    try:
+        args = parse_args()
+        filtered_list = get_filtered_pathes(args.sensor, args.frequency)
 
-    if not filtered_list:
-        raise SystemExit("brak plikow dla podanych parametrow")
+        if not filtered_list:
+            raise SystemExit(1)
 
-    records = get_all_measurements_in_range(filtered_list, args.start, args.end)
+        records = get_all_measurements_in_range(filtered_list, args.start, args.end)
 
-    if args.command == "random":
-        print_random_station(records)
-        return
+        if not records:
+            raise SystemExit(1)
 
-    if args.command == "stats":
-        print_stats(records, args.station_code)
-        return
+        if args.command == "random":
+            print_random_station(records)
+
+        elif args.command == "stats":
+            print_stats(records, args.station_code)
+
+    except FileNotFoundError:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

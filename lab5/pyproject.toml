@@ -4,10 +4,13 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "typer>=0.25.1",
+]
 
 [project.scripts]
 lab5 = "app.main:main"
+lab5-typer = "app.cli_typer:app"
 
 [tool.uv]
 package = true

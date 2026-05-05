@@ -3,9 +3,6 @@ import re
 
 from app.constants import StationData
 
-# TODO zrobic f i g
-
-
 # 2001-12-31
 def is_date(date: str) -> bool:
     pattern = re.compile(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$")
@@ -26,7 +23,7 @@ def find_dates(stations: dict[str, list[StationData]]) -> list[tuple[str, str]]:
 
 
 def is_coordinate(coordinate: str) -> bool:
-    pattern = re.compile(r"\d{2}\.\d{6}")
+    pattern = re.compile(r"^\d{2}\.\d{6}$")
     return bool(pattern.match(coordinate))
 
 
@@ -64,14 +61,15 @@ def change_space_to_(name: str) -> str:
 
 
 def change_polish_special_alpha(name: str) -> str:
+    res = name.strip()
     for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ", strict=False):
-        res = re.sub(pl, lat, name.strip())
+        res = re.sub(pl, lat, res)
     return res
 
 
 def convert_station_names(stations: dict[str, list[StationData]]) -> dict[str, list[StationData]]:
     stations_copy = copy.deepcopy(stations)
-    for _, data in stations.items():
+    for _, data in stations_copy.items():
         for d in data:
             name = d.nazwa_stacji
             name = change_space_to_(name)
@@ -114,7 +112,7 @@ def find_stations_with_three_sashes(stations: dict[str, list[StationData]]) -> l
 # Znajdź lokalizacje zawierające przecinek i nazwę ulicy (ul.) lub alei (al.)
 # Głogów, ul. Orzechowa
 def has_ul_or_al(name: str) -> bool:
-    pattern = re.compile(r"(\w|\s)+\,\s+(ul\.){1}.+$")
+    pattern = re.compile(r"(\w|\s)+\,\s+(ul\.|al\.).+$")
     return bool(pattern.match(name))
 
 
