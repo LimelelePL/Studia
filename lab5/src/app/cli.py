@@ -172,6 +172,40 @@ def print_stats(records: list[dict], station_code: str) -> None:
     print(f"odchylenie standardowe: {pstdev(values):.4f}")  # noqa: T201
 
 
+def print_worst_station(records: list[dict]) -> None:
+    if not records:
+        logger.warning("Brak pomiarow w zadanym przedziale")
+        raise SystemExit(1)
+
+    station_dict: dict[str, list[float]] = {}
+
+    for record in records:
+        station_code = record.get("station_code")
+        value = record.get("value")
+
+        if station_code is None or value is None:
+            continue
+
+        station_dict.setdefault(station_code, []).append(value)
+
+    if not station_dict:
+        logger.warning("Brak poprawnych wartosci do obliczen")
+        raise SystemExit(1)
+
+    max_name = ""
+    max_mean = -1.0
+
+    for name, values in station_dict.items():
+        current_mean = mean(values)
+
+        if current_mean > max_mean:
+            max_mean = current_mean
+            max_name = name
+
+    print(max_name)
+    print(max_mean)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     measurements, frequencies = possible_unit_measurements(MEASUREMENTS_PATH)
@@ -184,6 +218,7 @@ def parse_args():
     subparsers.add_parser("random", help="Losowa stacja")
     parser_stats = subparsers.add_parser("stats", help="obliczenie statystyk dla danej stacji")
     parser_stats.add_argument("station_code", help="kod stacji")
+    subparsers.add_parser("worst_station", help="najgorsza stacja")
 
     args = parser.parse_args()
     validate_date_range(parser, args.start, args.end)
@@ -209,6 +244,9 @@ def main() -> None:
 
         elif args.command == "stats":
             print_stats(records, args.station_code)
+
+        elif args.command == "worst_station":
+            print_worst_station(records)
 
     except FileNotFoundError:
         raise SystemExit(1)

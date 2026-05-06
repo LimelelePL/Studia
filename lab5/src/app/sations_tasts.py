@@ -63,7 +63,7 @@ def change_space_to_(name: str) -> str:
 
 def change_polish_special_alpha(name: str) -> str:
     res = name.strip()
-    for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ", strict=False):
+    for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ"):
         res = re.sub(pl, lat, res)
     return res
 
