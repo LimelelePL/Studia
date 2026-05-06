@@ -11,7 +11,7 @@ from app.constants import (
     StationSeries,
 )
 
-# dane typu data szerokosc geograficzna są stringami bo trzeba pozniej w zadaniach operowac na nich regexem
+# dane typu data szerokosc geograficzna sa stringami bo trzeba pozniej w zadaniach operowac na nich regexem
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ def parse_stations(path: Path) -> dict[str, list[StationData]]:
     with open(path, encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for entry in reader:
-            logger.debug("Przeczytano %d bajtów", len(",".join(entry.values()).encode("utf-8")))
+            logger.debug("Przeczytano %d bajtow", len(",".join(entry.values()).encode("utf-8")))
             code = entry[StationEntry.kod_stacji]
 
             result.setdefault(code, []).append(
@@ -49,7 +49,7 @@ def parse_stations(path: Path) -> dict[str, list[StationData]]:
                     wgs84_e=entry[StationEntry.WGS84_E].split()[0].replace(",", "."),
                 )
             )
-    logger.info("Zamknięto plik: %s", path)
+    logger.info("Zamknieto plik: %s", path)
 
     return result
 
@@ -64,7 +64,7 @@ def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
     logger.info("Otwarto plik: %s", path)
     with open(path, encoding="utf-8") as file:
         rows = list(csv.reader(file))
-    logger.info("Zamknięto plik: %s", path)
+    logger.info("Zamknieto plik: %s", path)
 
     if not rows:
         return {}
@@ -74,7 +74,10 @@ def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
     averaging_time = rows[MeasurementsRawEntry.czas_usrednienia][1:]
     unit = rows[MeasurementsRawEntry.jednostka][1:]
     code = rows[MeasurementsRawEntry.kod_stanowiska][1:]
-    data_rows = rows[MeasurementsRawEntry.dane:]
+    data_rows = rows[MeasurementsRawEntry.dane :]
+
+    for row in data_rows:
+        logger.debug("Przeczytano %d bajtow", len(",".join(row).encode("utf-8")))
 
     result = {}
 
@@ -82,7 +85,6 @@ def parse_measurment(file_name: Path) -> dict[str, list[StationSeries]]:
         series: list[SingeMeasurement] = []
 
         for row in data_rows:
-            logger.debug("Przeczytano %d bajtów", len(",".join(row).encode("utf-8")))
             dt = row[0]
             raw_val = row[idx].replace(",", ".") if idx < len(row) else ""
             val = float(raw_val) if raw_val.strip() else None

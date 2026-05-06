@@ -161,7 +161,9 @@ def print_stats(records: list[dict], station_code: str) -> None:
     ]
 
     if not values:
-        logger.warning("Stacja '%s' nie wspiera podanego wskaźnika lub nie ma pomiarów w zadanym przedziale", station_code)
+        logger.warning(
+            "Stacja '%s' nie wspiera podanego wskaźnika lub nie ma pomiarów w zadanym przedziale", station_code
+        )
         raise SystemExit(1)
 
     print(f"kod stacji: {station_code}")  # noqa: T201

@@ -3,6 +3,7 @@ import re
 
 from app.constants import StationData
 
+
 # 2001-12-31
 def is_date(date: str) -> bool:
     pattern = re.compile(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$")

@@ -1,6 +1,7 @@
-import typer
 from datetime import datetime
 from typing import Annotated
+
+import typer
 
 from app.cli import (
     get_all_measurements_in_range,
@@ -95,3 +96,7 @@ def stats(
         print_stats(records, station_code)
     except FileNotFoundError:
         raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    app()
