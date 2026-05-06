@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 
+import numpy as np  # type: ignore
+
 
 @dataclass
 class TimeSeries:
@@ -8,7 +10,7 @@ class TimeSeries:
     code: str
     averaging_time: str
     timestamps: list[datetime]
-    values: list[float | None]
+    values: np.array[float | None]
     unit: str
 
     def __init__(
@@ -17,7 +19,7 @@ class TimeSeries:
         code: str,
         averaging_time: str,
         timestamps: list[datetime],
-        values: list[float | None],
+        values: np.array[float | None],
         unit: str,
     ) -> None:
         if len(timestamps) != len(values):
@@ -66,3 +68,12 @@ class TimeSeries:
             return matched_values
 
         raise TypeError("key musi byc int, slice, datetime albo date")
+        return None
+
+    @property
+    def mean(self) -> float | None:
+        return np.mean(self.values) if self.values else None
+
+    @property
+    def stddev(self) -> float | None:
+        return np.std(self.values) if self.values else None
