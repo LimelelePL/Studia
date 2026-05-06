@@ -129,9 +129,9 @@ def print_stdin_tail(lines: int) -> None:
 
     line_buffer: deque[str] = deque(maxlen=max(0, lines))
     for line in sys.stdin:
-        line_buffer.append(line)
-    output_lines = list(reversed(line_buffer)) if tail_reverse else list(line_buffer)
-    for line in output_lines:
+        buffer.append(line)
+    for line in reversed(buffer):
+        time.sleep(0.2)
         sys.stdout.write(line)
         sys.stdout.flush()
 
