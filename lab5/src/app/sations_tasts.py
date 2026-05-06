@@ -3,6 +3,7 @@ import re
 
 from app.constants import StationData
 
+
 # 2001-12-31
 def is_date(date: str) -> bool:
     pattern = re.compile(r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$")
@@ -62,7 +63,7 @@ def change_space_to_(name: str) -> str:
 
 def change_polish_special_alpha(name: str) -> str:
     res = name.strip()
-    for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ", strict=False):
+    for pl, lat in zip("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ"):
         res = re.sub(pl, lat, res)
     return res
 
