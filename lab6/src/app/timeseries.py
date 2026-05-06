@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 
-import numpy as np  # type: ignore
+import numpy as np
 
 
 @dataclass
@@ -10,7 +10,7 @@ class TimeSeries:
     code: str
     averaging_time: str
     timestamps: list[datetime]
-    values: np.array[float | None]
+    values: np.ndarray
     unit: str
 
     def __init__(
@@ -19,7 +19,7 @@ class TimeSeries:
         code: str,
         averaging_time: str,
         timestamps: list[datetime],
-        values: np.array[float | None],
+        values: np.ndarray,
         unit: str,
     ) -> None:
         if len(timestamps) != len(values):
@@ -68,12 +68,21 @@ class TimeSeries:
             return matched_values
 
         raise TypeError("key musi byc int, slice, datetime albo date")
-        return None
 
     @property
     def mean(self) -> float | None:
-        return np.mean(self.values) if self.values else None
+        numeric_values = np.array([np.nan if value is None else value for value in self.values], dtype=float)
+
+        if np.isnan(numeric_values).all():
+            return None
+
+        return float(np.nanmean(numeric_values))
 
     @property
     def stddev(self) -> float | None:
-        return np.std(self.values) if self.values else None
+        numeric_values = np.array([np.nan if value is None else value for value in self.values], dtype=float)
+
+        if np.isnan(numeric_values).all():
+            return None
+
+        return float(np.nanstd(numeric_values))
