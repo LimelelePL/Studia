@@ -47,12 +47,15 @@ class ZeroSpikeDetector(SeriesValidator):
 
         result: list[str] = []
 
-        def append_message() -> None:
-            if (
+        def is_end_of_sequence() -> bool:
+            return (
                 number_of_zeros_or_none >= min_number_of_zeros
                 and start_timestamp is not None
                 and previous_timestamp is not None
-            ):
+            )
+
+        def append_message() -> None:
+            if start_timestamp is not None and previous_timestamp is not None:
                 result.append(
                     f"ZeroSpikeDetector dla stacji {series.code}, wskaznika {series.sensor}: "
                     f"{number_of_zeros_or_none} zer lub brakow danych z rzedu "
@@ -68,12 +71,15 @@ class ZeroSpikeDetector(SeriesValidator):
                 previous_timestamp = timestamp
                 continue
 
-            append_message()
+            if is_end_of_sequence():
+                append_message()
+
             number_of_zeros_or_none = 0
             start_timestamp = None
             previous_timestamp = timestamp
 
-        append_message()
+        if is_end_of_sequence():
+            append_message()
 
         return result
 
