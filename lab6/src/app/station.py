@@ -17,7 +17,6 @@ class Station:
     address: str | None
     latitude: str
     longitude: str
-    age: int | None  # Dodałem pole age, skoro pojawiło się w Twoim pytaniu
 
     def __init__(
         self,
@@ -35,7 +34,6 @@ class Station:
         address: str | None,
         latitude: str,
         longitude: str,
-        age: int | None = None,
     ):
         self.code = code
         self.international_code = international_code
@@ -51,7 +49,6 @@ class Station:
         self.address = address
         self.latitude = latitude
         self.longitude = longitude
-        self.age = age
 
     def __str__(self) -> str:
         return (
