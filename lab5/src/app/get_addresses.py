@@ -4,10 +4,7 @@ from pathlib import Path
 from app.constants import StationData
 from app.parser import parse_stations
 
-# TODO: przetestowac
 
-
-# ul. chopina 10
 def get_street_name(address: str) -> str:
     match = re.search(r"ul\.\s*([^\d]+)", address)
     return match.group(1).strip() if match else address
