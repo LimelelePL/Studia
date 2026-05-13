@@ -8,23 +8,23 @@ from app.constants import CSV_DATETIME_FORMAT, CsvHeaderField, CsvHeaderRow, Ser
 from app.detectors import SeriesValidator
 from app.timeseries import TimeSeries
 
-_HEADER_ROWS_TO_READ = CsvHeaderRow.STATION_ID + 1   # read up to and including "Kod stanowiska"
-_DATA_ROWS_START = CsvHeaderRow.STATION_ID + 1        # skip every header row before data
+_HEADER_ROWS_TO_READ = CsvHeaderRow.STATION_ID + 1  # czytaj włącznie z wierszem "Kod stanowiska"
+_DATA_ROWS_START = CsvHeaderRow.STATION_ID + 1        # pomiń wszystkie wiersze nagłówka przed danymi
 
 
 class Measurements:
     def __init__(self, directory: str | Path) -> None:
         self._directory = Path(directory)
         self._files: list[Path] = sorted(self._directory.glob("*.csv"))
-        self._index: list[SeriesEntry] | None = None
+        self._index: list[SeriesEntry] = []
+        self._index_built = False
         self._cache: dict[tuple[Path, str], TimeSeries] = {}
         self._loaded_files: set[Path] = set()
 
     def _ensure_index(self) -> None:
-        """Read header rows from every CSV to build the index of available series."""
-        if self._index is not None:
+        """Czyta wiersze nagłówka z każdego pliku CSV i buduje indeks dostępnych serii."""
+        if self._index_built:
             return
-        self._index = []
         for csv_file in self._files:
             with open(csv_file, encoding="utf-8", newline="") as f:
                 reader = csv.reader(f)
@@ -36,24 +36,24 @@ class Measurements:
                         break
             if len(rows) < _HEADER_ROWS_TO_READ:
                 continue
-            station_codes = rows[CsvHeaderRow.STATION_CODE][CsvHeaderField.DATA_START:]
-            sensors      = rows[CsvHeaderRow.SENSOR][CsvHeaderField.DATA_START:]
-            avg_times    = rows[CsvHeaderRow.AVG_TIME][CsvHeaderField.DATA_START:]
-            units        = rows[CsvHeaderRow.UNIT][CsvHeaderField.DATA_START:]
+            station_codes = rows[CsvHeaderRow.STATION_CODE][CsvHeaderField.DATA_START :]
+            sensors = rows[CsvHeaderRow.SENSOR][CsvHeaderField.DATA_START :]
+            avg_times = rows[CsvHeaderRow.AVG_TIME][CsvHeaderField.DATA_START :]
+            units = rows[CsvHeaderRow.UNIT][CsvHeaderField.DATA_START :]
             for i, code in enumerate(station_codes):
-                sensor = sensors[i]   if i < len(sensors)   else ""
-                avg    = avg_times[i] if i < len(avg_times) else ""
-                unit   = units[i]     if i < len(units)     else ""
+                sensor = sensors[i] if i < len(sensors) else ""
+                avg = avg_times[i] if i < len(avg_times) else ""
+                unit = units[i] if i < len(units) else ""
                 col_idx = i + CsvHeaderField.DATA_START
                 self._index.append(SeriesEntry(csv_file, col_idx, code, sensor, avg, unit))
+        self._index_built = True
 
     def _load_file(self, file_path: Path) -> None:
-        """Load all TimeSeries from a single CSV file and store them in the cache."""
+        """Wczytuje wszystkie serie czasowe z jednego pliku CSV i zapisuje je w cache."""
         if file_path in self._loaded_files:
             return
 
         self._ensure_index()
-        assert self._index is not None
 
         file_entries: list[SeriesEntry] = []
         for entry in self._index:
@@ -102,17 +102,14 @@ class Measurements:
 
     def __len__(self) -> int:
         self._ensure_index()
-        assert self._index is not None
         return len(self._index)
 
     def __contains__(self, parameter_name: object) -> bool:
         self._ensure_index()
-        assert self._index is not None
         return any(entry.sensor == parameter_name for entry in self._index)
 
     def get_by_parameter(self, param_name: str) -> list[TimeSeries]:
         self._ensure_index()
-        assert self._index is not None
         result: list[TimeSeries] = []
         seen: set[tuple[Path, str]] = set()
         for entry in self._index:
@@ -126,7 +123,6 @@ class Measurements:
 
     def get_by_station(self, station_code: str) -> list[TimeSeries]:
         self._ensure_index()
-        assert self._index is not None
         result: list[TimeSeries] = []
         seen: set[tuple[Path, str]] = set()
         for entry in self._index:
@@ -140,7 +136,6 @@ class Measurements:
 
     def detect_all_anomalies(self, validators: list[SeriesValidator], preload: bool = False) -> dict[str, list[str]]:
         self._ensure_index()
-        assert self._index is not None
 
         if preload:
             for entry in self._index:
