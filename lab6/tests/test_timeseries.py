@@ -11,7 +11,7 @@ def make_series(values: list[float | None] | None = None) -> TimeSeries:
     if values is None:
         values = [1.0, 2.0, 3.0, 4.0, 5.0]
     timestamps = [datetime(2023, 1, 1, h + 1) for h in range(len(values))]
-    np_values = np.array([np.nan if v is None else v for v in values], dtype=float)
+    np_values = np.array(values, dtype=float)
     return TimeSeries(
         sensor="C6H6",
         code="TestStation",
