@@ -35,39 +35,42 @@ class TimeSeries:
     def __getitem__(
         self, key: int | slice | datetime | date
     ) -> tuple[datetime, float | None] | list[tuple[datetime, float | None]] | float | list[float | None] | None:
-        if isinstance(key, int):
-            return (self.timestamps[key], self.values[key])
+        matched_values: list[float | None] = []
+        match key:
+            case int():
+                return (self.timestamps[key], self.values[key])
 
-        if isinstance(key, slice):
-            return list(zip(self.timestamps[key], self.values[key], strict=False))
+            case slice():
+                return list(zip(self.timestamps[key], self.values[key], strict=False))
 
-        if isinstance(key, datetime):
-            matched_values = [
-                value for timestamp, value in zip(self.timestamps, self.values, strict=False) if timestamp == key
-            ]
+            case datetime():
+                for timestamp, value in zip(self.timestamps, self.values, strict=False):
+                    if timestamp == key:
+                        matched_values.append(value)
 
-            if not matched_values:
-                raise KeyError(key)
+                if not matched_values:
+                    raise KeyError(key)
 
-            if len(matched_values) == 1:
-                return matched_values[0]
+                if len(matched_values) == 1:
+                    return matched_values[0]
 
-            return matched_values
+                return matched_values
 
-        if isinstance(key, date):
-            matched_values = [
-                value for timestamp, value in zip(self.timestamps, self.values, strict=False) if timestamp.date() == key
-            ]
+            case date():
+                for timestamp, value in zip(self.timestamps, self.values, strict=False):
+                    if timestamp.date() == key:
+                        matched_values.append(value)
 
-            if not matched_values:
-                raise KeyError(key)
+                if not matched_values:
+                    raise KeyError(key)
 
-            if len(matched_values) == 1:
-                return matched_values[0]
+                if len(matched_values) == 1:
+                    return matched_values[0]
 
-            return matched_values
+                return matched_values
 
-        raise TypeError("key musi byc int, slice, datetime albo date")
+            case _:
+                raise TypeError("key musi byc int, slice, datetime albo date")
 
     @property
     def mean(self) -> float | None:

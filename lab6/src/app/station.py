@@ -7,7 +7,7 @@ class Station:
     international_code: str | None
     name: str
     old_code: str | None
-    opening_time: str | None
+    opening_time: str
     closing_time: str | None
     station_type: str
     area_type: str
@@ -24,7 +24,7 @@ class Station:
         international_code: str | None,
         name: str,
         old_code: str | None,
-        opening_time: str | None,
+        opening_time: str,
         closing_time: str | None,
         station_type: str,
         area_type: str,
@@ -61,5 +61,7 @@ class Station:
             f"name={self.name!r}, address={self.address!r})"
         )
 
-    def __eq__(self, other: "Station") -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Station):
+            return False
         return self.code == other.code
