@@ -4,12 +4,9 @@ from pathlib import Path
 
 import numpy as np
 
-from app.constants import CSV_DATETIME_FORMAT, CsvHeaderField, CsvHeaderRow, SeriesEntry
+from app.constants import CSV_DATETIME_FORMAT, CsvHeaderField, CsvHeaderRow, HEADER_ROW_COUNT, SeriesEntry
 from app.detectors import SeriesValidator
 from app.timeseries import TimeSeries
-
-_HEADER_ROWS_TO_READ = CsvHeaderRow.STATION_ID + 1  # czytaj włącznie z wierszem "Kod stanowiska"
-_DATA_ROWS_START = CsvHeaderRow.STATION_ID + 1        # pomiń wszystkie wiersze nagłówka przed danymi
 
 
 class Measurements:
@@ -18,7 +15,7 @@ class Measurements:
         self._files: list[Path] = sorted(self._directory.glob("*.csv"))
         self._index: list[SeriesEntry] = []
         self._index_built = False
-        self._cache: dict[tuple[Path, str], TimeSeries] = {}
+        self._cache: dict[tuple[Path, int], TimeSeries] = {}
         self._loaded_files: set[Path] = set()
 
     def _ensure_index(self) -> None:
@@ -29,21 +26,18 @@ class Measurements:
             with open(csv_file, encoding="utf-8", newline="") as f:
                 reader = csv.reader(f)
                 rows: list[list[str]] = []
-                for _ in range(_HEADER_ROWS_TO_READ):
+                for _ in range(HEADER_ROW_COUNT):
                     try:
                         rows.append(next(reader))
                     except StopIteration:
                         break
-            if len(rows) < _HEADER_ROWS_TO_READ:
+            if len(rows) < HEADER_ROW_COUNT:
                 continue
             station_codes = rows[CsvHeaderRow.STATION_CODE][CsvHeaderField.DATA_START :]
             sensors = rows[CsvHeaderRow.SENSOR][CsvHeaderField.DATA_START :]
             avg_times = rows[CsvHeaderRow.AVG_TIME][CsvHeaderField.DATA_START :]
             units = rows[CsvHeaderRow.UNIT][CsvHeaderField.DATA_START :]
-            for i, code in enumerate(station_codes):
-                sensor = sensors[i] if i < len(sensors) else ""
-                avg = avg_times[i] if i < len(avg_times) else ""
-                unit = units[i] if i < len(units) else ""
+            for i, (code, sensor, avg, unit) in enumerate(zip(station_codes, sensors, avg_times, units, strict=False)):
                 col_idx = i + CsvHeaderField.DATA_START
                 self._index.append(SeriesEntry(csv_file, col_idx, code, sensor, avg, unit))
         self._index_built = True
@@ -63,7 +57,7 @@ class Measurements:
         rows_data: list[list[str]] = []
         with open(file_path, encoding="utf-8", newline="") as f:
             reader = csv.reader(f)
-            for _ in range(_DATA_ROWS_START):
+            for _ in range(HEADER_ROW_COUNT):
                 next(reader, None)
             for row in reader:
                 rows_data.append(row)
@@ -87,7 +81,7 @@ class Measurements:
                 except ValueError:
                     raw_values.append(None)
 
-            np_values = np.array([np.nan if v is None else v for v in raw_values], dtype=float)
+            np_values = np.array(raw_values, dtype=float)
             series = TimeSeries(
                 sensor=entry.sensor,
                 code=entry.station_code,
@@ -96,7 +90,7 @@ class Measurements:
                 values=np_values,
                 unit=entry.unit,
             )
-            self._cache[file_path, entry.station_code] = series
+            self._cache[file_path, entry.col_idx] = series
 
         self._loaded_files.add(file_path)
 
@@ -111,27 +105,23 @@ class Measurements:
     def get_by_parameter(self, param_name: str) -> list[TimeSeries]:
         self._ensure_index()
         result: list[TimeSeries] = []
-        seen: set[tuple[Path, str]] = set()
         for entry in self._index:
             if entry.sensor == param_name:
                 self._load_file(entry.file_path)
-                key = (entry.file_path, entry.station_code)
-                if key in self._cache and key not in seen:
+                key = (entry.file_path, entry.col_idx)
+                if key in self._cache:
                     result.append(self._cache[key])
-                    seen.add(key)
         return result
 
     def get_by_station(self, station_code: str) -> list[TimeSeries]:
         self._ensure_index()
         result: list[TimeSeries] = []
-        seen: set[tuple[Path, str]] = set()
         for entry in self._index:
             if entry.station_code == station_code:
                 self._load_file(entry.file_path)
-                key = (entry.file_path, entry.station_code)
-                if key in self._cache and key not in seen:
+                key = (entry.file_path, entry.col_idx)
+                if key in self._cache:
                     result.append(self._cache[key])
-                    seen.add(key)
         return result
 
     def detect_all_anomalies(self, validators: list[SeriesValidator], preload: bool = False) -> dict[str, list[str]]:

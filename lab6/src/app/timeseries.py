@@ -74,18 +74,12 @@ class TimeSeries:
 
     @property
     def mean(self) -> float | None:
-        numeric_values = np.array([np.nan if value is None else value for value in self.values], dtype=float)
-
-        if np.isnan(numeric_values).all():
+        if np.isnan(self.values).all():
             return None
-
-        return float(np.nanmean(numeric_values))
+        return float(np.nanmean(self.values))
 
     @property
     def stddev(self) -> float | None:
-        numeric_values = np.array([np.nan if value is None else value for value in self.values], dtype=float)
-
-        if np.isnan(numeric_values).all():
+        if np.isnan(self.values).all():
             return None
-
-        return float(np.nanstd(numeric_values))
+        return float(np.nanstd(self.values))
