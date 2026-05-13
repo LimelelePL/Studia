@@ -1,18 +1,9 @@
-from dataclasses import dataclass
 from datetime import date, datetime
 
 import numpy as np
 
 
-@dataclass
 class TimeSeries:
-    sensor: str
-    code: str
-    averaging_time: str
-    timestamps: list[datetime]
-    values: np.ndarray
-    unit: str
-
     def __init__(
         self,
         sensor: str,
@@ -83,3 +74,17 @@ class TimeSeries:
         if np.isnan(self.values).all():
             return None
         return float(np.nanstd(self.values))
+
+    @property
+    def min_value(self) -> float | None:
+        if np.isnan(self.values).all():
+            return None
+
+        return np.min(self.values)
+
+    @property
+    def max_value(self) -> float | None:
+        if np.isnan(self.values).all():
+            return None
+
+        return np.max(self.values)

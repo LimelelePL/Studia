@@ -1,12 +1,12 @@
 from datetime import datetime
 from pathlib import Path
 
-from app.detectors import OutlierDetector, ThresholdDetector, ZeroSpikeDetector
-from app.measurements import Measurements
+import numpy as np
 
 from app.detectors import OutlierDetector, SimpleReporter, ThresholdDetector, ZeroSpikeDetector
 from app.measurements import Measurements
 from app.timeseries import TimeSeries
+
 
 def demo_measurements() -> None:
     measurements_path = Path(__file__).resolve().parents[2] / "resources" / "measurements"
@@ -34,10 +34,10 @@ def demo_measurements() -> None:
     validators = [
         OutlierDetector(k=2.0),
         ZeroSpikeDetector(),
-        ThresholdDetector(threshold=0.05),
+        ThresholdDetector(threshold=5.0),
     ]
 
-    anomalies = measurements.detect_all_anomalies(validators, preload=True)
+    anomalies = measurements.detect_all_anomalies(validators, preload=False)
     print("\nPrzykladowe wyniki detektorow:")
 
     printed = 0
@@ -57,6 +57,31 @@ def demo_measurements() -> None:
         print("Brak wykrytych anomalii.")
 
 
+def demo_duck_typing() -> None:
+
+    timestamps = [datetime(2023, 1, 1, h) for h in range(1, 11)]
+    values = np.array([1.0, 2.0, 0.0, 0.0, 0.0, 3.0, 100.0, 2.5, 1.5, 2.0])
+    series = TimeSeries(
+        sensor="C6H6",
+        code="DsWrocWybCon",
+        averaging_time="1g",
+        timestamps=timestamps,
+        values=values,
+        unit="ug/m3",
+    )
+
+    analyzers = [OutlierDetector(k=2.0), ZeroSpikeDetector(), ThresholdDetector(threshold=50.0), SimpleReporter()]
+
+    for analyzer in analyzers:
+        results = analyzer.analyze(series)
+        print(f"\n[{type(analyzer).__name__}]")
+        if results:
+            for msg in results:
+                print(" ", msg)
+        else:
+            print("Brak anomalii.")
+
+
 def demo_detect_anomalies() -> None:
     measurements_dir = Path(__file__).parent.parent.parent / "resources" / "measurements"
     m = Measurements(measurements_dir)
@@ -67,7 +92,7 @@ def demo_detect_anomalies() -> None:
         ThresholdDetector(threshold=50.0),
     ]
 
-    m.get_by_parameter("C6H6")  # załaduj C6H6 przed detekcją
+    m.get_by_parameter("C6H6")
 
     wyniki = m.detect_all_anomalies(validators, preload=False)
 
@@ -79,9 +104,26 @@ def demo_detect_anomalies() -> None:
                 print(f"    {msg}")
 
 
+def min_max_test():
+    values = np.array([1.0, 2.0, 0.0, 0.0, 0.0, 3.0, 100.0, 2.5, 1.5, 2.0])
+    timestamps = [datetime(2023, 1, 1, h) for h in range(1, 11)]
+    series = TimeSeries(
+        sensor="C6H6",
+        code="DsWrocWybCon",
+        averaging_time="1g",
+        timestamps=timestamps,
+        values=values,
+        unit="ug/m3",
+    )
+
+    print(f"min {series.min_value} max {series.max_value}")
+
+
 def main() -> None:
-    demo_duck_typing()
-    demo_detect_anomalies()
+    # demo_duck_typing()
+    # demo_detect_anomalies()
+    # demo_measurements()
+    min_max_test()
 
 
 if __name__ == "__main__":
