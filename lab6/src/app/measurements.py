@@ -19,7 +19,10 @@ class Measurements:
         self._loaded_files: set[Path] = set()
 
     def _ensure_index(self) -> None:
-        """Czyta wiersze nagłówka z każdego pliku CSV i buduje indeks dostępnych serii."""
+        """
+        Czyta wiersze nagłówka z każdego pliku CSV i buduje indeks dostępnych serii pomiarowych.
+        Dla każdego pliku mamy indeks zawierający SeriesEntry czyli naglowek danego pliku
+        """
         if self._index_built:
             return
         for csv_file in self._files:
@@ -49,11 +52,13 @@ class Measurements:
 
         self._ensure_index()
 
+        # dla danego pliku pobieramy naglowek
         file_entries: list[SeriesEntry] = []
         for entry in self._index:
             if entry.file_path == file_path:
                 file_entries.append(entry)
 
+        # z pliku pobieramy wiersze
         rows_data: list[list[str]] = []
         with open(file_path, encoding="utf-8", newline="") as f:
             reader = csv.reader(f)
@@ -62,6 +67,7 @@ class Measurements:
             for row in reader:
                 rows_data.append(row)
 
+        # dla kazdego entry pobieramy przyporzadkowane mu dane (kolumny) i timestampy
         for entry in file_entries:
             timestamps: list[datetime] = []
             raw_values: list[float | None] = []
