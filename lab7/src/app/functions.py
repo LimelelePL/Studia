@@ -20,9 +20,8 @@ def sqrt(x: float, epsilon: float) -> float:
 
 
 def make_alpha_dict(entry: str) -> dict[str, list[str]]:
-    words = entry.split()
     result = {}
-    [result.setdefault(word[0], []).append(word) for word in words if word[0].isalpha()]
+    [result.setdefault(word[0], []).append(word) for word in entry.split() if word[0].isalpha()]
     return result
 
 
