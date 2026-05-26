@@ -37,3 +37,37 @@ def group_anagram(entry: list[str]) -> dict[str, list[str]]:
     result = {}
     [result.setdefault("".join(sorted(word)), []).append(word) for word in entry]
     return result
+
+
+# zad 2 - wersja z builtins
+def forall(pred, iterable) -> bool:
+    return all(map(pred, iterable))
+
+
+def exists(pred, iterable) -> bool:
+    return any(map(pred, iterable))
+
+
+def atleast(n: int, pred, iterable) -> bool:
+    return sum(map(pred, iterable)) >= n
+
+
+def atmost(n: int, pred, iterable) -> bool:
+    return sum(map(pred, iterable)) <= n
+
+
+# zad 2 - wersja z reduce
+def forall_reduce(pred, iterable) -> bool:
+    return reduce(lambda acc, x: acc and bool(pred(x)), iterable, True)
+
+
+def exists_reduce(pred, iterable) -> bool:
+    return reduce(lambda acc, x: acc or bool(pred(x)), iterable, False)
+
+
+def atleast_reduce(n: int, pred, iterable) -> bool:
+    return reduce(lambda acc, x: acc + bool(pred(x)), iterable, 0) >= n
+
+
+def atmost_reduce(n: int, pred, iterable) -> bool:
+    return reduce(lambda acc, x: acc + bool(pred(x)), iterable, 0) <= n
