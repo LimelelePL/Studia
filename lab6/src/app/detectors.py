@@ -103,7 +103,5 @@ class ThresholdDetector(SeriesValidator):
 
 
 class SimpleReporter:
-    """Słuzy do pokazania "kaczego" typowanie: nie dziediczy po SeriesValidator ale posiada metode analyzce()."""
-
     def analyze(self, series: TimeSeries) -> list[str]:
         return [f"Info: {series.sensor} at {series.code} has mean = {series.mean}"]

@@ -1,3 +1,5 @@
+import random
+import string
 from collections.abc import Callable, Generator
 from functools import cache, lru_cache
 
@@ -37,3 +39,38 @@ def test_mem_gen():
     print(next(gen))
     print(next(gen))
     print(next(gen))
+
+
+# zad 3
+class PasswordGenerator:
+    def __init__(
+        self,
+        length: int,
+        charset: str = string.ascii_letters + string.digits,
+        count: int = 10,
+    ):
+        self.length = length
+        self.charset = charset
+        self.count = count
+        self._generated = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> str:
+        if self._generated >= self.count:
+            raise StopIteration
+        self._generated += 1
+        return "".join(random.choices(self.charset, k=self.length))
+
+
+def demo_password_generator() -> None:
+    # a) jawne wywołanie next()
+    gen = PasswordGenerator(length=8, count=3)
+    print(next(gen))
+    print(next(gen))
+    print(next(gen))
+
+    # b) pętla for
+    for password in PasswordGenerator(length=12, count=4):
+        print(password)
