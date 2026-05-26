@@ -11,10 +11,10 @@ def log(lvl: int = logging.DEBUG):
         @wraps(target)
         def wrapper(*args, **kwargs):
             logging.basicConfig(level=lvl)
-            start = time.time()
+            start = time.perf_counter()
             name = target.__name__
             result = target(*args, **kwargs)
-            end = time.time() - start
+            end = time.perf_counter() - start
 
             if inspect.isclass(target):
                 msg = f"UTWORZONO OBIEKT klasy: {name}"
