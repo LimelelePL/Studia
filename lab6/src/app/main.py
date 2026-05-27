@@ -99,9 +99,9 @@ def demo_detect_anomalies() -> None:
     print("\n[detect_all_anomalies — serie C6H6]")
     for klucz, komunikaty in wyniki.items():
         if komunikaty:
-            print(f"\n  {klucz}:")
+            print(f"\n {klucz}:")
             for msg in komunikaty:
-                print(f"    {msg}")
+                print(f"{msg}")
 
 
 def min_max_test():
