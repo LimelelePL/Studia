@@ -1,7 +1,7 @@
 import random
 import string
 from collections.abc import Callable, Generator
-from functools import cache, lru_cache
+from functools import cache
 
 
 # zad 4
@@ -10,7 +10,6 @@ def make_generator(f: Callable) -> Generator:
     while True:
         yield f(n)
         n += 1
-
 
 # nalezy uzyc dekoratora cache zeby wywolania rekurencyjne szly do cache a nie na stos
 @cache
@@ -30,7 +29,7 @@ def test_gen():
 
 # zad 5
 def make_generator_mem(f: Callable):
-    return make_generator(lru_cache(maxsize=None)(f))
+    return make_generator(cache(f))
 
 
 def test_mem_gen():

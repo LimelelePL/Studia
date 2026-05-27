@@ -10,9 +10,9 @@ def main() -> None:
     # print(find_coordinates(stations))
     # print(find_stations_with_dash(stations))
     # print(verify_mob_ending(stations))
-    #print(find_stations_with_ul_or_al(stations))
+    print(find_stations_with_ul_or_al(stations))
     # print(find_stations_with_three_sashes(stations))
-
+a
 
 if __name__ == "__main__":
     main()

@@ -19,10 +19,8 @@ class Measurements:
         self._loaded_files: set[Path] = set()
 
     def _ensure_index(self) -> None:
-        """
-        Czyta wiersze nagłówka z każdego pliku CSV i buduje indeks dostępnych serii pomiarowych.
-        Dla każdego pliku mamy indeks zawierający SeriesEntry czyli naglowek danego pliku
-        """
+        #Czyta wiersze nagłówka z każdego pliku CSV i buduje indeks dostępnych serii pomiarowych.
+        #Dla każdego pliku mamy indeks zawierający SeriesEntry czyli naglowek danego pliku
         if self._index_built:
             return
         for csv_file in self._files:
@@ -46,7 +44,7 @@ class Measurements:
         self._index_built = True
 
     def _load_file(self, file_path: Path) -> None:
-        """Wczytuje wszystkie serie czasowe z jednego pliku CSV i zapisuje je w cache."""
+        #Wczytuje wszystkie serie czasowe z jednego pliku CSV i zapisuje je w cache
         if file_path in self._loaded_files:
             return
 
