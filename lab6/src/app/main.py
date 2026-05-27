@@ -12,11 +12,7 @@ def demo_measurements() -> None:
     measurements_path = Path(__file__).resolve().parents[2] / "resources" / "measurements"
     measurements = Measurements(measurements_path)
 
-    print(f"Liczba serii w indeksie: {len(measurements)}")
-    print(f"Czy parametr 'As(PM10)' istnieje: {'As(PM10)' in measurements}")
-
     parameter_series = measurements.get_by_parameter("As(PM10)")
-    print(f"Liczba serii dla 'As(PM10)': {len(parameter_series)}")
 
     if parameter_series:
         first_series = parameter_series[0]
@@ -38,7 +34,6 @@ def demo_measurements() -> None:
     ]
 
     anomalies = measurements.detect_all_anomalies(validators, preload=False)
-    print("\nPrzykladowe wyniki detektorow:")
 
     printed = 0
     for series_name, messages in anomalies.items():
