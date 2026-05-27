@@ -2,7 +2,7 @@ from functools import reduce
 
 
 def acronym(entry: list[str]) -> str:
-    return "".join(map(lambda x: x[0] if x else " ", entry))
+    return "".join(x[0] if x else " " for x in entry)
 
 
 def median(entry: list[int]) -> float:

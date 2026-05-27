@@ -31,10 +31,20 @@ def log(lvl: int = logging.DEBUG):
 
 
 def log_test():
-
     @log(logging.INFO)
     def add(a, b):
         return a + b
+
+    add(1, 2)
+
+
+def log_test_class():
+    @log(logging.INFO)
+    class TestClass:
+        def __init__(self, field: int):
+            self.field = field
+
+    test = TestClass(1)
 
 
 # MODYFIKACJA 1

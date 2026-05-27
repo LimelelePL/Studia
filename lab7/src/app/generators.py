@@ -11,6 +11,7 @@ def make_generator(f: Callable) -> Generator:
         yield f(n)
         n += 1
 
+
 # nalezy uzyc dekoratora cache zeby wywolania rekurencyjne szly do cache a nie na stos
 @cache
 def fib(n: int) -> int:
