@@ -1,6 +1,7 @@
 import inspect
 import logging
 import time
+from collections.abc import Callable
 from functools import wraps
 from typing import Any
 
@@ -47,24 +48,21 @@ def log_test_class():
     test = TestClass(1)
 
 
-# MODYFIKACJA 1
-def count_calls(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        wrapper.calls += 1  # type: ignore
-        return func(*args, **kwargs)
+# napisac dekorator require gdzie dla kazdego argumentu funkcji
 
-    wrapper.calls = 0  # type: ignore
+
+def require(target: Callable):
+    @wraps(target)
+    def wrapper(*args, **kwargs):
+        if args:
+            for arg in args:
+                if arg is None:
+                    raise ValueError("argument funkcji jest none")
+        if kwargs:
+            for kwarg in kwargs.values():
+                if kwarg is None:
+                    raise ValueError("klucz ma wartość none")
+        return target(*args, **kwargs)
+
     return wrapper
 
-
-# MODYFIKACJA 2
-def call_once(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not wrapper.called:  # type: ignore
-            wrapper.called = True  # type: ignore
-            return func(*args, **kwargs)
-        return None
-
-    return wrapper
