@@ -1,8 +1,7 @@
 import sys
 
-from app.converters import read_log
-from app.modyfikacja import get_most_active_ip
-from app.utils import format_stream_utf8
+from converters import read_log
+from utils import format_stream_utf8
 
 
 def main() -> None:

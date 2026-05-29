@@ -5,9 +5,8 @@ from pathlib import Path
 from typing import Literal, overload
 from urllib.parse import urlparse
 
-from constants import ENTRY_INDEXES_WITH_IP
-
-from logs_parser.my_types import Entry
+from app.logs_parser.constants import ENTRY_INDEXES_WITH_IP
+from app.logs_parser.my_types import Entry
 
 
 def get_entries_by_code(log: list[Entry], code: HTTPStatus) -> list[Entry]:

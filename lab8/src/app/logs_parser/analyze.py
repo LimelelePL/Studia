@@ -6,12 +6,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from app.constants import EntryDictKey, EntryIndex  # EntryIndex używany w sort_log
-
-from logs_parser.converters import log_to_dict
-from logs_parser.my_types import Entry, EntryDict
-from logs_parser.sorts import sort_log
-from logs_parser.stats import count_by_method, count_status_classes, get_top_ips, get_top_uris
+from app.logs_parser.constants import EntryDictKey, EntryIndex  # EntryIndex używany w sort_log
+from app.logs_parser.converters import log_to_dict
+from app.logs_parser.my_types import Entry, EntryDict
+from app.logs_parser.sorts import sort_log
+from app.logs_parser.stats import count_by_method, count_status_classes, get_top_ips, get_top_uris
 
 
 def get_paths(session: list[EntryDict]) -> list[str]:

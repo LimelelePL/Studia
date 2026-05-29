@@ -2,9 +2,8 @@ import datetime
 from collections import Counter
 from ipaddress import IPv4Address
 
-from constants import ENTRY_KEYS_WITH_IP, EntryDictKey
-
-from logs_parser.my_types import Entry, EntryDict
+from app.logs_parser.constants import ENTRY_KEYS_WITH_IP, EntryDictKey
+from app.logs_parser.my_types import Entry, EntryDict
 
 
 def get_session_ips(session: list[EntryDict]) -> set[IPv4Address]:
