@@ -17,8 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDateTimeEdit, QHBoxLayout, QLabel,
     QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
-    QPushButton, QSizePolicy, QStatusBar, QVBoxLayout,
-    QWidget)
+    QPlainTextEdit, QPushButton, QSizePolicy, QStatusBar,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
 "    background: transparent;\n"
 "}\n"
 "\n"
-"QLineEdit {\n"
+"QLineEdit, QPlainTextEdit {\n"
 "    background-color: #2b2d31;\n"
 "    color: #f2f2f2;\n"
 "    border: 1px solid #555b63;\n"
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
 "    padding: 4px 6px;\n"
 "}\n"
 "\n"
-"QLineEdit:read-only {\n"
+"QLineEdit:read-only, QPlainTextEdit:read-only {\n"
 "    background-color: #25272b;\n"
 "    color: #dcdcdc;\n"
 "}\n"
@@ -76,10 +76,10 @@ class Ui_MainWindow(object):
 "    background-color: #2d89ef;\n"
 "    color: white;\n"
 "    border: none;\n"
-"    border-radius: 7px;\n"
+"    border-radius:"
+                        " 7px;\n"
 "    padding: 6px 12px;\n"
-"    f"
-                        "ont-weight: bold;\n"
+"    font-weight: bold;\n"
 "}\n"
 "\n"
 "QPushButton:hover {\n"
@@ -238,34 +238,37 @@ class Ui_MainWindow(object):
 
         self.resourceLabel = QLabel(self.centralwidget)
         self.resourceLabel.setObjectName(u"resourceLabel")
-        self.resourceLabel.setGeometry(QRect(530, 460, 52, 18))
+        self.resourceLabel.setGeometry(QRect(530, 450, 52, 18))
         self.resourceLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-        self.resourceLineEdit = QLineEdit(self.centralwidget)
-        self.resourceLineEdit.setObjectName(u"resourceLineEdit")
-        self.resourceLineEdit.setGeometry(QRect(530, 480, 251, 29))
-        self.resourceLineEdit.setFont(font)
-        self.resourceLineEdit.setReadOnly(True)
-        self.widget = QWidget(self.centralwidget)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(510, 310, 261, 127))
-        self.horizontalLayout_4 = QHBoxLayout(self.widget)
+        self.resourcePlainTextEdit = QPlainTextEdit(self.centralwidget)
+        self.resourcePlainTextEdit.setObjectName(u"resourcePlainTextEdit")
+        self.resourcePlainTextEdit.setGeometry(QRect(530, 470, 251, 51))
+        self.resourcePlainTextEdit.setFont(font)
+        self.resourcePlainTextEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.resourcePlainTextEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.resourcePlainTextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.resourcePlainTextEdit.setReadOnly(True)
+        self.layoutWidget = QWidget(self.centralwidget)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.layoutWidget.setGeometry(QRect(510, 310, 261, 127))
+        self.horizontalLayout_4 = QHBoxLayout(self.layoutWidget)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.statusCodeLabel = QLabel(self.widget)
+        self.statusCodeLabel = QLabel(self.layoutWidget)
         self.statusCodeLabel.setObjectName(u"statusCodeLabel")
         self.statusCodeLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.verticalLayout_3.addWidget(self.statusCodeLabel)
 
-        self.methodLabel = QLabel(self.widget)
+        self.methodLabel = QLabel(self.layoutWidget)
         self.methodLabel.setObjectName(u"methodLabel")
         self.methodLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.verticalLayout_3.addWidget(self.methodLabel)
 
-        self.sizeLabel = QLabel(self.widget)
+        self.sizeLabel = QLabel(self.layoutWidget)
         self.sizeLabel.setObjectName(u"sizeLabel")
         self.sizeLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
@@ -276,21 +279,21 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.statusCodeLineEdit = QLineEdit(self.widget)
+        self.statusCodeLineEdit = QLineEdit(self.layoutWidget)
         self.statusCodeLineEdit.setObjectName(u"statusCodeLineEdit")
         self.statusCodeLineEdit.setFont(font)
         self.statusCodeLineEdit.setReadOnly(True)
 
         self.verticalLayout_2.addWidget(self.statusCodeLineEdit)
 
-        self.methodLineEdit = QLineEdit(self.widget)
+        self.methodLineEdit = QLineEdit(self.layoutWidget)
         self.methodLineEdit.setObjectName(u"methodLineEdit")
         self.methodLineEdit.setFont(font)
         self.methodLineEdit.setReadOnly(True)
 
         self.verticalLayout_2.addWidget(self.methodLineEdit)
 
-        self.sizeLineEdit = QLineEdit(self.widget)
+        self.sizeLineEdit = QLineEdit(self.layoutWidget)
         self.sizeLineEdit.setObjectName(u"sizeLineEdit")
         self.sizeLineEdit.setFont(font)
         self.sizeLineEdit.setReadOnly(True)

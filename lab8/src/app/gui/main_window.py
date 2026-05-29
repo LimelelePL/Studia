@@ -9,9 +9,15 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QLineEdit,
     QMainWindow,
+    QPlainTextEdit,
 )
 
-from app.constants import DETAIL_WIDGET_NAMES
+from app.constants import (
+    DETAIL_LINE_EDIT_NAMES,
+    DETAIL_LINE_EDIT_VALUE_INDICES,
+    RESOURCE_DETAIL_INDEX,
+    RESOURCE_WIDGET_NAME,
+)
 from app.gui.ui_main_window import Ui_MainWindow
 from app.logs_parser.my_types import Entry
 from app.services.log_service import (
@@ -21,6 +27,8 @@ from app.services.log_service import (
     logs_in_time_range,
     min_max_timestamp,
 )
+
+# TODO: ogarnąć młyn w kodzie ;
 
 
 class MainWindow(QMainWindow):
@@ -40,7 +48,12 @@ class MainWindow(QMainWindow):
         self.ui.previousButton.clicked.connect(self.prev_button)
         self.ui.nextButton.clicked.connect(self.next_button)
 
-        self.details_labels: list[QLineEdit] = [cast(QLineEdit, getattr(self.ui, name)) for name in DETAIL_WIDGET_NAMES]
+        self.detail_line_edits: list[QLineEdit] = [
+            cast(QLineEdit, getattr(self.ui, name)) for name in DETAIL_LINE_EDIT_NAMES
+        ]
+        # resuorce jest jako QPlainTextEdeig ponieważ jest do za dlugi tekst i przez to
+        # trzeba wprowadzic scrollbar
+        self.resource_text_edit = cast(QPlainTextEdit, getattr(self.ui, RESOURCE_WIDGET_NAME))
 
     def browse_file(self):
         start_dir = str(self.current_file_path.parent) if self.current_file_path else str(Path.cwd())
@@ -91,8 +104,9 @@ class MainWindow(QMainWindow):
 
         if len(self.filtered_entries) == 0:
             self.current_row = -1
-            for field in self.details_labels:
+            for field in self.detail_line_edits:
                 field.clear()
+            self.resource_text_edit.clear()
             self.update_navigation_buttons()
             return
 
@@ -105,15 +119,19 @@ class MainWindow(QMainWindow):
 
         self.update_navigation_buttons()
 
-        for field in self.details_labels:
+        for field in self.detail_line_edits:
             field.clear()
+        self.resource_text_edit.clear()
 
         if self.current_row < 0 or self.current_row >= len(self.filtered_entries):
             return
 
         entry = self.filtered_entries[self.current_row]
-        for widget, value in zip(self.details_labels, build_detail_values(entry), strict=True):
+        detail_values = build_detail_values(entry)
+        line_edit_values = [detail_values[index] for index in DETAIL_LINE_EDIT_VALUE_INDICES]
+        for widget, value in zip(self.detail_line_edits, line_edit_values, strict=True):
             widget.setText(value)
+        self.resource_text_edit.setPlainText(detail_values[RESOURCE_DETAIL_INDEX])
 
     def next_button(self):
         if self.current_row >= len(self.filtered_entries) - 1 or self.current_row == -1:

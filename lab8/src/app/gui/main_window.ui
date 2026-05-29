@@ -32,7 +32,7 @@ QLabel {
     background: transparent;
 }
 
-QLineEdit {
+QLineEdit, QPlainTextEdit {
     background-color: #2b2d31;
     color: #f2f2f2;
     border: 1px solid #555b63;
@@ -40,7 +40,7 @@ QLineEdit {
     padding: 4px 6px;
 }
 
-QLineEdit:read-only {
+QLineEdit:read-only, QPlainTextEdit:read-only {
     background-color: #25272b;
     color: #dcdcdc;
 }
@@ -417,7 +417,7 @@ QStatusBar {
     <property name="geometry">
      <rect>
       <x>530</x>
-      <y>460</y>
+      <y>450</y>
       <width>52</width>
       <height>18</height>
      </rect>
@@ -429,13 +429,13 @@ QStatusBar {
      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="resourceLineEdit">
+   <widget class="QPlainTextEdit" name="resourcePlainTextEdit">
     <property name="geometry">
      <rect>
       <x>530</x>
-      <y>480</y>
+      <y>470</y>
       <width>251</width>
-      <height>29</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="font">
@@ -444,11 +444,20 @@ QStatusBar {
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="verticalScrollBarPolicy">
+     <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>510</x>
