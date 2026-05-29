@@ -83,7 +83,7 @@ def get_unique_methods(log: list[Entry]) -> list[str]:
 
 
 def is_in_date_range(start: datetime.datetime, end: datetime.datetime, target: datetime.datetime) -> bool:
-    return start <= target < end
+    return start <= target <= end
 
 
 def get_entries_in_time_range(log: list[Entry], start: datetime.datetime, end: datetime.datetime) -> list[Entry]:
