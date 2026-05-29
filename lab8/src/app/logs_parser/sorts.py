@@ -1,6 +1,5 @@
-from constants import RawLogIndex
-
-from logs_parser.my_types import Entry
+from app.logs_parser.constants import RawLogIndex
+from app.logs_parser.my_types import Entry
 
 
 def sort_log(log: list[Entry], index: int) -> list[Entry]:

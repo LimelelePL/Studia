@@ -2,9 +2,8 @@ from collections import Counter
 from ipaddress import IPv4Address
 from typing import cast
 
-from constants import ENTRY_INDEXES_WITH_IP
-
-from logs_parser.my_types import Entry, EntryDict
+from app.logs_parser.constants import ENTRY_INDEXES_WITH_IP
+from app.logs_parser.my_types import Entry, EntryDict
 
 
 def get_top_ips(log: list[Entry], n: int = 10) -> list[tuple[IPv4Address, int]]:
