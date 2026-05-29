@@ -7,12 +7,20 @@ from typing import Any
 from app.logs_parser.constants import EMPTY_ENTRY, EMPTY_FIELD, RAW_LOG_FIELD_INDEXES
 from app.logs_parser.my_types import Entry, EntryDict
 
-# W przypadku braku pola lub jego uszkodzenia zamieniamy na None(uszkodzone mogą być pola: ts,orig_p,resp_p,
-
 
 def _to_datetime(value: Any) -> datetime.datetime | None:
     try:
         return datetime.datetime.fromtimestamp(float(value))
+    except (ValueError, OSError, TypeError):
+        return None
+
+
+def _to_timezone(value: Any) -> str | None:
+    try:
+        aware_dt = datetime.datetime.fromtimestamp(float(value), tz=datetime.UTC).astimezone()
+        if aware_dt.dst():
+            return "CEST"
+        return "CET"
     except (ValueError, OSError, TypeError):
         return None
 
@@ -40,9 +48,11 @@ def _to_ip(value: Any) -> IPv4Address | None:
 
 def _normalize_raw_entry(raw_fields: list[str]) -> Entry:
     normalized_entry = [None if x == EMPTY_FIELD else x for x in raw_fields]
-    ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code = normalized_entry  # tu moze być ValueError
+    ts, uid, orig_h, orig_p, resp_h, resp_p, method, host, uri, status_code, size = normalized_entry
+    parsed_ts = _to_datetime(ts)
+
     return Entry(
-        ts=_to_datetime(ts),
+        ts=parsed_ts,
         uid=uid,
         orig_h=_to_ip(orig_h),
         orig_p=_to_int(orig_p),
@@ -52,12 +62,15 @@ def _normalize_raw_entry(raw_fields: list[str]) -> Entry:
         host=_to_ip(host),
         uri=uri,
         status_code=_to_http_status(status_code),
+        size=_to_int(size),
+        date=parsed_ts.date() if parsed_ts else None,
+        time=parsed_ts.time() if parsed_ts else None,
+        timezone=_to_timezone(ts),
     )
 
 
 def _extract_raw_entry_fields(raw_log_line: str) -> list[str]:
     fields = raw_log_line.split("\t")
-    # wybieramy tylko interesujące nas pola z tekstu
     return [fields[i] for i in RAW_LOG_FIELD_INDEXES]
 
 
@@ -72,7 +85,6 @@ def read_log() -> list[Entry]:
     return log
 
 
-# klucz - uid, wartość lista slownikow (EntryDictKey - value)
 def log_to_dict(log: list[Entry]) -> dict[str, list[EntryDict]]:
     result: dict[str, list[EntryDict]] = {}
     for entry in log:
@@ -93,4 +105,8 @@ def entry_to_dict(entry: Entry) -> EntryDict:
         "host": entry.host,
         "uri": entry.uri,
         "status_code": entry.status_code,
+        "size": entry.size,
+        "date": entry.date,
+        "time": entry.time,
+        "timezone": entry.timezone,
     }

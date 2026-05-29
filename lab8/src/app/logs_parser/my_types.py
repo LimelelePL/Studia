@@ -15,6 +15,10 @@ class Entry(NamedTuple):
     host: IPv4Address | None
     uri: str | None
     status_code: HTTPStatus | None
+    size: int | None
+    date: datetime.date | None
+    time: datetime.time | None
+    timezone: str | None
 
 
 type Extension = str
@@ -31,3 +35,7 @@ class EntryDict(TypedDict):
     host: IPv4Address | None
     uri: str | None
     status_code: HTTPStatus | None
+    size: int | None
+    date: datetime.date | None
+    time: datetime.time | None
+    timezone: str | None

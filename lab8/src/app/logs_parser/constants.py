@@ -19,6 +19,7 @@ class RawLogIndex(IntEnum):
     HOST = 8
     URI = 9
     STATUS_CODE = 14
+    SIZE = 13
 
 
 class EntryIndex:
@@ -32,6 +33,10 @@ class EntryIndex:
     HOST: Final = 7
     URI: Final = 8
     STATUS_CODE: Final = 9
+    SIZE: Final = 10
+    DATE: Final = 11
+    TIME: Final = 12
+    TIMEZONE: Final = 13
 
 
 class EntryDictKey:
@@ -45,12 +50,26 @@ class EntryDictKey:
     HOST: Final = "host"
     URI: Final = "uri"
     STATUS_CODE: Final = "status_code"
+    SIZE: Final = "size"
+    DATE: Final = "date"
+    TIME: Final = "time"
+    TIMEZONE: Final = "timezone"
 
 
 ENTRY_KEYS_WITH_IP: Final = (EntryDictKey.HOST, EntryDictKey.ORIG_H, EntryDictKey.RESP_H)
 
 ENTRY_INDEXES_WITH_IP: Final = (EntryIndex.ORIG_H, EntryIndex.RESP_H, EntryIndex.HOST)
+DETAIL_ENTRY_FIELDS: Final = (
+    EntryIndex.ORIG_H,
+    EntryIndex.DATE,
+    EntryIndex.TIME,
+    EntryIndex.TIMEZONE,
+    EntryIndex.STATUS_CODE,
+    EntryIndex.METHOD,
+    EntryIndex.URI,
+    EntryIndex.SIZE,
+)
 
 RAW_LOG_FIELD_INDEXES: Final = tuple(RawLogIndex)
 
-EMPTY_ENTRY = Entry(None, None, None, None, None, None, None, None, None, None)
+EMPTY_ENTRY = Entry(None, None, None, None, None, None, None, None, None, None, None, None, None, None)
