@@ -59,8 +59,6 @@ def is_extension(ext: str) -> bool:
 
 def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
     matched: list[Entry] = []
-    if not is_extension(ext):
-        raise ValueError("String have to be extension with '.'(dot) at beginning")
     target_ext = ext.lower()
     for entry in log:
         if uri := entry.uri:
@@ -71,6 +69,25 @@ def get_entries_by_extension(log: list[Entry], ext: str) -> list[Entry]:
             if file_ext == target_ext:
                 matched.append(entry)
 
+    return matched
+
+
+def get_entries_without_extension(log: list[Entry]) -> list[Entry]:
+    matched: list[Entry] = []
+    for entry in log:
+        if uri := entry.uri:
+            path = urlparse(uri).path
+            if Path(path).suffix == "":
+                matched.append(entry)
+    return matched
+
+
+def get_entries_by_method(log: list[Entry], method: str) -> list[Entry]:
+    matched: list[Entry] = []
+    target_method = method.casefold()
+    for entry in log:
+        if (m := entry.method) and m.casefold() == target_method:
+            matched.append(entry)
     return matched
 
 

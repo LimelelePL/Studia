@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import cast
 
 from PySide6.QtCore import QDateTime
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -19,6 +20,7 @@ from app.constants import (
     RESOURCE_WIDGET_NAME,
 )
 from app.gui.ui_main_window import Ui_MainWindow
+from app.logs_parser.filters import get_entries_by_extension, get_entries_without_extension
 from app.logs_parser.my_types import Entry
 from app.services.log_service import (
     build_detail_values,
@@ -36,17 +38,20 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui: Ui_MainWindow = Ui_MainWindow()
         self.ui.setupUi(self)
+
         self.entries: list[Entry] = []
         self.filtered_entries: list[Entry] = []
         self.current_file_path: Path | None = None
         self.current_row: int = -1
 
         self.ui.browseButton.clicked.connect(self.browse_file)
-        self.ui.DateFrom.dateTimeChanged.connect(self.filter_logs_by_date)
-        self.ui.DateTo.dateTimeChanged.connect(self.filter_logs_by_date)
+        self.ui.DateFrom.dateTimeChanged.connect(self.apply_filters)
+        self.ui.DateTo.dateTimeChanged.connect(self.apply_filters)
         self.ui.logListWidget.currentRowChanged.connect(self.show_log_details)
         self.ui.previousButton.clicked.connect(self.prev_button)
         self.ui.nextButton.clicked.connect(self.next_button)
+        self.init_extension_combo_box()
+        self.ui.comboFilterExtension.currentTextChanged.connect(self.apply_filters)
 
         self.detail_line_edits: list[QLineEdit] = [
             cast(QLineEdit, getattr(self.ui, name)) for name in DETAIL_LINE_EDIT_NAMES
@@ -89,14 +94,6 @@ class MainWindow(QMainWindow):
 
         self.ui.DateFrom.setDateTime(QDateTime.fromMSecsSinceEpoch(round(first_ts.timestamp() * 1000)))
         self.ui.DateTo.setDateTime(QDateTime.fromMSecsSinceEpoch(round(last_ts.timestamp() * 1000)))
-
-    def filter_logs_by_date(self, _date_time):
-        # bo mypy krzyczy
-        from_dt = cast(datetime.datetime, self.ui.DateFrom.dateTime().toPython())
-        to_dt = cast(datetime.datetime, self.ui.DateTo.dateTime().toPython())
-
-        self.filtered_entries = logs_in_time_range(self.entries, from_dt, to_dt)
-        self.reload_log_list()
 
     def reload_log_list(self):
         self.ui.logListWidget.clear()
@@ -151,9 +148,36 @@ class MainWindow(QMainWindow):
         self.ui.previousButton.setEnabled(self.current_row > 0)
         self.ui.nextButton.setEnabled(0 <= self.current_row < len(self.filtered_entries) - 1)
 
+    def init_extension_combo_box(self):
+        extensions = ["ALL", "NONE", ".html", ".php", ".png", ".css", ".js", ".nsf"]
+        self.ui.comboFilterExtension.addItems(extensions)
+
+    def apply_date_filters(self):
+        from_dt = cast(datetime.datetime, self.ui.DateFrom.dateTime().toPython())
+        to_dt = cast(datetime.datetime, self.ui.DateTo.dateTime().toPython())
+
+        self.filtered_entries = logs_in_time_range(self.entries, from_dt, to_dt)
+
+    def apply_extenstions_filters(self):
+        selected_extension = self.ui.comboFilterExtension.currentText()
+        if selected_extension == "NONE":
+            self.filtered_entries = get_entries_without_extension(self.filtered_entries)
+        elif selected_extension != "ALL" and selected_extension != "":
+            self.filtered_entries = get_entries_by_extension(self.filtered_entries, selected_extension)
+
+    def apply_filters(self):
+        self.apply_date_filters()
+        self.apply_extenstions_filters()
+        self.reload_log_list()
+
 
 def run_gui() -> None:
     app = QApplication(sys.argv)
     window = MainWindow()
+
+    # build icon path relative to this file to avoid escape-sequence issues
+    icon_path = Path(__file__).resolve().parent.parent / "resources" / "log.ico"
+    window.setWindowIcon(QIcon(str(icon_path)))
     window.show()
+    window.setWindowTitle("Analiza logów")
     sys.exit(app.exec())

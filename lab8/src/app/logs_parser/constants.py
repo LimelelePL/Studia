@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 from typing import Final
 
 from app.logs_parser.my_types import Entry
@@ -73,3 +73,10 @@ DETAIL_ENTRY_FIELDS: Final = (
 RAW_LOG_FIELD_INDEXES: Final = tuple(RawLogIndex)
 
 EMPTY_ENTRY = Entry(None, None, None, None, None, None, None, None, None, None, None, None, None, None)
+
+
+class HttpMethods(Enum):
+    GET = "GET"
+    PUT = "PUT"
+    POST = "POST"
+    DELETE = "DELETE"
