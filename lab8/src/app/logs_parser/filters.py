@@ -82,6 +82,16 @@ def get_entries_without_extension(log: list[Entry]) -> list[Entry]:
     return matched
 
 
+def get_entries_with_extension(log: list[Entry]) -> list[Entry]:
+    matched: list[Entry] = []
+    for entry in log:
+        if uri := entry.uri:
+            path = urlparse(uri).path
+            if Path(path).suffix != "":
+                matched.append(entry)
+    return matched
+
+
 def get_entries_by_method(log: list[Entry], method: str) -> list[Entry]:
     matched: list[Entry] = []
     target_method = method.casefold()

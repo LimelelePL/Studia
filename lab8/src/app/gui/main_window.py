@@ -20,7 +20,7 @@ from app.constants import (
     RESOURCE_WIDGET_NAME,
 )
 from app.gui.ui_main_window import Ui_MainWindow
-from app.logs_parser.filters import get_entries_by_extension, get_entries_without_extension
+from app.logs_parser.filters import get_entries_by_extension, get_entries_with_extension, get_entries_without_extension
 from app.logs_parser.my_types import Entry
 from app.services.log_service import (
     build_detail_values,
@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
         self.ui.nextButton.clicked.connect(self.next_button)
         self.init_extension_combo_box()
         self.ui.comboFilterExtension.currentTextChanged.connect(self.apply_filters)
+        self.ui.only_extensions_checkbox.checkStateChanged.connect(self.apply_filters)
 
         self.detail_line_edits: list[QLineEdit] = [
             cast(QLineEdit, getattr(self.ui, name)) for name in DETAIL_LINE_EDIT_NAMES
@@ -126,8 +127,10 @@ class MainWindow(QMainWindow):
         entry = self.filtered_entries[self.current_row]
         detail_values = build_detail_values(entry)
         line_edit_values = [detail_values[index] for index in DETAIL_LINE_EDIT_VALUE_INDICES]
+
         for widget, value in zip(self.detail_line_edits, line_edit_values, strict=True):
             widget.setText(value)
+
         self.resource_text_edit.setPlainText(detail_values[RESOURCE_DETAIL_INDEX])
 
     def next_button(self):
@@ -165,9 +168,21 @@ class MainWindow(QMainWindow):
         elif selected_extension != "ALL" and selected_extension != "":
             self.filtered_entries = get_entries_by_extension(self.filtered_entries, selected_extension)
 
+    def only_with_extensions_checkbox(self):
+        if self.ui.comboFilterExtension.currentText() == "NONE":
+            self.ui.only_extensions_checkbox.setDisabled(True)
+            return
+
+        self.ui.only_extensions_checkbox.setEnabled(True)
+        checked = self.ui.only_extensions_checkbox.isChecked()
+
+        if checked:
+            self.filtered_entries = get_entries_with_extension(self.filtered_entries)
+
     def apply_filters(self):
         self.apply_date_filters()
         self.apply_extenstions_filters()
+        self.only_with_extensions_checkbox()
         self.reload_log_list()
 
 
@@ -175,7 +190,6 @@ def run_gui() -> None:
     app = QApplication(sys.argv)
     window = MainWindow()
 
-    # build icon path relative to this file to avoid escape-sequence issues
     icon_path = Path(__file__).resolve().parent.parent / "resources" / "log.ico"
     window.setWindowIcon(QIcon(str(icon_path)))
     window.show()

@@ -578,6 +578,19 @@ QStatusBar {
      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
    </widget>
+   <widget class="QCheckBox" name="only_extensions_checkbox">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>100</y>
+      <width>171</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>only with extensions</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="mainStatusBar"/>
  </widget>
