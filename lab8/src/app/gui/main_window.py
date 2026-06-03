@@ -170,6 +170,7 @@ class MainWindow(QMainWindow):
 
     def only_with_extensions_checkbox(self):
         if self.ui.comboFilterExtension.currentText() == "NONE":
+            self.ui.only_extensions_checkbox.setChecked(False)
             self.ui.only_extensions_checkbox.setDisabled(True)
             return
 
