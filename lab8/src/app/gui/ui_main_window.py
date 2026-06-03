@@ -9,6 +9,7 @@
 from PySide6.QtCore import QCoreApplication, QDate, QDateTime, QMetaObject, QRect, Qt, QTime
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDateTimeEdit,
     QHBoxLayout,
@@ -335,6 +336,9 @@ class Ui_MainWindow:
         self.remoteHostLabel_2.setAlignment(
             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTrailing | Qt.AlignmentFlag.AlignVCenter
         )
+        self.only_extensions_checkbox = QCheckBox(self.centralwidget)
+        self.only_extensions_checkbox.setObjectName("only_extensions_checkbox")
+        self.only_extensions_checkbox.setGeometry(QRect(590, 100, 171, 24))
         MainWindow.setCentralWidget(self.centralwidget)
         self.mainStatusBar = QStatusBar(MainWindow)
         self.mainStatusBar.setObjectName("mainStatusBar")
@@ -364,5 +368,6 @@ class Ui_MainWindow:
         self.methodLabel.setText(QCoreApplication.translate("MainWindow", "Method", None))
         self.sizeLabel.setText(QCoreApplication.translate("MainWindow", "Size", None))
         self.remoteHostLabel_2.setText(QCoreApplication.translate("MainWindow", "pick or write extension", None))
+        self.only_extensions_checkbox.setText(QCoreApplication.translate("MainWindow", "only with extensions", None))
 
     # retranslateUi
