@@ -5,7 +5,13 @@ from pathlib import Path
 
 import numpy as np
 
-from app.constants import CSV_DATETIME_FORMAT, HEADER_ROW_COUNT, CsvHeaderField, CsvHeaderRow, SeriesEntry
+from app.constants import (
+    CSV_DATETIME_FORMAT,
+    HEADER_ROW_COUNT,
+    CsvHeaderField,
+    CsvHeaderRow,
+    SeriesEntry,
+)
 from app.detectors import SeriesAnalyzer
 from app.timeseries import TimeSeries
 

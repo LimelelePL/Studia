@@ -53,7 +53,8 @@ class MainWindow(QMainWindow):
         self.init_extension_combo_box()
         self.ui.comboFilterExtension.currentTextChanged.connect(self.apply_filters)
         self.ui.only_extensions_checkbox.checkStateChanged.connect(self.apply_filters)
-
+        self.ui.subsequenceLineEdit.textChanged.connect(self.apply_filters)
+        
         self.detail_line_edits: list[QLineEdit] = [
             cast(QLineEdit, getattr(self.ui, name)) for name in DETAIL_LINE_EDIT_NAMES
         ]
@@ -180,10 +181,23 @@ class MainWindow(QMainWindow):
         if checked:
             self.filtered_entries = get_entries_with_extension(self.filtered_entries)
 
+    def filter_subsequent_log(self):
+        subsequence_widget = self.ui.subsequenceLineEdit
+        text = subsequence_widget.text()
+        entries_text = build_entry_summaries(self.filtered_entries)
+        index = 0
+        indexes: list[int] = []
+
+        for index, log in enumerate(entries_text):
+            if text in log:
+                indexes.append(index)
+        self.filtered_entries = [self.filtered_entries[index] for index in indexes]
+
     def apply_filters(self):
         self.apply_date_filters()
         self.apply_extenstions_filters()
         self.only_with_extensions_checkbox()
+        self.filter_subsequent_log()
         self.reload_log_list()
 
 
