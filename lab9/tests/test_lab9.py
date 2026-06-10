@@ -50,12 +50,12 @@ def make_series(values: list[float | None] | None = None) -> TimeSeries:
 def write_measurements_csv(path: Path, rows: list[list[str]]) -> None:
     with path.open("w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
-        writer.writerow(["Nr", "1"])
-        writer.writerow(["Kod stacji", "StationA"])
-        writer.writerow(["Wskaznik", "PM10"])
-        writer.writerow(["Czas usredniania", "1g"])
-        writer.writerow(["Jednostka", "ug/m3"])
-        writer.writerow(["Kod stanowiska", "StationA-PM10-1g"])
+        writer.writerow(["Nr", "1", "2"])
+        writer.writerow(["Kod stacji", "StationA", "StationB"])
+        writer.writerow(["Wskaznik", "PM10", "PM10"])
+        writer.writerow(["Czas usredniania", "1g", "1g"])
+        writer.writerow(["Jednostka", "ug/m3", "ug/m3"])
+        writer.writerow(["Kod stanowiska", "StationA-PM10-1g", "StationB-PM10-1g"])
         writer.writerows(rows)
 
 
@@ -66,11 +66,11 @@ def measurements_dir() -> Iterator[Path]:
         write_measurements_csv(
             path / "2023_PM10_1g.csv",
             [
-                ["01/01/23 01:00", "1.0"],
-                ["01/01/23 02:00", "0.0"],
-                ["01/01/23 03:00", "0.0"],
-                ["01/01/23 04:00", "0.0"],
-                ["01/01/23 05:00", "100.0"],
+                ["01/01/23 01:00", "1.0", "2.0"],
+                ["01/01/23 02:00", "0.0", "3.0"],
+                ["01/01/23 03:00", "0.0", "4.0"],
+                ["01/01/23 04:00", "0.0", "5.0"],
+                ["01/01/23 05:00", "100.0", "6.0"],
             ],
         )
         yield path
@@ -164,5 +164,7 @@ def test_detect_all_anomalies_accepts_structural_analyzers(analyzer: SeriesAnaly
     measurements = Measurements(measurements_dir)
     results = measurements.detect_all_anomalies([analyzer], preload=True)
 
-    assert set(results) == {"StationA_PM10"}
-    assert results["StationA_PM10"] == list(results["StationA_PM10"])
+    station_a = measurements.get_by_station("StationA")[0]
+
+    assert list(results) == ["StationA_PM10", "StationB_PM10"]
+    assert results["StationA_PM10"] == analyzer.analyze(station_a)

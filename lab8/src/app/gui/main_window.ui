@@ -591,6 +591,19 @@ QStatusBar {
      <string>only with extensions</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="subsequenceLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>490</y>
+      <width>113</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="mainStatusBar"/>
  </widget>
