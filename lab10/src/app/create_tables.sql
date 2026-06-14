@@ -61,3 +61,8 @@ CREATE TABLE stop_times (
     FOREIGN KEY (trip_id) REFERENCES trips(trip_id),
     FOREIGN KEY (stop_id) REFERENCES stops(stop_id)
 );
+
+CREATE INDEX idx_stop_times_stop_id ON stop_times(stop_id);
+CREATE INDEX idx_stop_times_trip_id ON stop_times(trip_id);
+CREATE INDEX idx_trips_route_id ON trips(route_id);
+CREATE INDEX idx_trips_service_id ON trips(service_id);
