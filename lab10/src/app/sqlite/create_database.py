@@ -7,7 +7,7 @@ def create_database(db_name: str, sql_file_path: Path) -> None:
     if not sql_file_path.exists() or sql_file_path.suffix != ".sql":
         raise FileNotFoundError("brak pliku zrodlowego .sql")
 
-    project_dir = Path(__file__).resolve().parents[2]
+    project_dir = Path(__file__).resolve().parents[3]
     database_dir = project_dir / "database"
     database_dir.mkdir(exist_ok=True)
 
