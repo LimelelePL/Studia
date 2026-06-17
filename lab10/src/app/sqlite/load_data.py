@@ -53,15 +53,15 @@ def insert_file_into_db(db_path: Path, file_path: Path, table_name: str, batch_s
         conn.commit()
 
 
-def load_data(db_path: Path, dir_path: Path):
+def load_data(db_path: Path, dir_path: Path) -> None:
     if not db_path.exists() or not dir_path.is_dir():
         raise FileNotFoundError("plik bazy danych lub katalog z danymi nie istnieje")
 
     load_file_paths = collect_files(dir_path)
-    for file in load_file_paths:
-        insert_file_into_db(db_path, file, file.stem.strip())
+    for file_path in load_file_paths:
+        insert_file_into_db(db_path, file_path, file_path.stem.strip())
 
 
 if __name__ == "__main__":
-    db_path, dir_path = get_args()
-    load_data(Path(db_path), Path(dir_path))
+    db_path_arg, dir_path_arg = get_args()
+    load_data(Path(db_path_arg), Path(dir_path_arg))

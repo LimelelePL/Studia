@@ -2,6 +2,11 @@ import argparse
 import sqlite3
 from pathlib import Path
 
+from sqlalchemy import create_engine, distinct, func, select
+from sqlalchemy.orm import Session
+
+from app.orm.db_structure import Route, StopTime, Trip
+
 
 def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -10,13 +15,14 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def connect_database(db_path: Path) -> sqlite3.Connection:
+def connect_database(db_path: Path):
     if not db_path.exists():
         raise FileNotFoundError(f"Nie znaleziono bazy danych: {db_path}")
 
     conn = sqlite3.connect(db_path)
+    engine = create_engine(f"sqlite:///{db_path}")
     conn.row_factory = sqlite3.Row
-    return conn
+    return conn, engine
 
 
 def choose_stop(conn: sqlite3.Connection) -> int:
@@ -75,6 +81,17 @@ def count_routes(conn: sqlite3.Connection, stop_id: int) -> int:
             (stop_id,),
         ).fetchone()[0],
     )
+
+def count_routes_alchemy(session: Session, stop_id: int) -> int:
+    result = session.execute(
+        select(func.count(distinct(Route.route_id)))
+        .select_from(StopTime)
+        .join(Trip, Trip.trip_id == StopTime.trip_id)
+        .join(Route, Route.route_id == Trip.route_id)
+        .where(StopTime.stop_id == stop_id)
+    ).scalar_one()
+
+    return int(result)
 
 
 def count_departures(conn: sqlite3.Connection, stop_id: int) -> int:
@@ -138,12 +155,12 @@ def get_departures_by_route(conn: sqlite3.Connection, stop_id: int) -> list[sqli
     ).fetchall()
 
 
-def print_stop_stats(conn: sqlite3.Connection, stop_id: int) -> None:
+def print_stop_stats(conn: sqlite3.Connection, session: Session, stop_id: int) -> None:
     stop = get_stop(conn, stop_id)
     departures = get_first_and_last_departure(conn, stop_id)
 
     print(f"\nPrzystanek: {stop['stop_name']} | kod: {stop['stop_code']} | id: {stop['stop_id']}")
-    print(f"Liczba roznych linii: {count_routes(conn, stop_id)}")
+    print(f"Liczba roznych linii: {count_routes_alchemy(session, stop_id)}")
     print(f"Liczba odjazdow: {count_departures(conn, stop_id)}")
     print(f"Najwczesniejszy odjazd: {departures['first_departure']}")
     print(f"Najpozniejszy odjazd: {departures['last_departure']}")
@@ -164,9 +181,11 @@ def print_stop_stats(conn: sqlite3.Connection, stop_id: int) -> None:
 def main() -> None:
     args = get_args()
 
-    with connect_database(args.db_path) as conn:
+    conn, engine = connect_database(args.db_path)
+    with Session(engine) as session:
         stop_id = args.stop_id if args.stop_id is not None else choose_stop(conn)
-        print_stop_stats(conn, stop_id)
+        print_stop_stats(conn, session, stop_id)
+        conn.close()
 
 
 if __name__ == "__main__":

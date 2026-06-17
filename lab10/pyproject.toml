@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "sqlalchemy>=2.0.51",
+]
 
 [project.scripts]
 lab10 = "app.main:main"
@@ -53,6 +55,9 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["S", "T20"]
+"src/app/orm/create_database.py" = ["T20"]
+"src/app/sqlite/create_database.py" = ["T20"]
+"src/app/sqlite/load_data.py" = ["S608"]
 
 [tool.ruff.format]
 quote-style = "double"
