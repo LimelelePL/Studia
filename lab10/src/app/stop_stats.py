@@ -1,8 +1,9 @@
 import argparse
 import sqlite3
 from pathlib import Path
+from typing import cast
 
-from sqlalchemy import create_engine, distinct, func, select
+from sqlalchemy import Engine, create_engine, distinct, func, select
 from sqlalchemy.orm import Session
 
 from app.orm.db_structure import Route, StopTime, Trip
@@ -15,7 +16,7 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def connect_database(db_path: Path):
+def connect_database(db_path: Path) -> tuple[sqlite3.Connection, Engine]:
     if not db_path.exists():
         raise FileNotFoundError(f"Nie znaleziono bazy danych: {db_path}")
 
@@ -65,7 +66,7 @@ def get_stop(conn: sqlite3.Connection, stop_id: int) -> sqlite3.Row:
     if stop is None:
         raise ValueError(f"Nie znaleziono przystanku o id {stop_id}")
 
-    return stop
+    return cast(sqlite3.Row, stop)
 
 
 def count_routes(conn: sqlite3.Connection, stop_id: int) -> int:
@@ -108,7 +109,7 @@ def count_departures(conn: sqlite3.Connection, stop_id: int) -> int:
 
 
 def get_first_and_last_departure(conn: sqlite3.Connection, stop_id: int) -> sqlite3.Row:
-    return conn.execute(
+    row = conn.execute(
         """
         SELECT MIN(departure_time) AS first_departure,
                MAX(departure_time) AS last_departure
@@ -117,6 +118,7 @@ def get_first_and_last_departure(conn: sqlite3.Connection, stop_id: int) -> sqli
         """,
         (stop_id,),
     ).fetchone()
+    return cast(sqlite3.Row, row)
 
 
 def get_most_common_directions(conn: sqlite3.Connection, stop_id: int) -> list[sqlite3.Row]:
