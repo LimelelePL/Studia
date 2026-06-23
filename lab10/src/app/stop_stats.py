@@ -83,6 +83,7 @@ def count_routes(conn: sqlite3.Connection, stop_id: int) -> int:
         ).fetchone()[0],
     )
 
+
 def count_routes_alchemy(session: Session, stop_id: int) -> int:
     result = session.execute(
         select(func.count(distinct(Route.route_id)))
@@ -141,16 +142,13 @@ def get_departures_by_route(conn: sqlite3.Connection, stop_id: int) -> list[sqli
     return conn.execute(
         """
         SELECT routes.route_short_name AS route,
-               trips.trip_headsign AS direction,
-               COUNT(*) AS departures_count,
-               MIN(stop_times.departure_time) AS first_departure,
-               MAX(stop_times.departure_time) AS last_departure
+               COUNT(*) AS departures_count
         FROM stop_times
         JOIN trips ON trips.trip_id = stop_times.trip_id
         JOIN routes ON routes.route_id = trips.route_id
         WHERE stop_times.stop_id = ?
-        GROUP BY routes.route_id, routes.route_short_name, trips.trip_headsign
-        ORDER BY departures_count DESC, routes.route_short_name, trips.trip_headsign
+        GROUP BY routes.route_short_name
+        ORDER BY departures_count DESC
         LIMIT 10
         """,
         (stop_id,),
@@ -171,13 +169,9 @@ def print_stop_stats(conn: sqlite3.Connection, session: Session, stop_id: int) -
     for row in get_most_common_directions(conn, stop_id):
         print(f"- {row['direction']}: {row['departures_count']}")
 
-    print("\nDodatkowe zapytanie - najczestsze linie i kierunki na przystanku:")
+    print("\nDodatkowe zapytanie - najczestsze linie na przystanku:")
     for row in get_departures_by_route(conn, stop_id):
-        print(
-            f"- linia {row['route']} do {row['direction']}: "
-            f"{row['departures_count']} odjazdow, "
-            f"od {row['first_departure']} do {row['last_departure']}"
-        )
+        print(f"- linia {row['route']}: {row['departures_count']} odjazdow")
 
 
 def main() -> None:
