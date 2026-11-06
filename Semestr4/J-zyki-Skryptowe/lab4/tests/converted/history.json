@@ -1,0 +1,51 @@
+[
+    {
+        "timestamp": "2026-04-06 22:09:43",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\Oxygen.mp3",
+        "output_format": ".webm",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-Oxygen.webm",
+        "program": "ffmpeg"
+    },
+    {
+        "timestamp": "2026-04-06 22:10:04",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\pomidor.jpg",
+        "output_format": ".png",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-pomidor.png",
+        "program": "magick"
+    },
+    {
+        "timestamp": "2026-04-06 22:24:05",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\Oxygen.mp3",
+        "output_format": ".wav",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-Oxygen.wav",
+        "program": "ffmpeg"
+    },
+    {
+        "timestamp": "2026-04-06 22:24:06",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\Yung Lean  CBT.mp3",
+        "output_format": ".wav",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-Yung Lean  CBT.wav",
+        "program": "ffmpeg"
+    },
+    {
+        "timestamp": "2026-04-06 22:29:28",
+        "source_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\pomidor.jpg",
+        "output_format": ".jpeg",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260406-pomidor.jpeg",
+        "program": "magick"
+    },
+    {
+        "timestamp": "2026-04-21 23:11:57",
+        "source_path": "<built-in function input>",
+        "output_format": ".wav",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260421-Oxygen.wav",
+        "program": "ffmpeg"
+    },
+    {
+        "timestamp": "2026-04-21 23:11:58",
+        "source_path": "<built-in function input>",
+        "output_format": ".wav",
+        "output_path": "C:\\Users\\Dudek\\OneDrive\\Pulpit\\Repozytoria\\Jezyki_Skryptowe\\lab4\\tests\\converted\\20260421-Yung Lean  CBT.wav",
+        "program": "ffmpeg"
+    }
+]

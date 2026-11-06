@@ -1,0 +1,65 @@
+[project]
+name = "lab4"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+lab4 = "app.main:main"
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/app"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.0.0",
+    "pytest>=9.0.0",
+    "ruff>=0.15.0",
+]
+
+[tool.ruff]
+preview = true
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "N",    # pep8-naming
+    "C4",   # flake8-comprehensions
+    "RUF",  # ruff-specific
+    "SIM",  # flake8-simplify
+    "PT",   # flake8-pytest-style
+    "ERA",  # eradicate (no commented-out code)
+    "S",    # flake8-bandit (security)
+    "RET"   # flake8-return
+]
+ignore = [
+    "S101",   # allow assert in tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S", "T20"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+strict = true
+python_version = "3.13"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
